@@ -9,9 +9,7 @@ a lot of more established languages.
 The goal of this series is to help you go from no knowledge of Rust to understanding how Rust is written as quickly as
 possible.
 
-This repository will provide the content in book form, however, the plan is to make a full YouTube series.
-
-You can view the book here: [https://www.danielmason.com/idiomatic-rust-in-simple-steps](https://www.danielmason.com/idiomatic-rust-in-simple-steps)
+You can view the book here: [https://fios-quest.com/idiomatic-rust-in-simple-steps](https://fios-quest.com/idiomatic-rust-in-simple-steps)
 
 ## Build tools
 
