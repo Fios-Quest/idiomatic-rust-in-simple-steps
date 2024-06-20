@@ -351,4 +351,288 @@ learning.
 
 It's one of the many examples of how the Rust community feeds into itself, helping us all be better software engineers.
 
+Homework
+--------
+
+In the last chapter, we asked you to do three things, one at a time, starting with the test and then writing the
+implementation.
+
+1. Create a function that will reverse the words in an English sentence.
+2. If the string starts or ends with whitespace, it should be removed (trimmed) from the returned String.
+3. If the string contains more than one sentence, the function should return an error (though for now, that error can
+   be the unit type `()`).
+
+> Please note an earlier version of this book had 4 requirements, the second one has been removed. See the 
+> [homework section of this chapters video](https://www.youtube.com/watch?v=MLTy-UmLCnk?t=856) to see how it can be
+> solved, and why I chose to remove it.
+
+We want to start with the test, but we can't create the test without the function existing, so the easiest way to
+proceed is to design the interface of the function and use the `todo!` macro so that we can integrate it into a test.
+We know later we'll want to return an Error, so we've got a string slice input, and a Result output where the Ok variant
+is a `String`.
+
+```rust,noplayground
+fn reverse_sentence(_input: &str) -> Result<String, ()> {
+    todo!("Write the reverse_sentence function")
+}
+```
+
+We then create our first test, but because our first requirement doesn't tell us too much, we'll keep it simple; all
+lowercase, no punctuation.
+
+
+```rust,noplayground
+# fn reverse_sentence(_input: &str) -> Result<String, ()> {
+#     todo!("Write the reverse_sentence function")
+# }
+# 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_reverse_words() {
+        let input = "this is my test input";
+        let output = reverse_sentence(input);
+        assert_eq!(output, Ok("input test my is this".to_string()));
+    }
+}
+```
+
+Now that we have a failing test, lets fix the code. I'm going to use our split_around_many function but if you used the
+built-in split function instead, well done, bonus points to you! It's actually more efficient that way, and you can in
+fact reduce the memory allocations down to just one.
+
+I decided to stick with our existing functions for simplicity. We can split the string around spaces to get a vector of
+words, then we can call reverse on the vector to get the words in the opposite order. Finally, we can join the vector of
+strings with spaces to create our output string.
+
+```rust,noplayground
+fn reverse_sentence(input: &str) -> Result<String, ()> {
+    let mut words: Vec<&str> = split_around_many(input, " ");
+    words.reverse();
+    Ok(words.join(" "))
+}
+# 
+# #[cfg(test)]
+# mod tests {
+#     use super::*;
+#     
+#     #[test]
+#     fn test_reverse_words() {
+#         let input = "this is my test input";
+#         let output = reverse_sentence(input);
+#         assert_eq!(output, Ok("input test my is this".to_string()));
+#     }
+# }
+```
+
+Now the test passes.
+
+Next lets look at trimming the string.
+
+In the requirements I did say "any whitespace" so lets test with a space on one end and a tab on the other.
+
+```rust,noplayground
+# fn reverse_sentence(input: &str) -> Result<String, ()> {
+#     let mut words: Vec<&str> = split_around_many(input, " ");
+#     words.reverse();
+#     Ok(words.join(" "))
+# }
+# 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ...
+#     #[test]
+#     fn test_reverse_words() {
+#         let input = "this is my test input";
+#         let output = reverse_sentence(input);
+#         assert_eq!(output, Ok("input test my is this".to_string()));
+#     }
+
+    #[test]
+    fn test_reverse_words_trims_string() {
+        let input = " this string has weird whitespace\t";
+        let output = reverse_sentence(input);
+        assert_eq!(output, Ok("whitespace weird has string this".to_string()));
+    }
+}
+```
+
+Again, this test won't pass when we run it, so lets implement the feature.
+
+String slices have a [method called `.trim()`](https://doc.rust-lang.org/std/primitive.str.html#method.trim), which will
+return a string slice that points to the characters inside the original string slice without surrounding whitespace. 
+This is really cool because it means we didn't need to allocate any more memory. We can also shadow the `input` 
+variable, so we only need to add one line to the function!
+
+```rust,noplayground
+fn reverse_sentence(input: &str) -> Result<String, ()> {
+    let input = input.trim();
+    let mut words: Vec<&str> = split_around_many(input, " ");
+    words.reverse();
+    Ok(words.join(" "))
+}
+# 
+# #[cfg(test)]
+# mod tests {
+#     use super::*;
+# 
+#     #[test]
+#     fn test_reverse_words() {
+#         let input = "this is my test input";
+#         let output = reverse_sentence(input);
+#         assert_eq!(output, Ok("input test my is this".to_string()));
+#     }
+# 
+#     #[test]
+#     fn test_reverse_words_trims_string() {
+#         let input = " this string has weird whitespace\t";
+#         let output = reverse_sentence(input);
+#         assert_eq!(output, Ok("whitespace weird has string this".to_string()));
+#     }
+# }
+```
+
+The final requirement is to return an error if there is more than one sentence. We haven't dealt with punctuation yet
+so let's create an assertion that an ending dot is fine, and a second assertion that one in the middle of a sentence
+causes an error. The first assertion should pass without any changes, but helps make sure we don't break this as we
+implement feature.
+
+```rust,noplayground
+# fn reverse_sentence(input: &str) -> Result<String, ()> {
+#     let input = input.trim();
+#     let mut words: Vec<&str> = split_around_many(input, " ");
+#     words.reverse();
+#     Ok(words.join(" "))
+# }
+# 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ...
+#     #[test]
+#     fn test_reverse_words() {
+#         let input = "this is my test input";
+#         let output = reverse_sentence(input);
+#         assert_eq!(output, Ok("input test my is this".to_string()));
+#     }
+# 
+#     #[test]
+#     fn test_reverse_words_trims_string() {
+#         let input = " this string has weird whitespace\t";
+#         let output = reverse_sentence(input);
+#         assert_eq!(output, Ok("whitespace weird has string this".to_string()));
+#     }
+
+    #[test]
+    fn test_reverse_words_reject_multiple_sentances() {
+        let input = "sentance one.";
+        let output = reverse_sentence(input);
+        assert_eq!(output, Ok("one. sentance".to_string()));
+
+        let input = "sentance one. sentance two";
+        let output = reverse_sentence(input);
+        assert_eq!(output, Err(()));
+    }
+}
+```
+
+To implementing this feature, we can check the words iterator after the split, but before the reverse, for any full
+stops that occur before the final word. To do this we'll iterate over the vector, taking all but the last element, and
+if any word ends with a `.` we can assume it's a sentence break.
+
+```rust,noplayground
+fn reverse_sentence(input: &str) -> Result<String, ()> {
+    let input = input.trim();
+    let mut words: Vec<&str> = split_around_many(input, " ");
+    
+    if words
+        .iter()
+        .take(words.len() - 1)
+        .any(|word| word.ends_with('.'))
+    {
+        return Err(());
+    }
+    
+    words.reverse();
+    Ok(words.join(" "))
+}
+# 
+# #[cfg(test)]
+# mod tests {
+#     use super::*;
+# 
+#     #[test]
+#     fn test_reverse_words() {
+#         let input = "this is my test input";
+#         let output = reverse_sentence(input);
+#         assert_eq!(output, Ok("input test my is this".to_string()));
+#     }
+# 
+#     #[test]
+#     fn test_reverse_words_trims_string() {
+#         let input = " this string has weird whitespace\t";
+#         let output = reverse_sentence(input);
+#         assert_eq!(output, Ok("whitespace weird has string this".to_string()));
+#     }
+# 
+#     #[test]
+#     fn test_reverse_words_reject_multiple_sentances() {
+#         let input = "sentance one.";
+#         let output = reverse_sentence(input);
+#         assert_eq!(output, Ok("one. sentance".to_string()));
+# 
+#         let input = "sentance one. sentance two";
+#         let output = reverse_sentence(input);
+#         assert_eq!(output, Err(()));
+#     }
+# }
+```
+
+Were we doing this properly, of course we'd use proper errors... but proper errors are for another time 😉
+
+This time for the homework, I'd like you to create a library that contains our three split functions from the last few 
+chapters (I've rewritten them below, use the 👁️ icon to show hidden lines).
+
+```rust,noplayground
+pub fn split_at(input: &str, at: usize) -> (&str, &str) {
+#     let up_to = std::cmp::min(at, input.len()); // Prevent out of bounds
+#     (&input[..up_to], &input[up_to..])
+}
+
+pub fn split_around<'a>(input: &'a str, sub_string: &str) -> (&'a str, &'a str) {
+#     if let Some(found_at) = input.find(sub_string) {
+#       (&input[..found_at], &input[found_at + sub_string.len()..])
+#     } else {
+#       (&input[..], &input[input.len()..])
+#     }
+}
+
+# fn split_around_many_recurse<'a>(input: &'a str, sub_string: &str, collection: &mut Vec<&'a str>) {
+#     if let Some(found_at) = input.find(sub_string) {
+#         let end_pos = found_at + sub_string.len();
+#         collection.push(&input[..found_at]);
+#         split_around_many_recurse(&input[end_pos..], sub_string, collection);
+#     } else {
+#         collection.push(&input);
+#     }
+# }
+# 
+pub fn split_around_many<'a>(input: &'a str, sub_string: &str) -> Vec<&'a str> {
+#     let mut output = Vec::with_capacity(input.matches(sub_string).count());
+#     split_around_many_recurse(input, sub_string, &mut output);
+#     output
+}
+```
+
+You can make a library directly with no executable with `cargo new --lib <name>` where <name> is whatever you want to
+call it, this saves you moving things around too much.
+
+Write documentation for the functions that explains how they work with code samples and assertions. Note that the
+`split_around_many_recurse` function probably shouldn't be public, so you won't see it in your library documentation.
+
 [^rfc1574]: https://rust-lang.github.io/rfcs/1574-more-api-documentation-conventions.html

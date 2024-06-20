@@ -802,12 +802,11 @@ pub fn split_around_many<'a>(input: &'a str, sub_string: &str) -> Vec<&'a str> {
 ```
 
 For the homework in this chapter, I would like you to write the tests for, and then implement the code for the following
-requirements in this order:
+requirements, one at a time, in this order:
 
 1. Create a function that will reverse the words in an English sentence.
-2. If the string started with a capital letter, it should still start with a capital after the words are reversed.
-3. If the string starts or ends with whitespace, it should be removed (trimmed) from the returned String.
-4. If the string contains more than one sentence, the function should return an error (though for now, that error can
+2. If the string starts or ends with whitespace, it should be removed (trimmed) from the returned String.
+3. If the string contains more than one sentence, the function should return an error (though for now, that error can
    be the unit type `()`).
 
 Your function will need to allocate memory and should probably have the header:

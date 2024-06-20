@@ -425,6 +425,249 @@ for every crate (library) ever published!</p>
 conventions, which means Rust documentation will always feel somewhat familiar, significantly reducing the burden of
 learning.</p>
 <p>It’s one of the many examples of how the Rust community feeds into itself, helping us all be better software engineers.</p>
+<h2 id="homework"><a class="header" href="#homework">Homework</a></h2>
+<p>In the last chapter, we asked you to do three things, one at a time, starting with the test and then writing the
+implementation.</p>
+<ol>
+<li>Create a function that will reverse the words in an English sentence.</li>
+<li>If the string starts or ends with whitespace, it should be removed (trimmed) from the returned String.</li>
+<li>If the string contains more than one sentence, the function should return an error (though for now, that error can
+be the unit type <code>()</code>).</li>
+</ol>
+<blockquote>
+<p>Please note an earlier version of this book had 4 requirements, the second one has been removed. See the
+<a href="https://www.youtube.com/watch?v=MLTy-UmLCnk?t=856" title="" target="_blank">homework section of this chapters video</a> to see how it can be
+solved, and why I chose to remove it.</p>
+</blockquote>
+<p>We want to start with the test, but we can’t create the test without the function existing, so the easiest way to
+proceed is to design the interface of the function and use the <code>todo!</code> macro so that we can integrate it into a test.
+We know later we’ll want to return an Error, so we’ve got a string slice input, and a Result output where the Ok variant
+is a <code>String</code>.</p>
+<pre><code class="language-rust noplayground">fn reverse_sentence(_input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+    todo!("Write the reverse_sentence function")
+}</code></pre>
+<p>We then create our first test, but because our first requirement doesn’t tell us too much, we’ll keep it simple; all
+lowercase, no punctuation.</p>
+<pre><code class="language-rust noplayground"><span class="boring">fn reverse_sentence(_input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+</span><span class="boring">    todo!("Write the reverse_sentence function")
+</span><span class="boring">}
+</span><span class="boring">
+</span>#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_reverse_words() {
+        let input = "this is my test input";
+        let output = reverse_sentence(input);
+        assert_eq!(output, Ok("input test my is this".to_string()));
+    }
+}</code></pre>
+<p>Now that we have a failing test, lets fix the code. I’m going to use our split_around_many function but if you used the
+built-in split function instead, well done, bonus points to you! It’s actually more efficient that way, and you can in
+fact reduce the memory allocations down to just one.</p>
+<p>I decided to stick with our existing functions for simplicity. We can split the string around spaces to get a vector of
+words, then we can call reverse on the vector to get the words in the opposite order. Finally, we can join the vector of
+strings with spaces to create our output string.</p>
+<pre><code class="language-rust noplayground">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+    let mut words: Vec&lt;&amp;str&gt; = split_around_many(input, " ");
+    words.reverse();
+    Ok(words.join(" "))
+}
+<span class="boring">
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">    
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn test_reverse_words() {
+</span><span class="boring">        let input = "this is my test input";
+</span><span class="boring">        let output = reverse_sentence(input);
+</span><span class="boring">        assert_eq!(output, Ok("input test my is this".to_string()));
+</span><span class="boring">    }
+</span><span class="boring">}</span></code></pre>
+<p>Now the test passes.</p>
+<p>Next lets look at trimming the string.</p>
+<p>In the requirements I did say “any whitespace” so lets test with a space on one end and a tab on the other.</p>
+<pre><code class="language-rust noplayground"><span class="boring">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+</span><span class="boring">    let mut words: Vec&lt;&amp;str&gt; = split_around_many(input, " ");
+</span><span class="boring">    words.reverse();
+</span><span class="boring">    Ok(words.join(" "))
+</span><span class="boring">}
+</span><span class="boring">
+</span>#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ...
+<span class="boring">    #[test]
+</span><span class="boring">    fn test_reverse_words() {
+</span><span class="boring">        let input = "this is my test input";
+</span><span class="boring">        let output = reverse_sentence(input);
+</span><span class="boring">        assert_eq!(output, Ok("input test my is this".to_string()));
+</span><span class="boring">    }
+</span>
+    #[test]
+    fn test_reverse_words_trims_string() {
+        let input = " this string has weird whitespace\t";
+        let output = reverse_sentence(input);
+        assert_eq!(output, Ok("whitespace weird has string this".to_string()));
+    }
+}</code></pre>
+<p>Again, this test won’t pass when we run it, so lets implement the feature.</p>
+<p>String slices have a <a href="https://doc.rust-lang.org/std/primitive.str.html#method.trim" title="" target="_blank">method called <code>.trim()</code></a>, which will
+return a string slice that points to the characters inside the original string slice without surrounding whitespace.
+This is really cool because it means we didn’t need to allocate any more memory. We can also shadow the <code>input</code>
+variable, so we only need to add one line to the function!</p>
+<pre><code class="language-rust noplayground">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+    let input = input.trim();
+    let mut words: Vec&lt;&amp;str&gt; = split_around_many(input, " ");
+    words.reverse();
+    Ok(words.join(" "))
+}
+<span class="boring">
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn test_reverse_words() {
+</span><span class="boring">        let input = "this is my test input";
+</span><span class="boring">        let output = reverse_sentence(input);
+</span><span class="boring">        assert_eq!(output, Ok("input test my is this".to_string()));
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn test_reverse_words_trims_string() {
+</span><span class="boring">        let input = " this string has weird whitespace\t";
+</span><span class="boring">        let output = reverse_sentence(input);
+</span><span class="boring">        assert_eq!(output, Ok("whitespace weird has string this".to_string()));
+</span><span class="boring">    }
+</span><span class="boring">}</span></code></pre>
+<p>The final requirement is to return an error if there is more than one sentence. We haven’t dealt with punctuation yet
+so let’s create an assertion that an ending dot is fine, and a second assertion that one in the middle of a sentence
+causes an error. The first assertion should pass without any changes, but helps make sure we don’t break this as we
+implement feature.</p>
+<pre><code class="language-rust noplayground"><span class="boring">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+</span><span class="boring">    let input = input.trim();
+</span><span class="boring">    let mut words: Vec&lt;&amp;str&gt; = split_around_many(input, " ");
+</span><span class="boring">    words.reverse();
+</span><span class="boring">    Ok(words.join(" "))
+</span><span class="boring">}
+</span><span class="boring">
+</span>#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ...
+<span class="boring">    #[test]
+</span><span class="boring">    fn test_reverse_words() {
+</span><span class="boring">        let input = "this is my test input";
+</span><span class="boring">        let output = reverse_sentence(input);
+</span><span class="boring">        assert_eq!(output, Ok("input test my is this".to_string()));
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn test_reverse_words_trims_string() {
+</span><span class="boring">        let input = " this string has weird whitespace\t";
+</span><span class="boring">        let output = reverse_sentence(input);
+</span><span class="boring">        assert_eq!(output, Ok("whitespace weird has string this".to_string()));
+</span><span class="boring">    }
+</span>
+    #[test]
+    fn test_reverse_words_reject_multiple_sentances() {
+        let input = "sentance one.";
+        let output = reverse_sentence(input);
+        assert_eq!(output, Ok("one. sentance".to_string()));
+
+        let input = "sentance one. sentance two";
+        let output = reverse_sentence(input);
+        assert_eq!(output, Err(()));
+    }
+}</code></pre>
+<p>To implementing this feature, we can check the words iterator after the split, but before the reverse, for any full
+stops that occur before the final word. To do this we’ll iterate over the vector, taking all but the last element, and
+if any word ends with a <code>.</code> we can assume it’s a sentence break.</p>
+<pre><code class="language-rust noplayground">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+    let input = input.trim();
+    let mut words: Vec&lt;&amp;str&gt; = split_around_many(input, " ");
+    
+    if words
+        .iter()
+        .take(words.len() - 1)
+        .any(|word| word.ends_with('.'))
+    {
+        return Err(());
+    }
+    
+    words.reverse();
+    Ok(words.join(" "))
+}
+<span class="boring">
+</span><span class="boring">#[cfg(test)]
+</span><span class="boring">mod tests {
+</span><span class="boring">    use super::*;
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn test_reverse_words() {
+</span><span class="boring">        let input = "this is my test input";
+</span><span class="boring">        let output = reverse_sentence(input);
+</span><span class="boring">        assert_eq!(output, Ok("input test my is this".to_string()));
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn test_reverse_words_trims_string() {
+</span><span class="boring">        let input = " this string has weird whitespace\t";
+</span><span class="boring">        let output = reverse_sentence(input);
+</span><span class="boring">        assert_eq!(output, Ok("whitespace weird has string this".to_string()));
+</span><span class="boring">    }
+</span><span class="boring">
+</span><span class="boring">    #[test]
+</span><span class="boring">    fn test_reverse_words_reject_multiple_sentances() {
+</span><span class="boring">        let input = "sentance one.";
+</span><span class="boring">        let output = reverse_sentence(input);
+</span><span class="boring">        assert_eq!(output, Ok("one. sentance".to_string()));
+</span><span class="boring">
+</span><span class="boring">        let input = "sentance one. sentance two";
+</span><span class="boring">        let output = reverse_sentence(input);
+</span><span class="boring">        assert_eq!(output, Err(()));
+</span><span class="boring">    }
+</span><span class="boring">}</span></code></pre>
+<p>Were we doing this properly, of course we’d use proper errors… but proper errors are for another time 😉</p>
+<p>This time for the homework, I’d like you to create a library that contains our three split functions from the last few
+chapters (I’ve rewritten them below, use the 👁️ icon to show hidden lines).</p>
+<pre><code class="language-rust noplayground">pub fn split_at(input: &amp;str, at: usize) -&gt; (&amp;str, &amp;str) {
+<span class="boring">    let up_to = std::cmp::min(at, input.len()); // Prevent out of bounds
+</span><span class="boring">    (&amp;input[..up_to], &amp;input[up_to..])
+</span>}
+
+pub fn split_around&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; (&amp;'a str, &amp;'a str) {
+<span class="boring">    if let Some(found_at) = input.find(sub_string) {
+</span><span class="boring">      (&amp;input[..found_at], &amp;input[found_at + sub_string.len()..])
+</span><span class="boring">    } else {
+</span><span class="boring">      (&amp;input[..], &amp;input[input.len()..])
+</span><span class="boring">    }
+</span>}
+
+<span class="boring">fn split_around_many_recurse&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str, collection: &amp;mut Vec&lt;&amp;'a str&gt;) {
+</span><span class="boring">    if let Some(found_at) = input.find(sub_string) {
+</span><span class="boring">        let end_pos = found_at + sub_string.len();
+</span><span class="boring">        collection.push(&amp;input[..found_at]);
+</span><span class="boring">        split_around_many_recurse(&amp;input[end_pos..], sub_string, collection);
+</span><span class="boring">    } else {
+</span><span class="boring">        collection.push(&amp;input);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>pub fn split_around_many&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; Vec&lt;&amp;'a str&gt; {
+<span class="boring">    let mut output = Vec::with_capacity(input.matches(sub_string).count());
+</span><span class="boring">    split_around_many_recurse(input, sub_string, &amp;mut output);
+</span><span class="boring">    output
+</span>}</code></pre>
+<p>You can make a library directly with no executable with <code>cargo new --lib &lt;name&gt;</code> where <name> is whatever you want to
+call it, this saves you moving things around too much.</p>
+<p>Write documentation for the functions that explains how they work with code samples and assertions. Note that the
+<code>split_around_many_recurse</code> function probably shouldn’t be public, so you won’t see it in your library documentation.</p>
 <div class="footnote-definition" id="rfc1574"><sup class="footnote-definition-label">1</sup>
 <p>https://rust-lang.github.io/rfcs/1574-more-api-documentation-conventions.html</p>
 </div>
