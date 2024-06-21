@@ -1,8 +1,8 @@
 Clippy and Fmt
 ==============
 
-The Rust ecosystem has a wealth of tools that support us when writing Rust but two of the most important ship with the
-default tool suite.
+The Rust ecosystem has a wealth of tools that support us when writing Rust but there are two important tools I want to
+cover at this point:
 
 - `rustfmt` - Pronounced Rust Format, helps us keep our code styles consistent, so that its easy to share your code or
   read and learn from someone else's.
