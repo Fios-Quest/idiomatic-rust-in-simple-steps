@@ -12,8 +12,6 @@ create-missing = true
 
 [preprocessor.external-links]
 
-[preprocessor.mermaid]
-
 [output]
 
 [output.html]
