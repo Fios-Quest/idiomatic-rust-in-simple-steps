@@ -14,6 +14,7 @@
     - [Tests](./language-basics/tests.md)
     - [Documentation](./language-basics/documentation.md)
     - [Clippy and Fmt](./language-basics/clippy-and-fmt.md)
+    - [Giving types functionality](./language-basics/impl.md)
     - [Traits]()
     - [Conversions]()
     - [Error Handling]()
