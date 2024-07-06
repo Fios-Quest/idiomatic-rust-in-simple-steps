@@ -3490,7 +3490,7 @@ as you write your documentation. Try to keep this line terse but descriptive.</p
 <p>Before we move on, we should also provide some documentation for our library. We can’t put Outer Doc Comments before the
 library because the library <em>is</em> the file. Instead, we use Inner Doc Comments, which are prefixed with <code>//!</code>. We do this
 at the top of the file. Let’s provide a little</p>
-<pre><code class="language-rust noplayground">//! This library does little more than provide us a way of playing with documentation
+<pre><code class="language-rust ignore">//! This library does little more than provide us a way of playing with documentation
 //!
 //! We can use all kinds of markdown in Doc Comments, including:
 //!
@@ -3534,7 +3534,7 @@ for our library (<code>lib.rs</code>), one test suite for our binary (<code>iris
 two have no tests, but Doc-tests have two tests.</p>
 <p>What’s happened here is that <code>cargo test</code> is treating any code samples as tests (unless we ask it not to).</p>
 <p>Let’s quickly add a test to <code>lib.rs</code> to look more closely at the difference.</p>
-<pre><code class="language-rust noplayground">//! ...
+<pre><code class="language-rust ignore">//! ...
 
 /// ...
 pub fn add(a: usize, b: usize) -&gt; usize { /* ... */ }
@@ -3634,7 +3634,23 @@ fact reduce the memory allocations down to just one.</p>
 <p>I decided to stick with our existing functions for simplicity. We can split the string around spaces to get a vector of
 words, then we can call reverse on the vector to get the words in the opposite order. Finally, we can join the vector of
 strings with spaces to create our output string.</p>
-<pre><code class="language-rust noplayground">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+<pre><code class="language-rust noplayground"><span class="boring">fn split_around_many_recurse&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str, collection: &amp;mut Vec&lt;&amp;'a str&gt;) {
+</span><span class="boring">    if let Some(found_at) = input.find(sub_string) {
+</span><span class="boring">        let end_pos = found_at + sub_string.len();
+</span><span class="boring">        collection.push(&amp;input[..found_at]);
+</span><span class="boring">        split_around_many_recurse(&amp;input[end_pos..], sub_string, collection);
+</span><span class="boring">    } else {
+</span><span class="boring">        collection.push(&amp;input);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn split_around_many&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let mut output = Vec::with_capacity(input.matches(sub_string).count());
+</span><span class="boring">    split_around_many_recurse(input, sub_string, &amp;mut output);
+</span><span class="boring">    output
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
     let mut words: Vec&lt;&amp;str&gt; = split_around_many(input, " ");
     words.reverse();
     Ok(words.join(" "))
@@ -3654,7 +3670,23 @@ strings with spaces to create our output string.</p>
 <p>Now the test passes.</p>
 <p>Next lets look at trimming the string.</p>
 <p>In the requirements I did say “any whitespace” so lets test with a space on one end and a tab on the other.</p>
-<pre><code class="language-rust noplayground"><span class="boring">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+<pre><code class="language-rust noplayground"><span class="boring">fn split_around_many_recurse&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str, collection: &amp;mut Vec&lt;&amp;'a str&gt;) {
+</span><span class="boring">    if let Some(found_at) = input.find(sub_string) {
+</span><span class="boring">        let end_pos = found_at + sub_string.len();
+</span><span class="boring">        collection.push(&amp;input[..found_at]);
+</span><span class="boring">        split_around_many_recurse(&amp;input[end_pos..], sub_string, collection);
+</span><span class="boring">    } else {
+</span><span class="boring">        collection.push(&amp;input);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn split_around_many&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let mut output = Vec::with_capacity(input.matches(sub_string).count());
+</span><span class="boring">    split_around_many_recurse(input, sub_string, &amp;mut output);
+</span><span class="boring">    output
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
 </span><span class="boring">    let mut words: Vec&lt;&amp;str&gt; = split_around_many(input, " ");
 </span><span class="boring">    words.reverse();
 </span><span class="boring">    Ok(words.join(" "))
@@ -3684,7 +3716,23 @@ mod tests {
 return a string slice that points to the characters inside the original string slice without surrounding whitespace.
 This is really cool because it means we didn’t need to allocate any more memory. We can also shadow the <code>input</code>
 variable, so we only need to add one line to the function!</p>
-<pre><code class="language-rust noplayground">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+<pre><code class="language-rust noplayground"><span class="boring">fn split_around_many_recurse&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str, collection: &amp;mut Vec&lt;&amp;'a str&gt;) {
+</span><span class="boring">    if let Some(found_at) = input.find(sub_string) {
+</span><span class="boring">        let end_pos = found_at + sub_string.len();
+</span><span class="boring">        collection.push(&amp;input[..found_at]);
+</span><span class="boring">        split_around_many_recurse(&amp;input[end_pos..], sub_string, collection);
+</span><span class="boring">    } else {
+</span><span class="boring">        collection.push(&amp;input);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn split_around_many&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let mut output = Vec::with_capacity(input.matches(sub_string).count());
+</span><span class="boring">    split_around_many_recurse(input, sub_string, &amp;mut output);
+</span><span class="boring">    output
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
     let input = input.trim();
     let mut words: Vec&lt;&amp;str&gt; = split_around_many(input, " ");
     words.reverse();
@@ -3713,7 +3761,23 @@ variable, so we only need to add one line to the function!</p>
 so let’s create an assertion that an ending dot is fine, and a second assertion that one in the middle of a sentence
 causes an error. The first assertion should pass without any changes, but helps make sure we don’t break this as we
 implement feature.</p>
-<pre><code class="language-rust noplayground"><span class="boring">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+<pre><code class="language-rust noplayground"><span class="boring">fn split_around_many_recurse&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str, collection: &amp;mut Vec&lt;&amp;'a str&gt;) {
+</span><span class="boring">    if let Some(found_at) = input.find(sub_string) {
+</span><span class="boring">        let end_pos = found_at + sub_string.len();
+</span><span class="boring">        collection.push(&amp;input[..found_at]);
+</span><span class="boring">        split_around_many_recurse(&amp;input[end_pos..], sub_string, collection);
+</span><span class="boring">    } else {
+</span><span class="boring">        collection.push(&amp;input);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn split_around_many&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let mut output = Vec::with_capacity(input.matches(sub_string).count());
+</span><span class="boring">    split_around_many_recurse(input, sub_string, &amp;mut output);
+</span><span class="boring">    output
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
 </span><span class="boring">    let input = input.trim();
 </span><span class="boring">    let mut words: Vec&lt;&amp;str&gt; = split_around_many(input, " ");
 </span><span class="boring">    words.reverse();
@@ -3753,7 +3817,23 @@ mod tests {
 <p>To implementing this feature, we can check the words iterator after the split, but before the reverse, for any full
 stops that occur before the final word. To do this we’ll iterate over the vector, taking all but the last element, and
 if any word ends with a <code>.</code> we can assume it’s a sentence break.</p>
-<pre><code class="language-rust noplayground">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
+<pre><code class="language-rust noplayground"><span class="boring">fn split_around_many_recurse&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str, collection: &amp;mut Vec&lt;&amp;'a str&gt;) {
+</span><span class="boring">    if let Some(found_at) = input.find(sub_string) {
+</span><span class="boring">        let end_pos = found_at + sub_string.len();
+</span><span class="boring">        collection.push(&amp;input[..found_at]);
+</span><span class="boring">        split_around_many_recurse(&amp;input[end_pos..], sub_string, collection);
+</span><span class="boring">    } else {
+</span><span class="boring">        collection.push(&amp;input);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub fn split_around_many&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; Vec&lt;&amp;'a str&gt; {
+</span><span class="boring">    let mut output = Vec::with_capacity(input.matches(sub_string).count());
+</span><span class="boring">    split_around_many_recurse(input, sub_string, &amp;mut output);
+</span><span class="boring">    output
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt; {
     let input = input.trim();
     let mut words: Vec&lt;&amp;str&gt; = split_around_many(input, " ");
     
@@ -3891,7 +3971,7 @@ code to look. For example:</p>
 </span>let list = [
     "one",
     "two",
-]
+];
 <span class="boring">}</span></code></pre></pre>
 <p>or not:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -3899,7 +3979,7 @@ code to look. For example:</p>
 </span>let list = [
     "one",
     "two"
-]
+];
 <span class="boring">}</span></code></pre></pre>
 </li>
 <li>
@@ -4036,8 +4116,8 @@ This is where its worth learning your CI suite’s caching process, so that you 
 step.</p>
 <p><img src="language-basics/./clippy-and-fmt/rust-ci-with-cache.svg" alt="rust-ci-with-cache.svg" /></p>
 <h2 id="next-chapter"><a class="header" href="#next-chapter">Next Chapter</a></h2>
-<p>Next we’re going to cover traits; what they are, how to write them, how to implement them, and some of the more useful
-traits Rust provides that you should be aware of.</p>
+<p>Next we’re going to explain how to add functionality to types, why that’s useful and show off some real power moves of
+the type system.</p>
 
                     </main>
 

@@ -48,14 +48,14 @@ code to look. For example:
   let list = [
       "one",
       "two",
-  ]
+  ];
   ```
   or not:
   ```rust
   let list = [
       "one",
       "two"
-  ]
+  ];
   ```
 - How many empty lines are allowed between lines of code in a function?
 - etc...
@@ -213,5 +213,5 @@ step.
 Next Chapter
 ------------
 
-Next we're going to cover traits; what they are, how to write them, how to implement them, and some of the more useful
-traits Rust provides that you should be aware of. 
+Next we're going to explain how to add functionality to types, why that's useful and show off some real power moves of
+the type system.
