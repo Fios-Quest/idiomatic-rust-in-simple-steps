@@ -14,7 +14,7 @@
     - [Tests](./language-basics/tests.md)
     - [Documentation](./language-basics/documentation.md)
     - [Clippy and Fmt](./language-basics/clippy-and-fmt.md)
-    - [Traits]()
+    - [Traits](./language-basics/traits.md)
     - [Conversions]()
     - [Error Handling]()
     - [Collections]()
