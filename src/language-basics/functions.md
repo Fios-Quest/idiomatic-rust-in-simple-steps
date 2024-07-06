@@ -12,37 +12,20 @@ the function extremely predictable. Given the same input they will always produc
 within the system will change. 
 
 <style>
-  .mermaid {
-    text-align: center;
-  }
-  .mermaid svg {
-    background-color: white;
+  img {
+    display: block;
+    margin: 0 auto;
   }
 </style>
 
-```mermaid
----
-title: Pure Function
----
-graph LR;
-    Input ==> Process
-    Process ==> Output
-```
+
+![Pure Functions](./functions/PureFunctions.svg)
 
 An impure function, might not always produce the same output given the same input, or may have side effects within the
 system, either changing something else in the system or having some other part of the system change what the function
 does.
 
-```mermaid
----
-title: Impure Function
----
-graph LR;
-    Input ==> Process
-    Process ==> Output
-    Process <-.-> SE["Side Effect"]
-    
-```
+![Impure Functions](./functions/ImpureFunctions.svg)
 
 A Quick Note on Mutability
 --------------------------

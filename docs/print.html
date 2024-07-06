@@ -8,9 +8,7 @@
 
 
         <!-- Custom HTML head -->
-        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
-        <script>mermaid.initialize({startOnLoad:true});</script>
-
+        
         <meta name="description" content="Learn idiomatic Rust in simple steps even if you have no former knowledge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
@@ -2080,32 +2078,16 @@ attached to data types) that are built into Rust. We can make and use our own fu
 the function extremely predictable. Given the same input they will always produce the same output, and nothing else
 within the system will change.</p>
 <style>
-  .mermaid {
-    text-align: center;
-  }
-  .mermaid svg {
-    background-color: white;
+  img {
+    display: block;
+    margin: 0 auto;
   }
 </style>
-<pre class="mermaid">---
-title: Pure Function
----
-graph LR;
-    Input ==&gt; Process
-    Process ==&gt; Output
-</pre>
+<p><img src="language-basics/./functions/PureFunctions.svg" alt="Pure Functions" /></p>
 <p>An impure function, might not always produce the same output given the same input, or may have side effects within the
 system, either changing something else in the system or having some other part of the system change what the function
 does.</p>
-<pre class="mermaid">---
-title: Impure Function
----
-graph LR;
-    Input ==&gt; Process
-    Process ==&gt; Output
-    Process &lt;-.-&gt; SE[&quot;Side Effect&quot;]
-    
-</pre>
+<p><img src="language-basics/./functions/ImpureFunctions.svg" alt="Impure Functions" /></p>
 <h2 id="a-quick-note-on-mutability"><a class="header" href="#a-quick-note-on-mutability">A Quick Note on Mutability</a></h2>
 <p>Up to now, we haven’t needed to change any data once it’s been created. By default, all variables in Rust are implicitly
 “immutable”, meaning that the values inside of them can not be changed.</p>

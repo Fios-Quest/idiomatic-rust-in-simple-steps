@@ -13,7 +13,6 @@ create-missing = true
 [preprocessor.external-links]
 
 [preprocessor.mermaid]
-command = "mdbook-mermaid"
 
 [output]
 

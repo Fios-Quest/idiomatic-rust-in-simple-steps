@@ -16,5 +16,4 @@ You can view the book here: [https://fios-quest.com/idiomatic-rust-in-simple-ste
 ```shell
 cargo install mdbook
 cargo install mdbook-external-links
-cargo install mdbook-mermaid
 ```
