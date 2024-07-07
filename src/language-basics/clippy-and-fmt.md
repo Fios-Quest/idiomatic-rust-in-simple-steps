@@ -149,20 +149,20 @@ Continuous Integration
 ----------------------
 
 Continuous Integration (CI) is a technique that we use to maintain high quality, robust, and "correct" code in our code
-base. CI is usually used to help control what goes into your source code management system, where you might be storing
+base. CI is usually used to help control what goes into your Version Control Systems (VCS), where you might be storing
 your code.
 
-Software Configuration Management systems like Git, Mercurial, Subversion (SVN), etc, are out of scope for this book,
-however, if you haven't already, you should learn to use one of these as quickly as possible. I can't tell you which to
-use though as it depends on what kind of application you're building. Git is very common, and its what I use for this 
-book, but it's better for things that are being _primarily_ built from text based resources, like websites, or desktop
-application. If you're making games or something that uses a lot of images or other non-text based assets though you
-might want to use SVN, Plastic or Perforce.
+Version Control Systems like Git, Mercurial, Subversion (SVN), etc., are out of scope for this book, however, if you
+haven't already, you should learn to use one of these as quickly as possible. I can't tell you which to use though as it
+depends on what kind of application you're building. Git is very common, and it's what I use for this book, but it's
+better for things that are being _primarily_ built from text based resources, like websites, or desktop application.
+If you're making games or something that uses a lot of images or other non-text based assets though you might want to
+use Plastic or Perforce.
 
 Whatever you choose, you can use Continuous Integration to make sure that every time you make changes, those changes
 make your project better, and minimise the risk of them making things worse.
 
-How you achieve this will vary depending on not only what SCM you use, but potentially who hosts it. GitLab CI is
+How you achieve this will vary depending on not only what VCS you use, but potentially who hosts it. GitLab CI is
 very different from GitHub Actions. The main idea however is to run a set of instructions before allowing changes to
 be integrated (or merged) into the main project.
 
