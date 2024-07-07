@@ -179,6 +179,12 @@ Yuki.</p>
 <h2 id="yuki-states"><a class="header" href="#yuki-states">Yuki States</a></h2>
 <p>We’ll model 3 emotional states of my Cat, give him behaviours unique to each state, and allow him to transition between
 those states, but only in a specific</p>
+<style>
+  img {
+    display: block;
+    margin: 0 auto;
+  }
+</style>
 <p><img src="./impl/YukiStateMachine.svg" alt="YukiStateMachine.svg" /></p>
 <p>So what is the behaviour we want to model in these states?</p>
 <h3 id="mischievous"><a class="header" href="#mischievous">Mischievous</a></h3>
@@ -219,22 +225,22 @@ mod cat;
 fn main() {
     println!("Hello, world!");
 }</code></pre>
-<p>If you’re using VSCode, RustRover or similar, you might be able to use the context menu to create <code>cat/mod.rs</code> by
+<p>If you’re using VSCode, RustRover or similar, you might be able to use the context menu to create <code>cat.rs</code> by
 putting the cursor over <code>cat</code> and pressing activating the context actions (in VSCode that’s <code>Ctrl</code>/<code>⌘</code> + <code>.</code>, in
-IntelliJ products like RustRover it’s <code>Alt</code>/<code>⌥</code> + <code>enter</code>). If you aren’t able to do that, create a directory called
-<code>cat</code> in your <code>src</code> folder, then create a <code>mod.rs</code> folder in there.</p>
-<p>Inside our <code>mod.rs</code> file lets create a structure to hold a cat, we’ll make it public by putting the word <code>pub</code> in front
+IntelliJ products like RustRover it’s <code>Alt</code>/<code>⌥</code> + <code>enter</code>). If you aren’t able to do that, create a file called <code>cat.rs</code>
+in your <code>src</code> folder.</p>
+<p>Inside our <code>cat.rs</code> file lets create a structure to hold a cat, we’ll make it public by putting the word <code>pub</code> in front
 of the struct.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>// File: cat/mod.rs
+</span>// File: cat.rs
 pub struct Cat {
     name: String,
 }
 <span class="boring">}</span></code></pre></pre>
 <p>We can access the <code>Cat</code> struct either by giving a full reference to the <code>Cat</code> struct in its module, <code>cat::Cat</code> or by
 using the <code>use</code> keyword. However, you’ll find we can’t actually <em>create</em> the structure.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">// This would be in your `cat/mod.rs`, I need to put it here to make the code work in mdbook
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
 </span><span class="boring">mod cat {
 </span><span class="boring">  pub struct Cat {
 </span><span class="boring">    name: String,
@@ -247,16 +253,488 @@ mod cat;
 use cat::Cat;
 
 fn main() {
-    Cat { name: "Yuki".to_string() }
+    let yuki = Cat { name: "Yuki".to_string() };
 }</code></pre></pre>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><code class="language-text">   |
+6  |     let yuki = Cat { name: "Yuki".to_string() };
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^ private field
+</code></pre>
+<p>This is because although <code>Cat</code> is public, <code>name</code> is not.</p>
+<p>We could, of course, simple make <code>name</code> public, but this means anything can access it at any time and, if your <code>cat</code> is
+mutable, the name can be changed. We don’t want anything renaming Yuki, so, we’ll manage the property privately.</p>
+<p>To create the object then, we’ll need a “constructor”, a function that is associated with our <code>Cat</code> type, that returns
+and instantiated object. To do this we need to use the <code>impl</code> block.</p>
+<h2 id="impl"><a class="header" href="#impl">impl</a></h2>
+<p>In Rust, code that is associated with specific types is called “implementation” code, and lives inside an <code>impl</code> block.</p>
+<p><code>impl</code> blocks are incredibly flexible, and we’ll see more of this in the next chapter, for now though, the simplest use
+of the block is:</p>
+<pre><code class="language-rust ignore">impl TypeName {
+    // code goes here
+}</code></pre>
+<p>Our constructor is simply a function that lives inside the impl block of <code>Cat</code> that takes the cats name, and returns a
+cat. One nice thing about <code>impl</code> blocks is that they have a special shortcut when referring to the type that is being
+implemented called <code>Self</code>. This means that while we <em>could</em> specifically return the <code>Cat</code> type, we could also use
+<code>Self</code>.</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>enum YukiState {
+</span>// File: cat.rs
+pub struct Cat {
+    name: String,
+}
+
+impl Cat {
+    pub fn new(name: String) -&gt; Self {
+        Self { name }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Above, the <code>new</code> function takes a <code>String</code> and returns a <code>Cat</code>. Here we can instantiate the <code>Cat</code> type with <code>Self</code> too,
+and inside the <code>impl</code> block, we have access to the private <code>name</code> field. Finally, because the <code>name</code> variable is called
+the same as thing as the <code>name</code> field, writing <code>Self { name: name }</code> is redundant, we can just write <code>Self { name }</code>.</p>
+<p>Let’s make our <code>Cat</code> implementation slightly more useful by adding a function that will get the name of our cat too. In
+order to get the name we’ll create a function with a special parameter <code>&amp;self</code>. You might notice a couple of odd things
+about this. First, it has no type, and second, the variable self name itself gets the <code>&amp;</code> which would normally be on the
+type, to show that it is a reference.</p>
+<p><code>self</code> is a keyword, that translates in the parameters of a function header to <code>self: Self</code>, or, a variable called
+<code>self</code> with the type of whatever the implementation is for. When you use <code>&amp;self</code> it instead translates to <code>self: &amp;Self</code>.
+Similarly, <code>&amp;mut self</code> translates to <code>self: &amp;mut Self</code>. We don’t need to take ownership, or have a mutable reference, so
+for our function we’ll</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// File: cat.rs
+<span class="boring">pub struct Cat {
+</span><span class="boring">    name: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span>impl Cat {
+    pub fn new(name: String) -&gt; Self { // ...
+<span class="boring">        Self { name }
+</span><span class="boring">    }
+</span>
+    pub fn get_name(&amp;self) -&gt; &amp;str {
+        &amp;self.name
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p><strong>Note:</strong> We can safely return a reference to owned data at this point because the function acts like any other, there
+is only one reference coming in, <code>&amp;self</code>, and one reference going out <code>&amp;str</code>, they must have the same lifetime. Rust
+will not allow you to compile any code where you keep the <code>&amp;str</code> beyond the point where the owning object goes out of
+scope.</p>
+</blockquote>
+<p>Any implementation function where the first parameter is some for of <code>self</code> is may be referred to as a “method”, and is
+available on the instantiated type. Any other function in the implementation is called a “static method”. This (afaik)
+is not “official Rust” terminology, but is borrowed from other languages, nonetheless, you will see this a lot, and
+we’ll be using it here to differentiate from non-implementation functions.</p>
+<p>We can finally create a working program, so returning to <code>main</code>, lets use our new implementation:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
+</span><span class="boring">mod cat {
+</span><span class="boring">    pub struct Cat {
+</span><span class="boring">        name: String,
+</span><span class="boring">    }
+</span><span class="boring">    impl Cat {
+</span><span class="boring">        pub fn new(name: String) -&gt; Self {
+</span><span class="boring">           Self { name }
+</span><span class="boring">        }
+</span><span class="boring">        pub fn get_name(&amp;self) -&gt; &amp;str {
+</span><span class="boring">            &amp;self.name
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>// File: main.rs
+
+// ...
+<span class="boring">use cat::Cat;
+</span>
+fn main() {
+    let mut yuki = Cat::new("Yuki".to_string());
+    println!("Our cat is called {}", yuki.get_name());
+}</code></pre></pre>
+<p>Lets move on to Yuki’s state!</p>
+<h2 id="state-machines-and-rust"><a class="header" href="#state-machines-and-rust">State Machines and Rust</a></h2>
+<p>We want to represent three of Yuki’s many “states”, but in particular, we want to move between them in a very specific
+way.</p>
+<p>A naive approach to this could use an <code>enum</code> to represent the states, and then we could have methods that change the
+state.</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// File: cat.rs
+pub enum CatState {
     Mischievous,
     Hangry,
     Eepy,
 }
+
+pub struct Cat {
+    name: String,
+    state: CatState,
+}
+
+impl Cat {
+    pub fn new(name: String) -&gt; Self {
+       Self { 
+          name,
+          state: CatState::Mischievous, // Our default state
+       }
+    }
+  
+    pub fn get_name(&amp;self) -&gt; &amp;str { // ...
+<span class="boring">        &amp;self.name
+</span><span class="boring">    }
+</span>
+    pub fn forget_to_feed(&amp;mut self) {
+        self.state = CatState::Hangry
+    }
+
+    pub fn feed(&amp;mut self) {
+        self.state = CatState::Eepy
+    }
+
+    pub fn sleep(&amp;mut self) {
+        self.state = CatState::Mischievous
+    }
+}
 <span class="boring">}</span></code></pre></pre>
+<p>Here we use methods which take a mutable reference to self (<code>&amp;mut self</code>) so that we can modify the state</p>
+<p>But let’s look again at the diagram:</p>
+<p><img src="./impl/YukiStateMachine.svg" alt="YukiStateMachine.svg" /></p>
+<p>A Hangry cat doesn’t become Mischievous because it slept. What should happen if we try to call <code>sleep</code> on a Hangry cat?
+Should it do nothing? Should it throw an error? Does it even make sense for this to be an option?</p>
+<p>Furthermore, if we look back at the specification, a Hangry cat may choose violence, but Eepy cat and Mischievous cats
+won’t.</p>
+<p>Instead, we could use a pattern called a State Machine. In a State Machine we transition fully between different states,
+and those states have different functionality.</p>
+<p>Let’s make our states unit structs instead of an enum</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// File: cat.rs
+pub struct Mischievous;
+pub struct Hangry;
+pub struct Eepy;
+<span class="boring">}</span></code></pre></pre>
+<p>We can then apply the functionality to each struct in turn:</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// File: cat.rs
+<span class="boring">pub struct Mischievous;
+</span><span class="boring">pub struct Hangry;
+</span><span class="boring">pub struct Eepy;
+</span>impl Mischievous {
+    pub fn forget_to_feed(self) -&gt; Hangry {
+        Hangry
+    }
+}
+
+impl Hangry {
+    pub fn feed(self) -&gt; Eepy {
+        Eepy
+    }
+}
+
+impl Eepy {
+    pub fn sleep(self) -&gt; Mischievous {
+        Mischievous
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This is <em>much</em> more ergonomic as <code>Hangry</code> simply does not have the method <code>sleep</code>, meaning you get compile time checking
+that your cat states are being used correctly.</p>
+<p>At this point, we don’t have any data about our cat though. There are a few ways we could deal with this. We could
+extend our states to be the cat like this:</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// File: cat.rs
+pub struct Mischievous {
+    name: String,
+}
+
+pub struct Hangry {
+    name: String,
+}
+
+pub struct Eepy {
+    name: String,
+}
+
+impl Mischievous {
+    pub fn new(name: String) -&gt; Self {
+        Mischievous { name }
+    }
+  
+    pub fn forget_to_feed(self) -&gt; Hangry {
+        Hangry::new(self.name)
+    }
+}
+
+impl Hangry {
+    pub fn new(name: String) -&gt; Self {
+        Hangry { name }
+    }
+  
+    pub fn feed(self) -&gt; Eepy {
+        Eepy::new(self.name)
+    }
+}
+
+impl Eepy {
+    pub fn new(name: String) -&gt; Self {
+        Eepy { name }
+    }
+  
+    pub fn sleep(self) -&gt; Mischievous {
+        Mischievous::new(self.name)
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p>Note: Each state transition consumes itself, and passes its owned data onto the new state. This saves memory
+allocations and makes sure that you don’t have an “old” state hanging around.</p>
+</blockquote>
+<p>This is fine… but it’s not very flexible. Instead, we’re going to put the <em>whole</em> cat inside the state.</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// File: cat.rs
+
+// ---------- Cat ----------
+pub struct Cat {
+    name: String,
+}
+
+// ---------- States ----------
+pub struct Mischievous {
+    cat: Cat,
+}
+
+pub struct Hangry {
+    cat: Cat,
+}
+
+pub struct Eepy {
+    cat: Cat,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>You might think this is no better, and you’d be right! Whether the cat’s information is stored directly in the state or
+not we haven’t made this more flexible… but, what if the states were generic?</p>
+<h2 id="generics"><a class="header" href="#generics">Generics</a></h2>
+<p>Generics are a way that we can create a template where some of the details are filled in later. We’re going to get
+deeper into this in the next chapter, but we can use rudimentary generics to manage our states. Functions, Structs and
+Enums can all be made generic by adding triangle brackets after their name, and then the names of the generics. Very
+over you might see a single letter generic name, particularly you might see something like <code>&lt;T&gt;</code> as you do with
+<code>Option&lt;T&gt;</code>, however, you might want to hint about the purposed of the type like the Error <code>E</code> in <code>Result&lt;T, E&gt;</code>.</p>
+<p>You can even use whole words, though this is seen less.</p>
+<p>For our purposes, we’ll use the letter <code>A</code> to represent “Animal”.</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// File: cat.rs
+
+pub struct Mischievous&lt;A&gt; {
+    animal: A,
+}
+
+pub struct Hangry&lt;A&gt; {
+    animal: A,
+}
+
+pub struct Eepy&lt;A&gt; {
+    animal: A,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Next we’ll need to update our implementations. Implementations that involve Generic parts, need to list those
+after the <code>impl</code> to save confusing implementations on generic types and implementations on concrete variants of generic
+types (don’t worry if that doesn’t quite make sense, just remember to put the generic parameters after the <code>impl</code>).</p>
+<p>Once we’ve specified the generic parameters of the impl block, we don’t need to respecify them for each function so long
+as the type is being used consistently. So, our <code>new</code> functions can use <code>A</code> for the animal parameter, and that will be
+linked to our state’s generic <code>A</code>, and our state changes can use <code>A</code> to show that when the state changes, the generic
+type will remain the same.</p>
+<p>I’m also going to add a quick extra function to each implementation for use at the end.</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// File: cat.rs
+
+pub struct Mischievous&lt;A&gt; {
+    animal: A,
+}
+
+pub struct Hangry&lt;A&gt; {
+    animal: A,
+}
+
+pub struct Eepy&lt;A&gt; {
+    animal: A,
+}
+
+impl&lt;A&gt; Mischievous&lt;A&gt; {
+    pub fn new(animal: A) -&gt; Self {
+        Mischievous { animal }
+    }
+
+    pub fn forget_to_feed(self) -&gt; Hangry&lt;A&gt; {
+        Hangry::new(self.animal)
+    }
+    
+    pub fn describe(&amp;self) -&gt; String {
+        "Trying to break into a wardrobe by pulling on exposed clothing".to_string()
+    }
+}
+
+impl&lt;A&gt; Hangry&lt;A&gt; {
+    pub fn new(animal: A) -&gt; Self {
+        Hangry { animal }
+    }
+
+    pub fn feed(self) -&gt; Eepy&lt;A&gt; {
+        Eepy::new(self.animal)
+    }
+    
+    pub fn describe(&amp;self) -&gt; String {
+        "Being loud doesn't get what they want, they choose violence and attack!".to_string()
+    }
+}
+
+impl&lt;A&gt; Eepy&lt;A&gt; {
+    pub fn new(animal: A) -&gt; Self {
+        Eepy { animal }
+    }
+
+    pub fn sleep(self) -&gt; Mischievous&lt;A&gt; {
+        Mischievous::new(self.animal)
+    }
+    
+    pub fn describe(&amp;self) -&gt; String {
+        "Look at the precious baby sleeping 😍".to_string()
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Finally, lets update our cat implementation to return the Mischievous<Cat> type:</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// File: cat.rs
+
+<span class="boring">pub struct Cat {
+</span><span class="boring">    name: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub struct Mischievous&lt;A&gt; {
+</span><span class="boring">  animal: A,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl&lt;A&gt; Mischievous&lt;A&gt; {
+</span><span class="boring">    pub fn new(animal: A) -&gt; Self {
+</span><span class="boring">        Mischievous { animal }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>impl Cat {
+    pub fn new(name: String) -&gt; Mischievous&lt;Cat&gt; {
+        Mischievous::new(Self { name })
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>We can now play with all of this in our main function:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">mod cat { // Everything here should be in `cat.rs`, I can't do that and have runnable code though ;) 
+</span><span class="boring">    pub struct Cat {
+</span><span class="boring">        name: String,
+</span><span class="boring">    }
+</span><span class="boring">   
+</span><span class="boring">    impl Cat {
+</span><span class="boring">      pub fn new(name: String) -&gt; Mischievous&lt;Cat&gt; {
+</span><span class="boring">        Mischievous::new(Self { name })
+</span><span class="boring">      }
+</span><span class="boring">    }
+</span><span class="boring">    
+</span><span class="boring">    pub struct Mischievous&lt;A&gt; {
+</span><span class="boring">        animal: A,
+</span><span class="boring">    }
+</span><span class="boring">    
+</span><span class="boring">    pub struct Hangry&lt;A&gt; {
+</span><span class="boring">        animal: A,
+</span><span class="boring">    }
+</span><span class="boring">    
+</span><span class="boring">    pub struct Eepy&lt;A&gt; {
+</span><span class="boring">        animal: A,
+</span><span class="boring">    }
+</span><span class="boring">    
+</span><span class="boring">    impl&lt;A&gt; Mischievous&lt;A&gt; {
+</span><span class="boring">        pub fn new(animal: A) -&gt; Self {
+</span><span class="boring">            Mischievous { animal }
+</span><span class="boring">        }
+</span><span class="boring">    
+</span><span class="boring">        pub fn forget_to_feed(self) -&gt; Hangry&lt;A&gt; {
+</span><span class="boring">            Hangry::new(self.animal)
+</span><span class="boring">        }
+</span><span class="boring">        
+</span><span class="boring">        pub fn describe(&amp;self) -&gt; String {
+</span><span class="boring">            "Trying to break into a wardrobe by pulling on exposed clothing".to_string()
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">    
+</span><span class="boring">    impl&lt;A&gt; Hangry&lt;A&gt; {
+</span><span class="boring">        pub fn new(animal: A) -&gt; Self {
+</span><span class="boring">            Hangry { animal }
+</span><span class="boring">        }
+</span><span class="boring">    
+</span><span class="boring">        pub fn feed(self) -&gt; Eepy&lt;A&gt; {
+</span><span class="boring">            Eepy::new(self.animal)
+</span><span class="boring">        }
+</span><span class="boring">        
+</span><span class="boring">        pub fn describe(&amp;self) -&gt; String {
+</span><span class="boring">            "Being loud doesn't get what they want, they choose violence and attack!".to_string()
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">    
+</span><span class="boring">    impl&lt;A&gt; Eepy&lt;A&gt; {
+</span><span class="boring">        pub fn new(animal: A) -&gt; Self {
+</span><span class="boring">            Eepy { animal }
+</span><span class="boring">        }
+</span><span class="boring">    
+</span><span class="boring">        pub fn sleep(self) -&gt; Mischievous&lt;A&gt; {
+</span><span class="boring">            Mischievous::new(self.animal)
+</span><span class="boring">        }
+</span><span class="boring">        
+</span><span class="boring">        pub fn describe(&amp;self) -&gt; String {
+</span><span class="boring">            "Look at the precious baby sleeping 😍".to_string()
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">use cat::Cat;
+</span>// File: main.rs
+
+// ...
+
+fn main() {
+  let mischievous_yuki = Cat::new("Yuki".to_string());
+  println!("{}", mischievous_yuki.describe());
+  println!();
+  
+  let hangry_yuki = mischievous_yuki.forget_to_feed();
+  println!("{}", hangry_yuki.describe());
+  println!();
+  
+  let sleepy_yuki = hangry_yuki.feed();
+  println!("{}", sleepy_yuki.describe());
+  println!();
+  
+  let mischievous_yuki = sleepy_yuki.sleep();
+  println!("{}", mischievous_yuki.describe());
+  println!();
+}</code></pre></pre>
+<h2 id="tidying-up"><a class="header" href="#tidying-up">Tidying up</a></h2>
+<p>Before we finish the chapter, our code has gotten a bit messy, we should clean it up. Now that our states are not
+Cat specific, they should be moved out of <code>cat.rs</code>.</p>
+<p>I recommend splitting your files like this:</p>
+<p><img src="./impl/project-layout.png" alt="project-layout.png" /></p>
+<p>You will need to <code>use</code> each state in the appropriate file being used, and you need to make your individual state modules
+public in your general state <code>mod.rs</code>.</p>
+<p>I’d like you to try to organise this project yourself, but if you get stuck, you can see it on our
+<a href="https://github.com/Fios-Quest/yuki-state-machine-impl-example" title="" target="_blank">GitHub</a>.</p>
+<h2 id="next-chapter"><a class="header" href="#next-chapter">Next Chapter</a></h2>
+<p>This is cool… but we’ve got a slight problem. We can’t get Yuki’s name, and really his actions should belong to him,
+not be part of the state (I try not to choose violence when I’m hangry for example).</p>
+<p>We should move some of this behaviour to the Cat, but type, but how can we access details on our Cat type, when we
+don’t know that our Generic states will contain Cat’s until runtime?</p>
+<p>In the next chapter we’ll discuss Traits which provide a way to resolve this, as well as some other cool things they
+can do with Generics!</p>
 
                     </main>
 
