@@ -6,7 +6,7 @@ Yuki.
 ## Yuki States
 
 We'll model 3 emotional states of my Cat, give him behaviours unique to each state, and allow him to transition between
-those states, but only in a specific
+those states.
 
 <style>
   img {
@@ -56,6 +56,7 @@ like this:
 
 ```rust,ignore
 // File: main.rs
+
 mod cat;
 
 fn main() {
@@ -64,24 +65,25 @@ fn main() {
 ```
 
 If you're using VSCode, RustRover or similar, you might be able to use the context menu to create `cat.rs` by 
-putting the cursor over `cat` and pressing activating the context actions (in VSCode that's `Ctrl`/`⌘` + `.`, in
-IntelliJ products like RustRover it's `Alt`/`⌥` + `enter`). If you aren't able to do that, create a file called `cat.rs`
-in your `src` folder.
+putting the cursor over `cat` and activating the context actions (in VSCode that's `Ctrl`/`⌘` + `.`, in IntelliJ
+products like RustRover it's `Alt`/`⌥` + `enter`). If you aren't able to do that, create a file called `cat.rs` in your
+`src` folder.
 
 Inside our `cat.rs` file lets create a structure to hold a cat, we'll make it public by putting the word `pub` in front
 of the struct.
 
 ```rust
 // File: cat.rs
+
 pub struct Cat {
     name: String,
 }
 ```
 
-We can access the `Cat` struct either by giving a full reference to the `Cat` struct in its module, `cat::Cat` or by
-using the `use` keyword. However, you'll find we can't actually _create_ the structure.
+We can access the `Cat` struct back in our `main` function either by giving a full reference to the `Cat` struct in its
+module, `cat::Cat` or by using the `use` keyword. However, you'll find we can't actually _create_ the structure.
 
-```rust,compile_fail
+```rust,compile_fail,no_run
 # // This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
 # mod cat {
 #   pub struct Cat {
@@ -90,6 +92,7 @@ using the `use` keyword. However, you'll find we can't actually _create_ the str
 # }
 # 
 // File: main.rs
+
 mod cat;
 
 use cat::Cat;
@@ -104,13 +107,13 @@ fn main() {
    |                      ^^^^^^^^^^^^^^^^^^^^^^^^ private field
 ```
 
-This is because although `Cat` is public, `name` is not.
+This is because although `Cat` is public, it's `name` is not.
 
 We could, of course, simple make `name` public, but this means anything can access it at any time and, if your `cat` is
 mutable, the name can be changed. We don't want anything renaming Yuki, so, we'll manage the property privately.
 
 To create the object then, we'll need a "constructor", a function that is associated with our `Cat` type, that returns
-and instantiated object. To do this we need to use the `impl` block.
+an instantiated object. To do this we need to use an `impl` block.
 
 ## impl
 
@@ -125,13 +128,15 @@ impl TypeName {
 }
 ```
 
-Our constructor is simply a function that lives inside the impl block of `Cat` that takes the cats name, and returns a
-cat. One nice thing about `impl` blocks is that they have a special shortcut when referring to the type that is being
-implemented called `Self`. This means that while we _could_ specifically return the `Cat` type, we could also use 
-`Self`.
+Our constructor is simply a function that lives inside the impl block of `Cat`, takes the cats name, and returns an
+instantiated `Cat` with the given name. One nice thing about `impl` blocks is that they have a special shortcut when
+referring to the type that is being implemented called `Self`. This means that while we _could_ specifically return
+the `Cat` type, but we could also use `Self`. There are a lot of benefits to the latter in more advanced code, so we'll
+use that here.
 
 ```rust,no_run
 // File: cat.rs
+
 pub struct Cat {
     name: String,
 }
@@ -152,14 +157,16 @@ order to get the name we'll create a function with a special parameter `&self`. 
 about this. First, it has no type, and second, the variable self name itself gets the `&` which would normally be on the
 type, to show that it is a reference.
 
-`self` is a keyword, that translates in the parameters of a function header to `self: Self`, or, a variable called 
+`self` is a keyword, that translates in the parameters of a function header to `self: Self`, ie, a variable called 
 `self` with the type of whatever the implementation is for. When you use `&self` it instead translates to `self: &Self`.
-Similarly, `&mut self` translates to `self: &mut Self`. We don't need to take ownership, or have a mutable reference, so
-for our function we'll
+Similarly, `&mut self` translates to `self: &mut Self`. 
 
+We don't need to take ownership, or have a mutable reference, so for our function we'll use `&self` to get an immutable
+reference.
 
 ```rust,no_run
 // File: cat.rs
+
 # pub struct Cat {
 #     name: String,
 # }
@@ -177,13 +184,11 @@ impl Cat {
 
 > **Note:** We can safely return a reference to owned data at this point because the function acts like any other, there
 > is only one reference coming in, `&self`, and one reference going out `&str`, they must have the same lifetime. Rust
-> will not allow you to compile any code where you keep the `&str` beyond the point where the owning object goes out of
-> scope.
+> will not allow you to compile any code where you keep the `&str` beyond the point where whatever the owner of `&self` 
+> is goes out of scope.
 
-Any implementation function where the first parameter is some for of `self` is may be referred to as a "method", and is
-available on the instantiated type. Any other function in the implementation is called a "static method". This (afaik)
-is not "official Rust" terminology, but is borrowed from other languages, nonetheless, you will see this a lot, and
-we'll be using it here to differentiate from non-implementation functions. 
+Any implementation function where the first parameter is some form of `self` may be referred to as a "method", and is
+available on the instantiated type. Any other function in the implementation is called a "static method".
 
 We can finally create a working program, so returning to `main`, lets use our new implementation:
 
@@ -214,7 +219,7 @@ fn main() {
 }
 ```
 
-Lets move on to Yuki's state!
+Great, lets move on to Yuki's state!
 
 ## State Machines and Rust
 
@@ -226,6 +231,7 @@ state.
 
 ```rust,no_run
 // File: cat.rs
+
 pub enum CatState {
     Mischievous,
     Hangry,
@@ -263,7 +269,7 @@ impl Cat {
 }
 ```
 
-Here we use methods which take a mutable reference to self (`&mut self`) so that we can modify the state
+Here we use methods which take a mutable reference to self (`&mut self`) so that we can modify the state.
 
 But let's look again at the diagram:
 
@@ -272,7 +278,7 @@ But let's look again at the diagram:
 A Hangry cat doesn't become Mischievous because it slept. What should happen if we try to call `sleep` on a Hangry cat?
 Should it do nothing? Should it throw an error? Does it even make sense for this to be an option?
 
-Furthermore, if we look back at the specification, a Hangry cat may choose violence, but Eepy cat and Mischievous cats
+Furthermore, if we look back at the specification, a Hangry cat may choose violence, but Eepy cats and Mischievous cats
 won't.
 
 Instead, we could use a pattern called a State Machine. In a State Machine we transition fully between different states,
@@ -282,6 +288,7 @@ Let's make our states unit structs instead of an enum
 
 ```rust,no_run
 // File: cat.rs
+
 pub struct Mischievous;
 pub struct Hangry;
 pub struct Eepy;
@@ -290,6 +297,7 @@ We can then apply the functionality to each struct in turn:
 
 ```rust,no_run
 // File: cat.rs
+
 # pub struct Mischievous;
 # pub struct Hangry;
 # pub struct Eepy;
@@ -320,6 +328,7 @@ extend our states to be the cat like this:
 
 ```rust,no_run
 // File: cat.rs
+
 pub struct Mischievous {
     name: String,
 }
@@ -334,7 +343,7 @@ pub struct Eepy {
 
 impl Mischievous {
     pub fn new(name: String) -> Self {
-        Mischievous { name }
+        Self { name }
     }
   
     pub fn forget_to_feed(self) -> Hangry {
@@ -344,7 +353,7 @@ impl Mischievous {
 
 impl Hangry {
     pub fn new(name: String) -> Self {
-        Hangry { name }
+        Self { name }
     }
   
     pub fn feed(self) -> Eepy {
@@ -354,7 +363,7 @@ impl Hangry {
 
 impl Eepy {
     pub fn new(name: String) -> Self {
-        Eepy { name }
+        Self { name }
     }
   
     pub fn sleep(self) -> Mischievous {
@@ -363,7 +372,7 @@ impl Eepy {
 }
 ```
 
-> Note: Each state transition consumes itself, and passes its owned data onto the new state. This saves memory 
+> **Note:** Each state transition consumes itself, and passes its owned data onto the new state. This saves memory 
 > allocations and makes sure that you don't have an "old" state hanging around.
 
 This is fine... but it's not very flexible. Instead, we're going to put the _whole_ cat inside the state.
@@ -396,10 +405,12 @@ not we haven't made this more flexible... but, what if the states were generic?
 ## Generics
 
 Generics are a way that we can create a template where some of the details are filled in later. We're going to get
-deeper into this in the next chapter, but we can use rudimentary generics to manage our states. Functions, Structs and
-Enums can all be made generic by adding triangle brackets after their name, and then the names of the generics. Very
-over you might see a single letter generic name, particularly you might see something like `<T>` as you do with
-`Option<T>`, however, you might want to hint about the purposed of the type like the Error `E` in `Result<T, E>`.
+deeper into this in the next chapter, but we can use rudimentary generics to manage our states.
+
+Functions, Structs and Enums can all be made generic by adding triangle brackets after their name, containing a list of
+generic parameters. Very over you might see a single letter generic name, particularly you might see something like 
+`<T>` as you do with `Option<T>`, however, you might want to hint about the purposed of the type like the Error `E` in 
+`Result<T, E>`.
 
 You can even use whole words, though this is seen less.
 
@@ -421,6 +432,13 @@ pub struct Eepy<A> {
 }
 ```
 
+Later we can fill in the Generic and make it a "concrete" type, in our case this will eventually look like
+`Mischievous<Cat>`.
+
+[//]: # (> **Note:** it's possible to partially fill in generics, for example `std::io::Result<T>` is in fact)
+[//]: # (> `std::result::Result<T, std::io::Error>`, saving you from having to fill in the Error generic parameter `E` on)
+[//]: # (> functions where the Error generic parameter is `std::io::Error`, which covers most `std::io` functions.)
+
 Next we'll need to update our implementations. Implementations that involve Generic parts, need to list those
 after the `impl` to save confusing implementations on generic types and implementations on concrete variants of generic
 types (don't worry if that doesn't quite make sense, just remember to put the generic parameters after the `impl`).
@@ -430,7 +448,7 @@ as the type is being used consistently. So, our `new` functions can use `A` for 
 linked to our state's generic `A`, and our state changes can use `A` to show that when the state changes, the generic
 type will remain the same.
 
-I'm also going to add a quick extra function to each implementation for use at the end.
+I'm also going to add a quick extra function, `describe`, to each implementation for use at the end.
 
 ```rust,no_run
 // File: cat.rs
@@ -449,7 +467,7 @@ pub struct Eepy<A> {
 
 impl<A> Mischievous<A> {
     pub fn new(animal: A) -> Self {
-        Mischievous { animal }
+        Self { animal }
     }
 
     pub fn forget_to_feed(self) -> Hangry<A> {
@@ -463,7 +481,7 @@ impl<A> Mischievous<A> {
 
 impl<A> Hangry<A> {
     pub fn new(animal: A) -> Self {
-        Hangry { animal }
+        Self { animal }
     }
 
     pub fn feed(self) -> Eepy<A> {
@@ -477,7 +495,7 @@ impl<A> Hangry<A> {
 
 impl<A> Eepy<A> {
     pub fn new(animal: A) -> Self {
-        Eepy { animal }
+        Self { animal }
     }
 
     pub fn sleep(self) -> Mischievous<A> {
@@ -490,7 +508,7 @@ impl<A> Eepy<A> {
 }
 ```
 
-Finally, lets update our cat implementation to return the Mischievous<Cat> type:
+Finally, lets update our cat implementation to return a concrete `Mischievous<Cat>` type:
 
 ```rust,no_run
 // File: cat.rs
@@ -544,7 +562,7 @@ We can now play with all of this in our main function:
 #     
 #     impl<A> Mischievous<A> {
 #         pub fn new(animal: A) -> Self {
-#             Mischievous { animal }
+#             Self { animal }
 #         }
 #     
 #         pub fn forget_to_feed(self) -> Hangry<A> {
@@ -558,7 +576,7 @@ We can now play with all of this in our main function:
 #     
 #     impl<A> Hangry<A> {
 #         pub fn new(animal: A) -> Self {
-#             Hangry { animal }
+#             Self { animal }
 #         }
 #     
 #         pub fn feed(self) -> Eepy<A> {
@@ -572,7 +590,7 @@ We can now play with all of this in our main function:
 #     
 #     impl<A> Eepy<A> {
 #         pub fn new(animal: A) -> Self {
-#             Eepy { animal }
+#             Self { animal }
 #         }
 #     
 #         pub fn sleep(self) -> Mischievous<A> {
