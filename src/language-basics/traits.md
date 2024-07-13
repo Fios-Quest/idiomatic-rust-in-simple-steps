@@ -1,213 +1,181 @@
 Traits
 ======
 
-Impl
-----
+In the last chapter we created a state machine for our Cat, but we were left with several problems.
 
-As you can imagine, you can pass your own data types into functions, and typically that's fine, but there are some
-issues, take the example below:
+- First, we couldn't access anything about the Cat from inside our State.
+- Second, the behaviours didn't seem generally applicable. Would `Hangry<Human>` make loud noises and bite someone?
+  Mostly, probably not.
+
+Traits can help us solve those problems.
+
+Traits describe common behaviour between types that implement (impl) the trait. For example, have you noticed that lots
+of types have a method called `to_string()`, including numbers, string slices (`&str`) and even strings? This is because
+there is a trait called `ToString` that describes the function header for a method called `to_string()` and all of these
+types implement that trait.
+
+We can use this knowledge to create a generic function where we accept data of some type that could be literally
+anything, and in the list of generic parameters we use a "Trait Bound" to restrict the types that can be used.
+
+In the example below, we use the generic `S` but we use a bound to say that whatever `S` is, it _must_ implement
+`ToString`. We can then be sure that whatever goes into our generic function it _must_ have the `to_string()` method, so
+it's safe to rely on it being there. If it doesn't implement `ToString` you'll get a compiler error (this should show
+up in your IDE before you get as far as compiling though).
 
 ```rust
-struct User {
-    name: String,
-    fur_color: String,
-}
-
-fn to_string(user: User) -> String {
-    let User { name, fur_color } = user;
-    format!("User name: {name}\nUser fur color: {fur_color}")
+fn say_hello<S: ToString>(could_be_anything: S) {
+    println!("Hello {}!", could_be_anything.to_string());
 }
 
 fn main() {
-    let yuki = User {
-        name: "Yuki".to_string(),
-        fur_color: "White".to_string(),
-    };
-    println!("{}", to_string(yuki));
+    say_hello("Yuki");               // &str
+    say_hello("Daniel".to_string()); // String
+    say_hello(10u8)                  // u8 
+    // say_hello(Vec::new());        // Vec does not impl ToString, so this would not compile 
 }
 ```
 
-We have a nicely named function that does what it says, taking a User and turning it into a string, however, because
-there is no function overloading in Rust (you are unable to have multiple functions with the same name but different
-parameter lists), we can only have this one `to_string` function in scope at any time.
+Animals
+-------
 
-There are a few ways around this: in the case where the types are similar enough, you might be able to use a generic,
-you could "rename" the function using `as` (we'll talk about that more in the section on modules), or you could rename
-the function to something even more specific such as `user_to_string`...
+Let's start by tackling the first problem, not having access to the `Cat`'s data inside the States. We're going to make
+an `Animal` trait to represent the behaviour of any animal, we're also going to do a little reorganising while we're at
+it.
 
-Or, you could make the function part of the implementation of the type itself using an `impl` block. This will make the
-function a part of the `User` type itself, and can be used to make functions called from `User` or on an instantiated
-object like `yuki`.
+First lets create an animal module. In `main.rs` add `mod animal` and then create the file `animal/mod.rs`.
 
-Let's make an impl block starting with a function that provides an easier way to create a user:
+Let's move `cat.rs` to `animal/cat.rs` so that it's a submodule of `animal`. Finally, don't forget to add `pub mod cat;`
+to `animal/mod.rs` and don't forget to update your use statement in `main.rs` to `animal::cat::Cat`.
 
-```rust
-struct User {
-    name: String,
-    fur_color: String,
+We're now ready to make our trait.
+
+In `animal/mod.rs`, underneath `pub mod cat;`, let add the following:
+
+```rust,no_run
+// File: animal/mod.rs
+pub trait Animal {
+    fn get_name(&self) -> &str;
 }
+```
 
-impl User {
-    fn new(name: String, fur_color: String) -> Self {
-        User {
-            name,
-            fur_color,
-        }
-    }
-}
+With trait methods, we don't have to define any behaviour (though we can), we only need to tell Rust how the method will
+be used. In this case we define a method called `get_name` which will take a reference to the data this is implemented
+for, and will return a string slice. We also don't need to specify that the method is public as Traits are Rust's
+equivalent of Interfaces, everything listed is assumed to be public.
 
-#fn to_string(user: User) -> String {
-#    let User { name, fur_color } = user;
-#    format!("User name: {name}\nUser fur color: {fur_color}")
-#}
+So, let's implement this for `Cat`.
+
+In `cat.rs` we'll add the implementation. As with implementations for types we start with `impl TRAIT_NAME` but with
+traits we follow it up with `for TYPE`. So our impl block should look like this:
+
+```rust,no_run
+# // Prevent mdbook wrapping everything in a main function
+# fn main() {}
 #
-fn main() {
-    let yuki = User::new("Yuki".to_string(), "White".to_string());
-    println!("{}", to_string(yuki));
-}
-```
-
-The function `new` is called from the `User` type, and returns `Self`, this is a special keyword meaning the type that
-is being used for the call, which in this case is `User`. So, when we call `User::new` with the parameters for `name`
-and `fur_color`, it will return a new `User` object with those fields filled in. You'll also notice that when the
-properties of the object are the same as the variables being used to set them, we don't need to add the colon, eg, you
-don't need to do `name: name`, just putting `name` is fine.
-
-You can also create "methods", which are functions that can be called on the instantiated data. We do this by making the
-first parameter `self`, `&self` or `&mut self`. We'll talk more about the difference between these in the
-[generic functions](#generic-functions) section below.
-
-For now, we'll replicate the existing behaviour of our `to_string` function into the `User` implementation:
-
-```rust
-struct User {
-    name: String,
-    fur_color: String,
-}
-
-impl User {
-    fn new(name: String, fur_color: String) -> Self {
-        // ...
-#         User {
-#             name,
-#             fur_color,
-#         }
-    }
-  
-    fn to_string(self) -> String {
-        let User { name, fur_color } = self;
-        format!("User name: {name}\nUser fur color: {fur_color}")
-    }
-}
-
-fn main() {
-    let yuki = User::new("Yuki".to_string(), "White".to_string());
-    println!("{}", yuki.to_string());
-}
-```
-
-We moved the function into the impl block, changed the first parameter from `user: User` to just `self`, we don't need
-to specify the type. We also changed the way we call the function from `to_string(yuki)` to `yuki.to_string()`.
-
-
-
-Traits
-------
-
-`impl` is cool, but we can take it a step further and define behaviour that can be implemented for multiple types.
-
-For example, lets say that we have a similar type to our `User` type called `Admin`.
-
-```rust,noplayground
-struct User {
-    name: String,
-    fur_color: String,
-}
-
-struct Admin {
-    name: String,
-}
-```
-
-We might want both `User` and `Admin` to have the method `to_string`. We can define it in a trait.
-
-```rust
-trait ExampleToString {
-    fn to_string(self) -> String;
-}
-```
-
-We don't need to define the body of the function (though you can, if you want to provide some default behaviour), we
-just need to describe its properties and return type. We can then implement that trait for a given type using
-`impl <trait> for <type>`.
-
-
-```rust
-# struct User {
-#     name: String,
-#     fur_color: String,
+# // This should be in mod/animal.rs
+# trait Animal {
+#     fn get_name(&self) -> &str;
 # }
+#
+# mod cat {
+use super::Animal;
 # 
-# impl User {
-#     fn new(name: String, fur_color: String) -> Self {
-#         User {
-#             name,
-#             fur_color,
-#         }
-#     }
-# }
-# 
-# trait ExampleToString {
-#     fn to_string(self) -> String;
-# }
-#
-impl ExampleToString for User {
-    fn to_string(self) -> String {
-        let User { name, fur_color } = self;
-        format!("User name: {name}\nUser fur color: {fur_color}")
-    }
-}
-#
-# fn main() {
-#     let yuki = User::new("Yuki".to_string(), "White".to_string());
-#     println!("{}", yuki.to_string());
-# }
-```
-
-Now we've moved the method from `impl User` to `impl ExampleToString for User` we can still access the method on `yuki`
-with `yuki.to_string()`. We can also implement the same trait for `Admin`.
-
-```rust
-# struct Admin {
+# pub struct Cat {
 #     name: String,
 # }
-# 
-# impl Admin {
-#     fn new(name: String) -> Self {
-#         Admin { name }
-#     }
-# }
-# 
-# trait ExampleToString {
-#     fn to_string(self) -> String;
-# }
-#
-impl ExampleToString for Admin {
-    fn to_string(self) -> String {
-        let Admin { name } = self;
-        format!("Admin name: {name}")
+
+impl Animal for Cat {
+    fn get_name(&self) -> &str {
+        &self.name
     }
 }
-#
-# fn main() {
-#     let indra = Admin::new("Indra".to_string());
-#     println!("{}", indra.to_string());
 # }
 ```
 
-Why is this better than just implementing the `to_string` function on to `User` and `Admin`, if anything, this is more
-work right? Well, the cool thing about this is that we can use the trait as a trait guard in generics, which we'll see
-in just a moment.
+You might have noticed that we now have _two_ functions for Cat called `get_name()`, one in `impl Cat`, one in
+`impl Animal for Cat`. That's ok, we'll come to that. For now, lets finish off the first task by updating out states.
 
-Generic Functions
------------------
+For each state (`Mischievous`, `Hangry`, `Eepy`), we need to add a Trait Bound so that the generic `A` can only be of
+type `Animal`. We can do this in the generics list as we did before. For example, `Mischievous` would look like this:
+
+```rust,no_run
+# fn main() {}
+# trait Animal {
+#     fn get_name(&self) -> &str;
+# }
+pub struct Mischievous<A: Animal> {
+    animal: A,
+}
+```
+
+Now that we know that whatever is in each state's `animal` field must implement the `Animal` trait, we can treat it as
+such in any implementation code for those states. Just remember that for generic `impl`s, it is the `impl` that
+specifies the generic, so we need to make sure we add the Trait Bound there, then we can update our describe to use the
+trait (here I've used the `format!` macro which is like `println!` but produces a `String`):
+
+```rust
+# fn main() {}
+# trait Animal {
+#     fn get_name(&self) -> &str;
+# }
+pub struct Mischievous<A: Animal> {
+    animal: A,
+}
+
+impl<A: Animal> Mischievous<A> {
+    // Other methods ...
+
+    pub fn describe(&self) -> String {
+        format!(
+            "{} is trying to break into a wardrobe by pulling on exposed clothing",
+            self.animal.get_name()
+        )
+    }
+}
+```
+
+Update all of your States to use `self.animal.get_name()`, and try rerunning your program, you should get something 
+like:
+
+```text
+Yuki is trying to break into a wardrobe by pulling on exposed clothing
+
+Being loud doesn't work, Yuki chooses violence and attacks!
+
+Look at the precious baby Yuki sleeping 😍
+
+Yuki is trying to break into a wardrobe by pulling on exposed clothing
+```
+
+So that's our first problem solved!
+
+---
+
+Then we'll add a second animal, arguably the most dangerous of them all!
+
+Pop this into `animal/human.rs`.
+
+```rust
+// File: animal/human.rs
+
+pub struct Human {
+    name: String
+}
+
+// impl Human {
+//     pub fn new(name: String) -> Mischievous<Self> {
+//         todo!()
+//     }
+// }
+```
+
+Your `animal/mod.rs` need to expose both of its submodules publicly.
+
+```rust,ignore
+// File: animal/mod.rs
+
+pub mod cat;
+pub mod human;
+```
+
+Finally, lets update our main function, and run the program to make sure everything is working.
