@@ -9,6 +9,9 @@ In the last chapter we created a state machine for our Cat, but we were left wit
 
 Traits can help us solve those problems.
 
+Example Trait: `ToString`
+-------------------------
+
 Traits describe common behaviour between types that implement (impl) the trait. For example, have you noticed that lots
 of types have a method called `to_string()`, including numbers, string slices (`&str`) and even strings? This is because
 there is a trait called `ToString` that describes the function header for a method called `to_string()` and all of these
@@ -35,12 +38,17 @@ fn main() {
 }
 ```
 
+`ToString` is one of many traits that are built into the Rust standard library, and we'll talk more about this trait
+and others in the future. For now though, we're going to build our own!
+
 Animals
 -------
 
 Let's start by tackling the first problem, not having access to the `Cat`'s data inside the States. We're going to make
 an `Animal` trait to represent the behaviour of any animal, we're also going to do a little reorganising while we're at
 it.
+
+The idea here is that all animals will implement the Animal trait, then we'll have some known behaviour.
 
 First lets create an animal module. In `main.rs` add `mod animal` and then create the file `animal/mod.rs`.
 
@@ -145,7 +153,13 @@ Being loud doesn't work, Yuki chooses violence and attacks!
 Look at the precious baby Yuki sleeping 😍
 
 Yuki is trying to break into a wardrobe by pulling on exposed clothing
-```
+```Yuki is trying to break into a wardrobe by pulling on exposed clothing
+
+Being loud doesn't work, Yuki chooses violence and attacks!
+
+Look at the precious baby Yuki sleeping 😍
+
+Yuki is trying to break into a wardrobe by pulling on exposed clothing
 
 So that's our first problem solved!
 

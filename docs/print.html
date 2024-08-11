@@ -4682,6 +4682,7 @@ can do with Generics!</p>
 Mostly, probably not.</li>
 </ul>
 <p>Traits can help us solve those problems.</p>
+<h2 id="example-trait-tostring"><a class="header" href="#example-trait-tostring">Example Trait: <code>ToString</code></a></h2>
 <p>Traits describe common behaviour between types that implement (impl) the trait. For example, have you noticed that lots
 of types have a method called <code>to_string()</code>, including numbers, string slices (<code>&amp;str</code>) and even strings? This is because
 there is a trait called <code>ToString</code> that describes the function header for a method called <code>to_string()</code> and all of these
@@ -4702,10 +4703,13 @@ fn main() {
     say_hello(10u8)                  // u8 
     // say_hello(Vec::new());        // Vec does not impl ToString, so this would not compile 
 }</code></pre></pre>
+<p><code>ToString</code> is one of many traits that are built into the Rust standard library, and we’ll talk more about this trait
+and others in the future. For now though, we’re going to build our own!</p>
 <h2 id="animals"><a class="header" href="#animals">Animals</a></h2>
 <p>Let’s start by tackling the first problem, not having access to the <code>Cat</code>’s data inside the States. We’re going to make
 an <code>Animal</code> trait to represent the behaviour of any animal, we’re also going to do a little reorganising while we’re at
 it.</p>
+<p>The idea here is that all animals will implement the Animal trait, then we’ll have some known behaviour.</p>
 <p>First lets create an animal module. In <code>main.rs</code> add <code>mod animal</code> and then create the file <code>animal/mod.rs</code>.</p>
 <p>Let’s move <code>cat.rs</code> to <code>animal/cat.rs</code> so that it’s a submodule of <code>animal</code>. Finally, don’t forget to add <code>pub mod cat;</code>
 to <code>animal/mod.rs</code> and don’t forget to update your use statement in <code>main.rs</code> to <code>animal::cat::Cat</code>.</p>
@@ -4788,14 +4792,24 @@ Being loud doesn't work, Yuki chooses violence and attacks!
 Look at the precious baby Yuki sleeping 😍
 
 Yuki is trying to break into a wardrobe by pulling on exposed clothing
-</code></pre>
-<p>So that’s our first problem solved!</p>
-<hr />
-<p>Then we’ll add a second animal, arguably the most dangerous of them all!</p>
-<p>Pop this into <code>animal/human.rs</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// File: animal/human.rs
+```Yuki is trying to break into a wardrobe by pulling on exposed clothing
+
+Being loud doesn't work, Yuki chooses violence and attacks!
+
+Look at the precious baby Yuki sleeping 😍
+
+Yuki is trying to break into a wardrobe by pulling on exposed clothing
+
+So that's our first problem solved!
+
+---
+
+Then we'll add a second animal, arguably the most dangerous of them all!
+
+Pop this into `animal/human.rs`.
+
+```rust
+// File: animal/human.rs
 
 pub struct Human {
     name: String
@@ -4806,7 +4820,7 @@ pub struct Human {
 //         todo!()
 //     }
 // }
-<span class="boring">}</span></code></pre></pre>
+</code></pre>
 <p>Your <code>animal/mod.rs</code> need to expose both of its submodules publicly.</p>
 <pre><code class="language-rust ignore">// File: animal/mod.rs
 
