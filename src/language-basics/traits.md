@@ -3,27 +3,40 @@ Traits
 
 In the last chapter we created a state machine for our Cat, but we were left with several problems.
 
-- First, we couldn't access anything about the Cat from inside our State.
-- Second, the behaviours didn't seem generally applicable. Would `Hangry<Human>` make loud noises and bite someone?
-  Mostly, probably not.
+1. We couldn't access anything about the Cat from inside our State.
+2. The behaviours didn't seem generally applicable. Would `Hangry<Human>` make loud noises and bite someone? Mostly,
+   probably not.
 
 Traits can help us solve those problems.
+
+> Note: This Chapter continues off from the previous chapter, make sure you have the code from that chapter ready to go.
 
 Example Trait: `ToString`
 -------------------------
 
-Traits describe common behaviour between types that implement (impl) the trait. For example, have you noticed that lots
-of types have a method called `to_string()`, including numbers, string slices (`&str`) and even strings? This is because
-there is a trait called `ToString` that describes the function header for a method called `to_string()` and all of these
-types implement that trait.
+Traits describe common behaviour between types that implement (`impl`) the trait. For example, have you noticed that 
+lots of types have a method called `to_string()`, including numbers, string slices (`&str`) and even strings? This is
+because there is a trait called `ToString` that describes the function header for a method called `to_string()` and all
+of these types implement that trait.
+
+This is what ToString looks like in the Rust standard library (sans comments and annotations):
+
+```rust
+pub trait ToString {
+   fn to_string(&self) -> String;
+}
+```
+
+Any type can implement this trait to provide the `to_string()` method.
 
 We can use this knowledge to create a generic function where we accept data of some type that could be literally
 anything, and in the list of generic parameters we use a "Trait Bound" to restrict the types that can be used.
 
-In the example below, we use the generic `S` but we use a bound to say that whatever `S` is, it _must_ implement
+In the example below, we use the generic `S` but we use "bounding" to say that whatever `S` is, it _must_ implement
 `ToString`. We can then be sure that whatever goes into our generic function it _must_ have the `to_string()` method, so
 it's safe to rely on it being there. If it doesn't implement `ToString` you'll get a compiler error (this should show
-up in your IDE before you get as far as compiling though).
+up in your IDE before you get as far as compiling though). AS it happens, a _lot_ of built-in types already implement
+`ToString`.
 
 ```rust
 fn say_hello<S: ToString>(could_be_anything: S) {
@@ -32,21 +45,22 @@ fn say_hello<S: ToString>(could_be_anything: S) {
 
 fn main() {
     say_hello("Yuki");               // &str
-    say_hello("Daniel".to_string()); // String
+    say_hello(String::from("Yuki")); // String
     say_hello(10u8)                  // u8 
-    // say_hello(Vec::new());        // Vec does not impl ToString, so this would not compile 
+    // say_hello(Vec::new());        // Vec doesn't impl ToString, this won't compile 
 }
 ```
 
-`ToString` is one of many traits that are built into the Rust standard library, and we'll talk more about this trait
-and others in the future. For now though, we're going to build our own!
+`ToString` is one of many traits that are built into the Rust standard library, and we'll talk more about this trait,
+and others, in the future. For now though, we're going to build our own!
 
-Animals
--------
+`Animal`s
+---------
 
 Let's start by tackling the first problem, not having access to the `Cat`'s data inside the States. We're going to make
-an `Animal` trait to represent the behaviour of any animal, we're also going to do a little reorganising while we're at
-it.
+an `Animal` trait to represent the behaviour of any animal.
+
+We'll also do a little reorganising while we're at it.
 
 The idea here is that all animals will implement the Animal trait, then we'll have some known behaviour.
 
@@ -57,7 +71,7 @@ to `animal/mod.rs` and don't forget to update your use statement in `main.rs` to
 
 We're now ready to make our trait.
 
-In `animal/mod.rs`, underneath `pub mod cat;`, let add the following:
+In `animal/mod.rs`, underneath `pub mod cat;`, let our new `Animal` trait:
 
 ```rust,no_run
 // File: animal/mod.rs
@@ -66,15 +80,15 @@ pub trait Animal {
 }
 ```
 
-With trait methods, we don't have to define any behaviour (though we can), we only need to tell Rust how the method will
-be used. In this case we define a method called `get_name` which will take a reference to the data this is implemented
-for, and will return a string slice. We also don't need to specify that the method is public as Traits are Rust's
-equivalent of Interfaces, everything listed is assumed to be public.
+With trait methods, we don't _have_ to define any behaviour (though we can), we only need to tell Rust how the method
+will be used. In this case we define a method called `get_name` which will take a reference to the data this is
+implemented for, and will return a string slice. We also don't need to specify that the method is public as Traits are
+Rust's equivalent of Interfaces, everything listed is assumed to be public.
 
 So, let's implement this for `Cat`.
 
-In `cat.rs` we'll add the implementation. As with implementations for types we start with `impl TRAIT_NAME` but with
-traits we follow it up with `for TYPE`. So our impl block should look like this:
+In `cat.rs` we'll add the implementation. As with implementations for types we start with `impl <TRAIT_NAME>` but with
+traits we follow it up with `for <TYPE>`. So our impl block should look like this:
 
 ```rust,no_run
 # // Prevent mdbook wrapping everything in a main function
@@ -91,6 +105,17 @@ use super::Animal;
 # pub struct Cat {
 #     name: String,
 # }
+#
+# impl Cat {
+#     pub fn new(name: String) -> Self { // ...
+#         Self { name }
+#     }
+# 
+#     pub fn get_name(&self) -> &str {
+#         &self.name
+#     }
+# }
+#
 
 impl Animal for Cat {
     fn get_name(&self) -> &str {
@@ -142,32 +167,180 @@ impl<A: Animal> Mischievous<A> {
 }
 ```
 
-Update all of your States to use `self.animal.get_name()`, and try rerunning your program, you should get something 
-like:
+Update all of your States to use `self.animal.get_name()` and, assuming your `main.rs` still looks like the below, you
+should get your output with your cats name!
 
-```text
-Yuki is trying to break into a wardrobe by pulling on exposed clothing
+```rust
+# pub mod animal {
+#    // animal/mod.rs
+#    pub trait Animal {
+#       fn get_name(&self) -> &str;
+#    }
+#    pub struct Mischievous<A: Animal> {
+#       animal: A,
+# 
+#    }
+# 
+#    impl<A: Animal> Mischievous<A> {
+#       // Other methods ...
+# 
+#       pub fn describe(&self) -> String {
+#          format!(
+#             "{} is trying to break into a wardrobe by pulling on exposed clothing",
+#             self.animal.get_name()
+#          )
+#       }
+#    }
+# 
+#    pub mod cat {
+#       // animal/cat.rs
+#       use crate::state::mischievous::Mischievous;
+# 
+#       use super::Animal;
+# 
+#       pub struct Cat {
+#          name: String,
+#       }
+# 
+#       impl Cat {
+#          pub fn new(name: String) -> Mischievous<Self> {
+#             Mischievous::new(Self { name })
+#          }
+# 
+#          pub fn get_name(&self) -> &str {
+#             "Cat"
+#          }
+#       }
+# 
+#       impl Animal for Cat {
+#          fn get_name(&self) -> &str {
+#             &self.name
+#          }
+#       }
+#    }
+# }
+# 
+# pub mod state {
+#    pub mod eepy {
+#       // state/eepy.rs
+#       use crate::animal::Animal;
+# 
+#       use super::mischievous::Mischievous;
+# 
+#       pub struct Eepy<A: Animal> {
+#          animal: A,
+#       }
+# 
+#       impl<A: Animal> Eepy<A> {
+#          pub fn new(animal: A) -> Self {
+#             Eepy { animal }
+#          }
+# 
+#          pub fn sleep(self) -> Mischievous<A> {
+#             Mischievous::new(self.animal)
+#          }
+# 
+#          pub fn describe(&self) -> String {
+#             format!(
+#                "Look at the precious baby {} sleeping 😍",
+#                &self.animal.get_name()
+#             )
+#          }
+#       }
+# 
+#    }
+#    
+#    pub mod hangry {
+#       // state/hangry.rs
+#       use crate::animal::Animal;
+# 
+#       use super::eepy::Eepy;
+# 
+#       pub struct Hangry<A: Animal> {
+#          animal: A,
+#       }
+# 
+#       impl<A: Animal> Hangry<A> {
+#          pub fn new(animal: A) -> Self {
+#             Hangry { animal }
+#          }
+# 
+#          pub fn feed(self) -> Eepy<A> {
+#             Eepy::new(self.animal)
+#          }
+# 
+#          pub fn describe(&self) -> String {
+#             format!(
+#                "Being loud doesn't work, {} chooses violence and attacks!",
+#                &self.animal.get_name()
+#             )
+#          }
+#       }
+# 
+#    }
+#    pub mod mischievous {
+#       // state/mischievous.rs
+#       use crate::animal::Animal;
+# 
+#       use super::hangry::Hangry;
+# 
+#       pub struct Mischievous<A: Animal> {
+#          animal: A,
+#       }
+# 
+#       impl<A: Animal> Mischievous<A> {
+#          pub fn new(animal: A) -> Self {
+#             Mischievous { animal }
+#          }
+# 
+#          pub fn forget_to_feed(self) -> Hangry<A> {
+#             Hangry::new(self.animal)
+#          }
+# 
+#          pub fn describe(&self) -> String {
+#             format!(
+#                "{} is trying to break into a wardrobe by pulling on exposed clothing",
+#                self.animal.get_name()
+#             )
+#          }
+#       }
+# 
+#    }
+# }
+# 
+// main.rs
+use animal::cat::Cat;
 
-Being loud doesn't work, Yuki chooses violence and attacks!
+fn main() {
+  let mischievous_yuki = Cat::new("Yuki".to_string());
+  println!("{}", mischievous_yuki.describe());
+  println!();
+  
+  let hangry_yuki = mischievous_yuki.forget_to_feed();
+  println!("{}", hangry_yuki.describe());
+  println!();
+  
+  let sleepy_yuki = hangry_yuki.feed();
+  println!("{}", sleepy_yuki.describe());
+  println!();
+  
+  let mischievous_yuki = sleepy_yuki.sleep();
+  println!("{}", mischievous_yuki.describe());
+  println!();
+}
+```
 
-Look at the precious baby Yuki sleeping 😍
+So that's our first problem solved! We can now access the `Cat`'s data through the `Animal` trait.
 
-Yuki is trying to break into a wardrobe by pulling on exposed clothing
-```Yuki is trying to break into a wardrobe by pulling on exposed clothing
+Making more flexible `Animal`s
+------------------------------
 
-Being loud doesn't work, Yuki chooses violence and attacks!
+Now that we can read details from the underlying `Cat` object, lets start to think about how we can expand this 
+functionality out to other types of animals... starting with the most dangerous of animal.
 
-Look at the precious baby Yuki sleeping 😍
+Start by adding `pub mod human;` to `animal.mod`.
 
-Yuki is trying to break into a wardrobe by pulling on exposed clothing
-
-So that's our first problem solved!
-
----
-
-Then we'll add a second animal, arguably the most dangerous of them all!
-
-Pop this into `animal/human.rs`.
+Then create `animal/human.rs` and pop this inside:
 
 ```rust
 // File: animal/human.rs
@@ -176,11 +349,11 @@ pub struct Human {
     name: String
 }
 
-// impl Human {
-//     pub fn new(name: String) -> Mischievous<Self> {
-//         todo!()
-//     }
-// }
+impl Human {
+    pub fn new(name: String) -> Mischievous<Self> {
+       Mischievous::new(Self { name })
+    }
+}
 ```
 
 Your `animal/mod.rs` need to expose both of its submodules publicly.
