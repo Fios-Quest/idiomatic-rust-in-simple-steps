@@ -4683,7 +4683,7 @@ probably not.</li>
 </ol>
 <p>Traits can help us solve those problems.</p>
 <blockquote>
-<p>Note: This Chapter continues off from the previous chapter, make sure you have the code from that chapter ready to go.</p>
+<p>Note: This chapter uses code from the previous chapter, make sure you have the code from that chapter ready to go.</p>
 </blockquote>
 <h2 id="example-trait-tostring"><a class="header" href="#example-trait-tostring">Example Trait: <code>ToString</code></a></h2>
 <p>Traits describe common behaviour between types that implement (<code>impl</code>) the trait. For example, have you noticed that
@@ -4698,8 +4698,9 @@ of these types implement that trait.</p>
 }
 <span class="boring">}</span></code></pre></pre>
 <p>Any type can implement this trait to provide the <code>to_string()</code> method.</p>
-<p>We can use this knowledge to create a generic function where we accept data of some type that could be literally
-anything, and in the list of generic parameters we use a “Trait Bound” to restrict the types that can be used.</p>
+<p>We can use the <code>ToString</code> trait to create a generic function where we accept data of some type that could be literally
+anything, and in the list of generic parameters we use a “Trait Bound” to restrict the types that can be used to only
+those that implement the <code>ToString</code> trait.</p>
 <p>In the example below, we use the generic <code>S</code> but we use “bounding” to say that whatever <code>S</code> is, it <em>must</em> implement
 <code>ToString</code>. We can then be sure that whatever goes into our generic function it <em>must</em> have the <code>to_string()</code> method, so
 it’s safe to rely on it being there. If it doesn’t implement <code>ToString</code> you’ll get a compiler error (this should show
@@ -4715,8 +4716,40 @@ fn main() {
     say_hello(10u8)                  // u8 
     // say_hello(Vec::new());        // Vec doesn't impl ToString, this won't compile 
 }</code></pre></pre>
-<p><code>ToString</code> is one of many traits that are built into the Rust standard library, and we’ll talk more about this trait,
-and others, in the future. For now though, we’re going to build our own!</p>
+<p>We can also implement <code>ToString</code> on our own types. Imagine we have a <em>*cough*</em>
+<a href="https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/" title="" target="_blank">poorly designed</a> Person type with a
+first and last name. We can implement <code>ToString</code> to turn the user into a string which combines their name. You can
+run this example to see that it works with our previous function</p>
+<pre><pre class="playground"><code class="language-rust">struct User {
+   first: String,
+   last: String,
+}
+
+impl ToString for User {
+   fn to_string(&amp;self) -&gt; String {
+      // Here we use the format macro to create a combined string from the first
+      // and last names. This works almost identically to the various `println!`
+      // macros but creates a String on the heap and returns it
+      format!("{} {}", &amp;self.first, &amp;self.last)
+   }
+}
+<span class="boring">
+</span><span class="boring">fn say_hello&lt;S: ToString&gt;(could_be_anything: S) {
+</span><span class="boring">    println!("Hello {}!", could_be_anything.to_string());
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let daniel = User { first: "Daniel".to_string(), last: "Mason".to_string() };
+</span><span class="boring">    say_hello(daniel); 
+</span><span class="boring">}</span></code></pre></pre>
+<p>It’s worth noting that in order to use methods associated with a trait, the trait must be in scope. We don’t have to do
+this ourselves because <code>ToString</code> is part of the <a href="https://doc.rust-lang.org/std/prelude/" title="" target="_blank">Rust prelude</a>, a collection
+of types and traits that are always available in Rust. Often when people create libraries they’ll make their own prelude
+module that contains the most commonly used types and traits so that you can import the entire prelude module (eg
+<code>use rayon::prelude</code>, which we’ll talk more about in the ecosystem section of the book) rather than having to import a
+lot of items individually.</p>
+<p><code>ToString</code> is one of many traits that are built into the Rust standard library, and we’ll talk more about some of the
+other traits available to you in the future. For now though, we’re going to build our own!</p>
 <h2 id="animals"><a class="header" href="#animals"><code>Animal</code>s</a></h2>
 <p>Let’s start by tackling the first problem, not having access to the <code>Cat</code>’s data inside the States. We’re going to make
 an <code>Animal</code> trait to represent the behaviour of any animal.</p>

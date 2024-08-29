@@ -9,7 +9,7 @@ In the last chapter we created a state machine for our Cat, but we were left wit
 
 Traits can help us solve those problems.
 
-> Note: This Chapter continues off from the previous chapter, make sure you have the code from that chapter ready to go.
+> Note: This chapter uses code from the previous chapter, make sure you have the code from that chapter ready to go.
 
 Example Trait: `ToString`
 -------------------------
@@ -29,8 +29,9 @@ pub trait ToString {
 
 Any type can implement this trait to provide the `to_string()` method.
 
-We can use this knowledge to create a generic function where we accept data of some type that could be literally
-anything, and in the list of generic parameters we use a "Trait Bound" to restrict the types that can be used.
+We can use the `ToString` trait to create a generic function where we accept data of some type that could be literally
+anything, and in the list of generic parameters we use a "Trait Bound" to restrict the types that can be used to only
+those that implement the `ToString` trait.
 
 In the example below, we use the generic `S` but we use "bounding" to say that whatever `S` is, it _must_ implement
 `ToString`. We can then be sure that whatever goes into our generic function it _must_ have the `to_string()` method, so
@@ -51,8 +52,45 @@ fn main() {
 }
 ```
 
-`ToString` is one of many traits that are built into the Rust standard library, and we'll talk more about this trait,
-and others, in the future. For now though, we're going to build our own!
+We can also implement `ToString` on our own types. Imagine we have a *\*cough\**
+[poorly designed](https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/) Person type with a
+first and last name. We can implement `ToString` to turn the user into a string which combines their name. You can
+run this example to see that it works with our previous function
+
+```rust
+struct User {
+   first: String,
+   last: String,
+}
+
+impl ToString for User {
+   fn to_string(&self) -> String {
+      // Here we use the format macro to create a combined string from the first
+      // and last names. This works almost identically to the various `println!`
+      // macros but creates a String on the heap and returns it
+      format!("{} {}", &self.first, &self.last)
+   }
+}
+# 
+# fn say_hello<S: ToString>(could_be_anything: S) {
+#     println!("Hello {}!", could_be_anything.to_string());
+# }
+# 
+# fn main() {
+#     let daniel = User { first: "Daniel".to_string(), last: "Mason".to_string() };
+#     say_hello(daniel); 
+# }
+```
+
+It's worth noting that in order to use methods associated with a trait, the trait must be in scope. We don't have to do
+this ourselves because `ToString` is part of the [Rust prelude](https://doc.rust-lang.org/std/prelude/), a collection
+of types and traits that are always available in Rust. Often when people create libraries they'll make their own prelude
+module that contains the most commonly used types and traits so that you can import the entire prelude module (eg
+`use rayon::prelude`, which we'll talk more about in the ecosystem section of the book) rather than having to import a
+lot of items individually.
+
+`ToString` is one of many traits that are built into the Rust standard library, and we'll talk more about some of the
+other traits available to you in the future. For now though, we're going to build our own!
 
 `Animal`s
 ---------
