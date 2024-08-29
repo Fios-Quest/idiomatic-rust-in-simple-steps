@@ -95,17 +95,18 @@ other traits available to you in the future. For now though, we're going to buil
 `Animal`s
 ---------
 
-Let's start by tackling the first problem, not having access to the `Cat`'s data inside the States. We're going to make
-an `Animal` trait to represent the behaviour of any animal.
+Let's start by tackling the first problem, not having access to the `Cat`'s data inside the States. 
+
+We're going to make an `Animal` trait to represent the behaviour of any animal.
 
 We'll also do a little reorganising while we're at it.
 
-The idea here is that all animals will implement the Animal trait, then we'll have some known behaviour.
+The idea here is that all animals will implement the `Animal` trait, then we'll have some known behaviour.
 
 First lets create an animal module. In `main.rs` add `mod animal` and then create the file `animal/mod.rs`.
 
 Let's move `cat.rs` to `animal/cat.rs` so that it's a submodule of `animal`. Finally, don't forget to add `pub mod cat;`
-to `animal/mod.rs` and don't forget to update your use statement in `main.rs` to `animal::cat::Cat`.
+to `animal/mod.rs` and to update your use statement in `main.rs` to `animal::cat::Cat`.
 
 We're now ready to make our trait.
 
@@ -132,7 +133,7 @@ traits we follow it up with `for <TYPE>`. So our impl block should look like thi
 # // Prevent mdbook wrapping everything in a main function
 # fn main() {}
 #
-# // This should be in mod/animal.rs
+# // This should be in your mod/animal.rs
 # trait Animal {
 #     fn get_name(&self) -> &str;
 # }
@@ -163,11 +164,58 @@ impl Animal for Cat {
 # }
 ```
 
-You might have noticed that we now have _two_ functions for Cat called `get_name()`, one in `impl Cat`, one in
-`impl Animal for Cat`. That's ok, we'll come to that. For now, lets finish off the first task by updating out states.
+You might have noticed that we now have _two_ methods for Cat called `get_name()`, one in `impl Cat`, and one in
+`impl Animal for Cat`. That's actually ok, but we probably don't want two methods that do the same thing, what happens
+if we want to add more functionality to the getter, we'd have to remember to update both. It'd be better to call the
+underlying `Cat::get_name` from `Animal::get_name`, but how do we do that?
 
-For each state (`Mischievous`, `Hangry`, `Eepy`), we need to add a Trait Bound so that the generic `A` can only be of
-type `Animal`. We can do this in the generics list as we did before. For example, `Mischievous` would look like this:
+Have you noticed that when calling methods with the dot syntax, eg, `yuki.get_name()`, even though the methods first
+argument is `&self` (or similar), we don't actually pass anything in here, this argument is skipped when calling. This
+is because when we call a method with the dot syntax, we call it on a specific instance, so Rust, like many similar 
+languages, can infer the value of `self` (or `this` in some languages) to be the instance the method was called on.
+
+But, we can also call the method directly and manually pass in the value of `self`. For example, in the method
+`Animal::get_name` we could call the `Cat` method of the same name, manually passing in `self`. This lets Rust know that
+it should call the `Cat` implementation of `get_name`. Now the behaviour of `Animal::get_name` for `Cat` will always be
+the same as `Cat::get_name` even if we change the later method in the future.
+
+```rust,no_run
+# // Prevent mdbook wrapping everything in a main function
+# fn main() {}
+#
+# // This should be in your mod/animal.rs
+# trait Animal {
+#     fn get_name(&self) -> &str;
+# }
+#
+# mod cat {
+use super::Animal;
+# 
+# pub struct Cat {
+#     name: String,
+# }
+#
+# impl Cat {
+#     pub fn new(name: String) -> Self { // ...
+#         Self { name }
+#     }
+# 
+#     pub fn get_name(&self) -> &str {
+#         &self.name
+#     }
+# }
+#
+
+impl Animal for Cat {
+    fn get_name(&self) -> &str {
+        Cat::get_name(self)
+    }
+}
+# }
+
+For each state (`Mischievous`, `Hangry`, `Eepy`), we can add a Trait Bound so that the generic `A` must be a type that
+has implented the `Animal` trait. We can do this in the generics list as we did before. For example, `Mischievous` would
+look like this:
 
 ```rust,no_run
 # fn main() {}
@@ -179,12 +227,14 @@ pub struct Mischievous<A: Animal> {
 }
 ```
 
+Update all of your states to match.
+
 Now that we know that whatever is in each state's `animal` field must implement the `Animal` trait, we can treat it as
 such in any implementation code for those states. Just remember that for generic `impl`s, it is the `impl` that
 specifies the generic, so we need to make sure we add the Trait Bound there, then we can update our describe to use the
 trait (here I've used the `format!` macro which is like `println!` but produces a `String`):
 
-```rust
+```rust,no_run
 # fn main() {}
 # trait Animal {
 #     fn get_name(&self) -> &str;
