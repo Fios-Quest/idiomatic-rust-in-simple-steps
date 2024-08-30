@@ -1,5 +1,5 @@
-Traits
-======
+Introduction to Traits
+======================
 
 In the last chapter we created a state machine for our Cat, but we were left with several problems.
 
@@ -212,10 +212,10 @@ impl Animal for Cat {
     }
 }
 # }
-
+```
 For each state (`Mischievous`, `Hangry`, `Eepy`), we can add a Trait Bound so that the generic `A` must be a type that
-has implented the `Animal` trait. We can do this in the generics list as we did before. For example, `Mischievous` would
-look like this:
+has implemented the `Animal` trait. We can do this in the generics list as we did before. For example, `Mischievous` 
+would look like this:
 
 ```rust,no_run
 # fn main() {}
@@ -416,7 +416,34 @@ Start by adding `pub mod human;` to `animal.mod`.
 Then create `animal/human.rs` and pop this inside:
 
 ```rust
+# // Prevent mdbook wrapping everything in a main function
+# fn main() {}
+# pub mod animal {
+#     // animal/mod.rs
+#     pub trait Animal {
+#         fn get_name(&self) -> &str;
+#     }
+# }  
+# pub mod state {
+#     pub mod mischievous {
+#     // state/mischievous.rs
+#         use crate::animal::Animal;
+#
+#         pub struct Mischievous<A: Animal> {
+#             animal: A,
+#         }
+#
+#         impl<A: Animal> Mischievous<A> {
+#             pub fn new(animal: A) -> Self {
+#                 Mischievous { animal }
+#             }
+#         }
+#     }
+# }
+#
 // File: animal/human.rs
+use animal::Animal;
+use state::mischievous::Mischievous;
 
 pub struct Human {
     name: String
@@ -490,13 +517,13 @@ Finally, lets update our main function, and run the program to make sure everyth
 #          name: String,
 #       }
 # 
-#       impl Cat {
+#       impl Human {
 #          pub fn new(name: String) -> Mischievous<Self> {
 #             Mischievous::new(Self { name })
 #          }
 #       }
 # 
-#       impl Animal for Cat {
+#       impl Animal for Human {
 #          fn get_name(&self) -> &str {
 #             &self.name
 #          }
@@ -610,4 +637,244 @@ But there's still an issue... my mischievous state doesn't tend to have me break
 clothing... I have a opposable thumb.
 
 In fact, when I'm in a mischievous mood, I probably don't behave the same as other humans, I probably don't behave the
-same as you.
+same as you when you're feeling mischievous.
+
+Optional Homework
+-----------------
+
+Can you change the code so that each states behaviours are defined when the structs are instantiated? To do this you
+will need to:
+- modify the `Human` and `Cat` structs
+- add methods to the `Animal` trait
+- and then implement those methods for each struct
+
+If you get stuck, I've implemented the code below, just hit the eye icon. Please note that a limitation of this book
+means all the code is in one place, you should split your modules into files so that it's easier to manage and work
+with.
+
+```rust
+# pub mod animal {
+#    // animal/mod.rs
+#    pub trait Animal {
+#       fn get_name(&self) -> &str;
+#       fn get_behaviour_mischievous(&self) -> &str;
+#       fn get_behaviour_hangry(&self) -> &str;
+#       fn get_behaviour_eepy(&self) -> &str;
+#    }
+# 
+#    pub mod cat {
+#       // animal/cat.rs
+#       use crate::state::mischievous::Mischievous;
+# 
+#       use super::Animal;
+# 
+#       pub struct Cat {
+#           name: String,
+#           behaviour_mischievous: String,
+#           behaviour_hangry: String,
+#           behaviour_eepy: String,
+#       }
+# 
+#       impl Cat {
+#          pub fn new(
+#              name: String,
+#              behaviour_mischievous: String,
+#              behaviour_hangry: String,
+#              behaviour_eepy: String,
+#          ) -> Mischievous<Self> {
+#              Mischievous::new(Self { 
+#                  name,
+#                  behaviour_mischievous,
+#                  behaviour_hangry,
+#                  behaviour_eepy,
+#              })
+#          }
+#       }
+# 
+#       impl Animal for Cat {
+#          fn get_name(&self) -> &str {
+#             &self.name
+#          }
+#
+#          fn get_behaviour_mischievous(&self) -> &str {
+#             &self.behaviour_mischievous
+#          }
+#
+#          fn get_behaviour_hangry(&self) -> &str {
+#             &self.behaviour_hangry
+#          }
+#
+#          fn get_behaviour_eepy(&self) -> &str {
+#             &self.behaviour_eepy
+#          }
+#       }
+#    }
+# 
+#    pub mod human {
+#       // animal/human.rs
+#       use crate::state::mischievous::Mischievous;
+# 
+#       use super::Animal;
+# 
+#       pub struct Human {
+#           name: String,
+#           behaviour_mischievous: String,
+#           behaviour_hangry: String,
+#           behaviour_eepy: String,
+#       }
+# 
+#       impl Human {
+#           pub fn new(
+#               name: String,
+#               behaviour_mischievous: String,
+#               behaviour_hangry: String,
+#               behaviour_eepy: String,
+#           ) -> Mischievous<Self> {
+#               Mischievous::new(Self {
+#                   name,
+#                   behaviour_mischievous,
+#                   behaviour_hangry,
+#                   behaviour_eepy,
+#               })
+#           }
+#       }
+# 
+#       impl Animal for Human {
+#          fn get_name(&self) -> &str {
+#              &self.name
+#          }
+#
+#          fn get_behaviour_mischievous(&self) -> &str {
+#              &self.behaviour_mischievous
+#          }
+#
+#          fn get_behaviour_hangry(&self) -> &str {
+#              &self.behaviour_hangry
+#          }
+#
+#          fn get_behaviour_eepy(&self) -> &str {
+#              &self.behaviour_eepy
+#          }
+#       }
+#    }
+# }
+# 
+# pub mod state {
+#    pub mod eepy {
+#       // state/eepy.rs
+#       use crate::animal::Animal;
+# 
+#       use super::mischievous::Mischievous;
+# 
+#       pub struct Eepy<A: Animal> {
+#           animal: A,
+#       }
+# 
+#       impl<A: Animal> Eepy<A> {
+#          pub fn new(animal: A) -> Self {
+#              Eepy { animal }
+#          }
+# 
+#          pub fn sleep(self) -> Mischievous<A> {
+#              Mischievous::new(self.animal)
+#          }
+# 
+#          pub fn describe(&self) -> String {
+#              format!("{} is {}", self.animal.get_name(), self.animal.get_behaviour_eepy())
+#          }
+#       }
+# 
+#    }
+#    
+#    pub mod hangry {
+#       // state/hangry.rs
+#       use crate::animal::Animal;
+# 
+#       use super::eepy::Eepy;
+# 
+#       pub struct Hangry<A: Animal> {
+#          animal: A,
+#       }
+# 
+#       impl<A: Animal> Hangry<A> {
+#          pub fn new(animal: A) -> Self {
+#              Hangry { animal }
+#          }
+# 
+#          pub fn feed(self) -> Eepy<A> {
+#              Eepy::new(self.animal)
+#          }
+# 
+#          pub fn describe(&self) -> String {
+#              format!("{} is {}", self.animal.get_name(), self.animal.get_behaviour_hangry())
+#          }
+#       }
+# 
+#    }
+#    pub mod mischievous {
+#       // state/mischievous.rs
+#       use crate::animal::Animal;
+# 
+#       use super::hangry::Hangry;
+# 
+#       pub struct Mischievous<A: Animal> {
+#          animal: A,
+#       }
+# 
+#       impl<A: Animal> Mischievous<A> {
+#          pub fn new(animal: A) -> Self {
+#             Mischievous { animal }
+#          }
+# 
+#          pub fn forget_to_feed(self) -> Hangry<A> {
+#             Hangry::new(self.animal)
+#          }
+# 
+#          pub fn describe(&self) -> String {
+#              format!("{} is {}", self.animal.get_name(), self.animal.get_behaviour_mischievous())
+#          }
+#       }
+#    }
+# }
+# 
+# // main.rs
+# use animal::cat::Cat;
+# use animal::human::Human;
+# 
+# fn main() {
+#     let mischievous_yuki = Cat::new(
+#         "Yuki".to_string(),
+#         "trying to break into a wardrobe by pulling on exposed clothing".to_string(),
+#         "being loud, it doesn't work so he chooses violence".to_string(),
+#         "half a sleep, look at the precious baby 😻".to_string(),
+#     );
+#  
+#     let mischievous_daniel = Human::new(
+#         "Daniel".to_string(),
+#         r#"pretending to sneak up on his partner for a hug quietly saying "sneak sneak""#.to_string(),
+#         "looking at food delivery apps".to_string(),
+#         "watching TV he's seen a million times before to wind down".to_string(),
+#     );
+# 
+#     println!("{}", mischievous_yuki.describe());
+#     println!("{}", mischievous_daniel.describe());
+#     
+#     let hangry_yuki = mischievous_yuki.forget_to_feed();
+#     let hangry_daniel = mischievous_daniel.forget_to_feed();
+#     println!("{}", hangry_yuki.describe());
+#     println!("{}", hangry_daniel.describe());
+#
+#     let sleepy_yuki = hangry_yuki.feed();
+#     let sleepy_daniel = hangry_daniel.feed();
+#     println!("{}", sleepy_yuki.describe());
+#     println!("{}", sleepy_daniel.describe());
+# }
+// Run me or look at my code using the hover icons
+```
+
+Next Chapter
+------------
+
+In the next chapter we'll continue to explore Traits by looking at some of the more commonly used ones available in the
+Rust standard library. This will also allow us to cover some Trait features we haven't seen so far, including associated
+types!
