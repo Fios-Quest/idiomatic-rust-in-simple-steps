@@ -165,16 +165,16 @@ impl Animal for Cat {
 ```
 
 You might have noticed that we now have _two_ methods for Cat called `get_name()`, one in `impl Cat`, and one in
-`impl Animal for Cat`. That's actually ok, but we probably don't want two methods that do the same thing, what happens
-if we want to add more functionality to the getter, we'd have to remember to update both. It'd be better to call the
-underlying `Cat::get_name` from `Animal::get_name`, but how do we do that?
+`impl Animal for Cat`. That's actually ok, but is indicative of a code smell. What happens if we want to add more
+functionality to the getter? We'd have to remember to update both. It'd be better to call the underlying
+`Cat::get_name` from `Animal::get_name`, but how do we do that?
 
 Have you noticed that when calling methods with the dot syntax, eg, `yuki.get_name()`, even though the methods first
 argument is `&self` (or similar), we don't actually pass anything in here, this argument is skipped when calling. This
 is because when we call a method with the dot syntax, we call it on a specific instance, so Rust, like many similar 
 languages, can infer the value of `self` (or `this` in some languages) to be the instance the method was called on.
 
-But, we can also call the method directly and manually pass in the value of `self`. For example, in the method
+We can also call the method directly and manually pass in the value of `self`. For example, in the method
 `Animal::get_name` we could call the `Cat` method of the same name, manually passing in `self`. This lets Rust know that
 it should call the `Cat` implementation of `get_name`. Now the behaviour of `Animal::get_name` for `Cat` will always be
 the same as `Cat::get_name` even if we change the later method in the future.
@@ -227,7 +227,7 @@ pub struct Mischievous<A: Animal> {
 }
 ```
 
-Update all of your states to match.
+Update all of you other states (`Hangry`, and `Eepy`) to match.
 
 Now that we know that whatever is in each state's `animal` field must implement the `Animal` trait, we can treat it as
 such in any implementation code for those states. Just remember that for generic `impl`s, it is the `impl` that
@@ -264,21 +264,6 @@ should get your output with your cats name!
 #    pub trait Animal {
 #       fn get_name(&self) -> &str;
 #    }
-#    pub struct Mischievous<A: Animal> {
-#       animal: A,
-# 
-#    }
-# 
-#    impl<A: Animal> Mischievous<A> {
-#       // Other methods ...
-# 
-#       pub fn describe(&self) -> String {
-#          format!(
-#             "{} is trying to break into a wardrobe by pulling on exposed clothing",
-#             self.animal.get_name()
-#          )
-#       }
-#    }
 # 
 #    pub mod cat {
 #       // animal/cat.rs
@@ -296,13 +281,13 @@ should get your output with your cats name!
 #          }
 # 
 #          pub fn get_name(&self) -> &str {
-#             "Cat"
+#             &self.name
 #          }
 #       }
 # 
 #       impl Animal for Cat {
 #          fn get_name(&self) -> &str {
-#             &self.name
+#             Cat::get_name(self)
 #          }
 #       }
 #    }
@@ -442,6 +427,12 @@ impl Human {
        Mischievous::new(Self { name })
     }
 }
+
+impl Animal for Human {
+    fn get_name(&self) -> &str {
+       &self.name
+    }
+}
 ```
 
 Your `animal/mod.rs` need to expose both of its submodules publicly.
@@ -454,3 +445,169 @@ pub mod human;
 ```
 
 Finally, lets update our main function, and run the program to make sure everything is working.
+
+```rust
+# pub mod animal {
+#    // animal/mod.rs
+#    pub trait Animal {
+#       fn get_name(&self) -> &str;
+#    }
+# 
+#    pub mod cat {
+#       // animal/cat.rs
+#       use crate::state::mischievous::Mischievous;
+# 
+#       use super::Animal;
+# 
+#       pub struct Cat {
+#          name: String,
+#       }
+# 
+#       impl Cat {
+#          pub fn new(name: String) -> Mischievous<Self> {
+#             Mischievous::new(Self { name })
+#          }
+# 
+#          pub fn get_name(&self) -> &str {
+#             &self.name
+#          }
+#       }
+# 
+#       impl Animal for Cat {
+#          fn get_name(&self) -> &str {
+#             Cat::get_name(self)
+#          }
+#       }
+#    }
+# 
+#    pub mod human {
+#       // animal/human.rs
+#       use crate::state::mischievous::Mischievous;
+# 
+#       use super::Animal;
+# 
+#       pub struct Human {
+#          name: String,
+#       }
+# 
+#       impl Cat {
+#          pub fn new(name: String) -> Mischievous<Self> {
+#             Mischievous::new(Self { name })
+#          }
+#       }
+# 
+#       impl Animal for Cat {
+#          fn get_name(&self) -> &str {
+#             &self.name
+#          }
+#       }
+#    }
+# }
+# 
+# pub mod state {
+#    pub mod eepy {
+#       // state/eepy.rs
+#       use crate::animal::Animal;
+# 
+#       use super::mischievous::Mischievous;
+# 
+#       pub struct Eepy<A: Animal> {
+#          animal: A,
+#       }
+# 
+#       impl<A: Animal> Eepy<A> {
+#          pub fn new(animal: A) -> Self {
+#             Eepy { animal }
+#          }
+# 
+#          pub fn sleep(self) -> Mischievous<A> {
+#             Mischievous::new(self.animal)
+#          }
+# 
+#          pub fn describe(&self) -> String {
+#             format!(
+#                "Look at the precious baby {} sleeping 😍",
+#                &self.animal.get_name()
+#             )
+#          }
+#       }
+# 
+#    }
+#    
+#    pub mod hangry {
+#       // state/hangry.rs
+#       use crate::animal::Animal;
+# 
+#       use super::eepy::Eepy;
+# 
+#       pub struct Hangry<A: Animal> {
+#          animal: A,
+#       }
+# 
+#       impl<A: Animal> Hangry<A> {
+#          pub fn new(animal: A) -> Self {
+#             Hangry { animal }
+#          }
+# 
+#          pub fn feed(self) -> Eepy<A> {
+#             Eepy::new(self.animal)
+#          }
+# 
+#          pub fn describe(&self) -> String {
+#             format!(
+#                "Being loud doesn't work, {} chooses violence and attacks!",
+#                &self.animal.get_name()
+#             )
+#          }
+#       }
+# 
+#    }
+#    pub mod mischievous {
+#       // state/mischievous.rs
+#       use crate::animal::Animal;
+# 
+#       use super::hangry::Hangry;
+# 
+#       pub struct Mischievous<A: Animal> {
+#          animal: A,
+#       }
+# 
+#       impl<A: Animal> Mischievous<A> {
+#          pub fn new(animal: A) -> Self {
+#             Mischievous { animal }
+#          }
+# 
+#          pub fn forget_to_feed(self) -> Hangry<A> {
+#             Hangry::new(self.animal)
+#          }
+# 
+#          pub fn describe(&self) -> String {
+#             format!(
+#                "{} is trying to break into a wardrobe by pulling on exposed clothing",
+#                self.animal.get_name()
+#             )
+#          }
+#       }
+#    }
+# }
+# 
+// main.rs
+use animal::cat::Cat;
+use animal::human::Human;
+
+fn main() {
+    let mischievous_yuki = Cat::new("Yuki".to_string());
+    println!("{}", mischievous_yuki.describe());
+ 
+    let mischievous_daniel = Human::new("Daniel".to_string());
+    println!("{}", mischievous_daniel.describe());
+}
+```
+
+Notice that we barely had to change anything to add humans to our code, how cool is that!
+
+But there's still an issue... my mischievous state doesn't tend to have me breaking into wardrobes by pulling on exposed
+clothing... I have a opposable thumb.
+
+In fact, when I'm in a mischievous mood, I probably don't behave the same as other humans, I probably don't behave the
+same as you.
