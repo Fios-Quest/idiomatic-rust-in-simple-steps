@@ -4720,12 +4720,12 @@ fn main() {
 <a href="https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/" title="" target="_blank">poorly designed</a> Person type with a
 first and last name. We can implement <code>ToString</code> to turn the user into a string which combines their name. You can
 run this example to see that it works with our previous function</p>
-<pre><pre class="playground"><code class="language-rust">struct User {
+<pre><pre class="playground"><code class="language-rust">struct Person {
    first: String,
    last: String,
 }
 
-impl ToString for User {
+impl ToString for Person {
    fn to_string(&amp;self) -&gt; String {
       // Here we use the format macro to create a combined string from the first
       // and last names. This works almost identically to the various `println!`
@@ -4739,7 +4739,7 @@ impl ToString for User {
 </span><span class="boring">}
 </span><span class="boring">
 </span><span class="boring">fn main() {
-</span><span class="boring">    let daniel = User { first: "Daniel".to_string(), last: "Mason".to_string() };
+</span><span class="boring">    let daniel = Person { first: "Daniel".to_string(), last: "Mason".to_string() };
 </span><span class="boring">    say_hello(daniel); 
 </span><span class="boring">}</span></code></pre></pre>
 <p>It’s worth noting that in order to use methods associated with a trait, the trait must be in scope. We don’t have to do

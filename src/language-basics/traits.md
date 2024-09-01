@@ -58,12 +58,12 @@ first and last name. We can implement `ToString` to turn the user into a string 
 run this example to see that it works with our previous function
 
 ```rust
-struct User {
+struct Person {
    first: String,
    last: String,
 }
 
-impl ToString for User {
+impl ToString for Person {
    fn to_string(&self) -> String {
       // Here we use the format macro to create a combined string from the first
       // and last names. This works almost identically to the various `println!`
@@ -77,7 +77,7 @@ impl ToString for User {
 # }
 # 
 # fn main() {
-#     let daniel = User { first: "Daniel".to_string(), last: "Mason".to_string() };
+#     let daniel = Person { first: "Daniel".to_string(), last: "Mason".to_string() };
 #     say_hello(daniel); 
 # }
 ```
