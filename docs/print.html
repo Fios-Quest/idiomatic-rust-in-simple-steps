@@ -4713,7 +4713,7 @@ up in your IDE before you get as far as compiling though). AS it happens, a <em>
 fn main() {
     say_hello("Yuki");               // &amp;str
     say_hello(String::from("Yuki")); // String
-    say_hello(10u8)                  // u8 
+    say_hello(10u8);                 // u8 
     // say_hello(Vec::new());        // Vec doesn't impl ToString, this won't compile 
 }</code></pre></pre>
 <p>We can also implement <code>ToString</code> on our own types. Imagine we have a <em>*cough*</em>
@@ -4742,6 +4742,11 @@ impl ToString for Person {
 </span><span class="boring">    let daniel = Person { first: "Daniel".to_string(), last: "Mason".to_string() };
 </span><span class="boring">    say_hello(daniel); 
 </span><span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p>⚠️ <strong>Important:</strong> You actually <em>shouldn’t</em> implement <code>ToString</code>. I use it here because it’s very slightly easier to
+understand that what you <em>should</em> do, which is implement the trait <code>Display</code>. We’ll cover this at the end of the
+chapter when the reason why is easier to understand.</p>
+</blockquote>
 <p>It’s worth noting that in order to use methods associated with a trait, the trait must be in scope. We don’t have to do
 this ourselves because <code>ToString</code> is part of the <a href="https://doc.rust-lang.org/std/prelude/" title="" target="_blank">Rust prelude</a>, a collection
 of types and traits that are always available in Rust. Often when people create libraries they’ll make their own prelude
@@ -5471,6 +5476,65 @@ with.</p>
 </span><span class="boring">    println!("{}", sleepy_daniel.describe());
 </span><span class="boring">}
 </span>// Run me or look at my code using the hover icons</code></pre></pre>
+<h2 id="display"><a class="header" href="#display"><code>Display</code></a></h2>
+<p>As I mentioned earlier, we shouldn’t actually implement <code>ToString</code>, we should implement <code>Display</code>. In fact, none of the
+internal types I mentioned (numbers, string slices, strings, etc) implement <code>ToString</code> but do in fact implement
+<code>Display</code>.</p>
+<p>Let’s start looking at the trait itself:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::fmt::{Formatter, Result};
+</span><span class="boring">
+</span>pub trait Display {
+    fn fmt(&amp;self, f: &amp;mut Formatter&lt;'_&gt;) -&gt; Result;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>As you can see, its already more complex than <code>ToString</code>. It takes an additional parameter of type <code>Formatter</code>
+(specifically <code>std::fmt::Formatter</code>), and instead of returning a string, it returns a <code>Result</code> (specifically
+<code>std::fmt::Result</code>).</p>
+<p>Luckily, we don’t actually have to worry about any of this ourselves as there is a macro called <code>write!</code> that deals with
+it all for us.</p>
+<p>To change our <code>ToString</code> implementation for <code>Person</code> to <code>Display</code>, in addition to changing the trait name and method,
+we can simply swap the <code>format!</code> macro for <code>write!</code> and pass the formatter as the first part of the macro.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {}
+</span><span class="boring">
+</span><span class="boring">struct Person {
+</span><span class="boring">   first: String,
+</span><span class="boring">   last: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span>use std::fmt; // Easier to use the fmt module directly due to `Result` already existing in scope
+
+impl fmt::Display for Person {
+   fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+      write!(f, "{} {}", &amp;self.first, &amp;self.last)
+   }
+}</code></pre></pre>
+<p>Hang on though, if none of these types are implementing <code>ToString</code>, how did we use them in a function with a <code>ToString</code>
+trait bound?</p>
+<p>Well, they don’t implement <code>ToString</code> directly, there is a
+<a href="https://doc.rust-lang.org/1.81.0/src/alloc/string.rs.html#2555" title="" target="_blank">generic implementation of <code>ToString</code></a>
+for all types that implement <code>Display</code>.</p>
+<p>Over simplified (there’s still more to the <code>Display</code> trait I don’t want to cover <em>yet</em>, but check the link for the full
+code) it looks like this:</p>
+<pre><code class="language-rust ignore"><span class="boring">use std::fmt;
+</span><span class="boring">
+</span>impl&lt;T: fmt::Display&gt; ToString for T {
+    fn to_string(&amp;self) -&gt; String {
+        let mut buffer = String::new();
+        let mut formatter = fmt::Formatter::new(&amp;mut buffer);
+        self.fmt(&amp;mut formatter).expect("a Display implementation returned an error unexpectedly");
+        buffer
+    }
+}</code></pre>
+<p>Having gone through the rest of the chapter this hopefully makes some sense. We’re implementing <code>ToString</code> for the
+generic <code>T</code> where <code>T</code> already has <code>Display</code>. We can then create the string using the display method of that type.</p>
+<p>Because those built in types already have <code>Display</code>, they get <code>ToString</code> for free. Once you’ve implemented <code>Display</code> for
+<code>Person</code> to, you not only won’t need <code>ToString</code> any more, you’ll find that <code>ToString</code> if you leave you’re <code>ToString</code>
+implementation in, you can’t compile your code because it now conflicts with this other implementation.</p>
+<p>So why do both <code>Display</code> and <code>ToString</code> exist, especially if everything with <code>Display</code> gets a free <code>ToString</code>
+implementation? The answer might surprise you! … But it’s non-trivial so I’ll save it for much further into the book,
+however I will give you a hint, it’s <em>something</em> to do with memory.</p>
 <h2 id="next-chapter-2"><a class="header" href="#next-chapter-2">Next Chapter</a></h2>
 <p>In the next chapter we’ll continue to explore Traits by looking at some of the more commonly used ones available in the
 Rust standard library. This will also allow us to cover some Trait features we haven’t seen so far, including associated

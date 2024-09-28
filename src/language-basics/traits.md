@@ -47,7 +47,7 @@ fn say_hello<S: ToString>(could_be_anything: S) {
 fn main() {
     say_hello("Yuki");               // &str
     say_hello(String::from("Yuki")); // String
-    say_hello(10u8)                  // u8 
+    say_hello(10u8);                 // u8 
     // say_hello(Vec::new());        // Vec doesn't impl ToString, this won't compile 
 }
 ```
@@ -81,6 +81,10 @@ impl ToString for Person {
 #     say_hello(daniel); 
 # }
 ```
+
+> ⚠️ **Important:** You actually _shouldn't_ implement `ToString`. I use it here because it's very slightly easier to
+> understand that what you _should_ do, which is implement the trait `Display`. We'll cover this at the end of the 
+> chapter when the reason why is easier to understand.
 
 It's worth noting that in order to use methods associated with a trait, the trait must be in scope. We don't have to do
 this ourselves because `ToString` is part of the [Rust prelude](https://doc.rust-lang.org/std/prelude/), a collection
@@ -871,6 +875,84 @@ with.
 # }
 // Run me or look at my code using the hover icons
 ```
+
+`Display`
+---------
+
+As I mentioned earlier, we shouldn't actually implement `ToString`, we should implement `Display`. In fact, none of the
+internal types I mentioned (numbers, string slices, strings, etc) implement `ToString` but do in fact implement 
+`Display`.
+
+Let's start looking at the trait itself:
+
+```rust
+# use std::fmt::{Formatter, Result};
+#
+pub trait Display {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result;
+}
+```
+
+As you can see, its already more complex than `ToString`. It takes an additional parameter of type `Formatter` 
+(specifically `std::fmt::Formatter`), and instead of returning a string, it returns a `Result` (specifically 
+`std::fmt::Result`).
+
+Luckily, we don't actually have to worry about any of this ourselves as there is a macro called `write!` that deals with
+it all for us.
+
+To change our `ToString` implementation for `Person` to `Display`, in addition to changing the trait name and method,
+we can simply swap the `format!` macro for `write!` and pass the formatter as the first part of the macro.
+
+```rust
+# fn main() {}
+#
+# struct Person {
+#    first: String,
+#    last: String,
+# }
+# 
+use std::fmt; // Easier to use the fmt module directly due to `Result` already existing in scope
+
+impl fmt::Display for Person {
+   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+      write!(f, "{} {}", &self.first, &self.last)
+   }
+}
+```
+
+Hang on though, if none of these types are implementing `ToString`, how did we use them in a function with a `ToString`
+trait bound?
+
+Well, they don't implement `ToString` directly, there is a
+[generic implementation of `ToString`](https://doc.rust-lang.org/1.81.0/src/alloc/string.rs.html#2555) 
+for all types that implement `Display`.
+
+Over simplified (there's still more to the `Display` trait I don't want to cover _yet_, but check the link for the full
+code) it looks like this:
+
+```rust,ignore
+# use std::fmt;
+# 
+impl<T: fmt::Display> ToString for T {
+    fn to_string(&self) -> String {
+        let mut buffer = String::new();
+        let mut formatter = fmt::Formatter::new(&mut buffer);
+        self.fmt(&mut formatter).expect("a Display implementation returned an error unexpectedly");
+        buffer
+    }
+}
+```
+
+Having gone through the rest of the chapter this hopefully makes some sense. We're implementing `ToString` for the
+generic `T` where `T` already has `Display`. We can then create the string using the display method of that type.
+
+Because those built in types already have `Display`, they get `ToString` for free. Once you've implemented `Display` for
+`Person` to, you not only won't need `ToString` any more, you'll find that `ToString` if you leave you're `ToString`
+implementation in, you can't compile your code because it now conflicts with this other implementation.
+
+So why do both `Display` and `ToString` exist, especially if everything with `Display` gets a free `ToString`
+implementation? The answer might surprise you! ... But it's non-trivial so I'll save it for much further into the book,
+however I will give you a hint, it's _something_ to do with memory.
 
 Next Chapter
 ------------
