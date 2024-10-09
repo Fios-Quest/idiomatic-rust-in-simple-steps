@@ -58,6 +58,29 @@ that would cause them to clean up the memory on the heap that the other pointer 
 If you wanted to duplicate some string data, or something else inside a smart pointer, then you need to "clone" the data
 instead, which we'll discuss below.
 
+One awesome thing `Copy` does is it changes how the language itself works.
+
+Because `Copy` can only apply to things on the Stack, and because copying into memory you already own is cheap, Rust
+won't move ownership, and will use what are called "Copy Semantics" instead of "Move Semantics". This means, unlike
+normal, when you reassign a variable, or pass it to a function, if the variable has the `Copy` trait, you can still
+use the original variable after.
+
+So ordinarily we can't do something like this, you'll get a compile time error:
+
+```rust,compile_fail
+let x = "str is not Copy";
+let y = x;
+let x = print!("x no longer owns the str {x}");
+```
+
+However for types that do implement `Copy` that does still work thanks to Copy Semantics:
+
+```rust
+let x = 42;
+let y = x;
+let x = print!("x still owns the value {x}, and so does y {y}");
+```
+
 Copy is derivable, which we'll discuss below too.
 
 ### Send / Sync
@@ -74,7 +97,12 @@ something is "sent" from one thread to another, it moves ownership, like when yo
 
 `Sync` is used when a reference to data can be safely sent from one thread to another, i.e. `T` is `Sync` is `&T` is
 `Send`. This is perhaps easiest to explain with a type that isn't `Sync`, the `Rc<T>` generic. `Rc` is Rust's most basic
-reference counting type. You give it some data to hold, and pass clones of the container around. This 
+reference counting type. You give it some data to hold, and pass clones of the container around. The `Rc` owns the data
+but keeps count of how many places using it there are. That count is not atomic and so two threads could attempt to
+change the value at the same time. This means that it is not `Sync`. 
+
+We'll talk a lot more about threaded programming later in the book so don't worry if this doesn't make sense yet, but
+it's worth knowing that both `Send` and `Sync` are drivable.
 
 
 
@@ -85,9 +113,13 @@ Derivables
 
 ### Default
 
+### Debug
+
 ### Eq / PartialEq
 
 ### Ord / PartialOrd
+
+### Hash
 
 Converters
 ----------
