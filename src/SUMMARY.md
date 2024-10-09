@@ -16,7 +16,7 @@
     - [Clippy and Fmt](./language-basics/clippy-and-fmt.md)
     - [Giving types functionality](./language-basics/impl.md)
     - [Traits Intro](./language-basics/traits.md)
-    - [Common Traits]()
+    - [Common Traits](./language-basics/common-traits.md)
     - [Error Handling]()
     - [Collections]()
     - [Iterators]()
