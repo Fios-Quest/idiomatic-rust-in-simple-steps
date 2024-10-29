@@ -1,0 +1,1002 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Common Traits - Idiomatic Rust in Simple Steps</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Learn idiomatic Rust in simple steps even if you have no former knowledge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../introduction/why.html"><strong aria-hidden="true">1.1.</strong> Why or Why Not</a></li><li class="chapter-item expanded "><a href="../introduction/resources.html"><strong aria-hidden="true">1.2.</strong> Other Learning Resources</a></li></ol></li><li class="chapter-item expanded "><a href="../getting-started/index.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../getting-started/setup.html"><strong aria-hidden="true">2.1.</strong> Getting Set Up</a></li><li class="chapter-item expanded "><a href="../getting-started/environment.html"><strong aria-hidden="true">2.2.</strong> Environment</a></li><li class="chapter-item expanded "><a href="../getting-started/hello-world.html"><strong aria-hidden="true">2.3.</strong> Hello World</a></li></ol></li><li class="chapter-item expanded "><a href="../language-basics/index.html"><strong aria-hidden="true">3.</strong> Language Basics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../language-basics/memory.html"><strong aria-hidden="true">3.1.</strong> Memory</a></li><li class="chapter-item expanded "><a href="../language-basics/data-types.html"><strong aria-hidden="true">3.2.</strong> Data Types</a></li><li class="chapter-item expanded "><a href="../language-basics/control-flow.html"><strong aria-hidden="true">3.3.</strong> Control Flow</a></li><li class="chapter-item expanded "><a href="../language-basics/functions.html"><strong aria-hidden="true">3.4.</strong> Functions</a></li><li class="chapter-item expanded "><a href="../language-basics/tests.html"><strong aria-hidden="true">3.5.</strong> Tests</a></li><li class="chapter-item expanded "><a href="../language-basics/documentation.html"><strong aria-hidden="true">3.6.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="../language-basics/clippy-and-fmt.html"><strong aria-hidden="true">3.7.</strong> Clippy and Fmt</a></li><li class="chapter-item expanded "><a href="../language-basics/impl.html"><strong aria-hidden="true">3.8.</strong> Giving types functionality</a></li><li class="chapter-item expanded "><a href="../language-basics/traits.html"><strong aria-hidden="true">3.9.</strong> Traits Intro</a></li><li class="chapter-item expanded "><a href="../language-basics/common-traits.html" class="active"><strong aria-hidden="true">3.10.</strong> Common Traits</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.11.</strong> Error Handling</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.12.</strong> Collections</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.13.</strong> Iterators</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.14.</strong> Attributes</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.15.</strong> Derive</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.16.</strong> Threads</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.17.</strong> Unsafe</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.18.</strong> Macros</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.</strong> Common Patterns</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">4.1.</strong> Derive</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.2.</strong> Monads</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.3.</strong> Interior Mutability</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.4.</strong> New Types</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.5.</strong> RAII / Drop and Finalise</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.6.</strong> Prefer Borrows</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.7.</strong> Type State</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">4.8.</strong> Builder</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.</strong> Rust Ecosystem</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">5.1.</strong> Project Structure</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.2.</strong> rustup</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.3.</strong> Error Handling with ThisError and Anyhow</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.4.</strong> log</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.5.</strong> mdbook</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.6.</strong> Itertools</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.7.</strong> Rayon</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.8.</strong> Clap</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.9.</strong> Async with Tokio and async_std</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.10.</strong> Serialisation with Serde</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.11.</strong> Parsing with Nom</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.12.</strong> Regex</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.13.</strong> reqwest</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.14.</strong> Crossbeam?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.15.</strong> bitvec</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.16.</strong> Derive More</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> Advanced Rust</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">6.1.</strong> Foreign Function Interfaces</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.2.</strong> Proc Macro</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.3.</strong> Intro to Web Dev</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.4.</strong> Intro to Embedded</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.5.</strong> Intro to Game Dev</div></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Idiomatic Rust in Simple Steps</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="common-traits"><a class="header" href="#common-traits">Common Traits</a></h1>
+<p>In the previous chapter we introduced the concept of traits and made our own Animal trait to fix some problems left over
+from the chapter before that!</p>
+<p>TODO: Describe provided methods</p>
+<p>Rust provides a huge number of traits that you can implement on your own types, and in this chapter we’re going to
+discuss what I think are the most important to be aware of, whether that’s because you’ll want to implement them
+yourself, you’ll want to consume types that implement them, or they have interesting knock on effects you should be
+aware of.</p>
+<p>This chapter is broken into three main parts:</p>
+<ul>
+<li>Markers - these can be considered intrinsic traits</li>
+<li>Derivables - traits who’s functionality is so easy to</li>
+<li>???</li>
+<li>Converters - traits that allow you to change one type to another</li>
+<li>Iterators - traits that allow you to step through lists of things</li>
+<li>Other - Things that didn’t fit nicely into the other categories</li>
+</ul>
+<h2 id="markers"><a class="header" href="#markers">Markers</a></h2>
+<h3 id="sized"><a class="header" href="#sized">Sized</a></h3>
+<p>Anything that is of known size at compile time is consider to be <code>Sized</code>. For example, a <code>u8</code> has size 8 bits*,
+therefore it is sized. All primitives are sized, with the exception of <code>str</code>, which you can’t use outside of its
+reference form anyway.</p>
+<blockquote>
+<p>ℹ️ Actually, u8 has a minimum size of 8 bits, however, what its size at compilation may not be 8 bits. This
+<em>generally</em> shouldn’t impact your decisions about the types you use, but if you’re doing embedded programming you
+<em>may</em> need to check… but probably not. Fun fact, boolean is, as far as Rust cares, a 1 bit data type, however LLVM
+doesn’t have a concept of a 1 bit data type, so uses i8 for Rust code instead.</p>
+</blockquote>
+<p>One place you will see <code>Sized</code> a lot is that due to a quirk in Rusts design, generic types are assumed to be <code>Sized</code>.
+For this reason you will regularly see the trait bound <code>?Sized</code> which means that it may or may not be <code>Sized</code>. Unlike
+any other trait bound, this has a widening effect on the number of types that can be used within the generic.</p>
+<p>For example, in the last chapter, I mentioned that I was printing a simplified version of Display. This was because I
+left out the <code>?Sized</code> trait bound, so Display actually looks more like this:</p>
+<pre><code class="language-ignore">impl&lt;T: Display + ?Sized&gt; ToString for T {
+    // ...
+}
+</code></pre>
+<p>The <code>+</code> means the type <code>T</code> must abide both trait bounds, which includes <code>Display</code> but also may or may not be <code>Sized</code>.
+Without the <code>?Sized</code> trait bound, <code>T</code> would be assumed to be <code>Sized</code>.</p>
+<h3 id="copy"><a class="header" href="#copy">Copy</a></h3>
+<p>The <code>Copy</code> marker trait means that the data the type contains can be copied, however, “copy” has a very specific meaning
+in Rust which means that all the data can be exactly copied as is. Again, for all primitives (except <code>str</code>), as well as
+all types built only from these types and exist on the stack, this is achievable, however, for something like <code>String</code>,
+the data can not be safely copied. <code>String</code> is a smart pointer that points to a location on the Heap. If we copied the
+smart pointer, then we’d have two pointers pointing to the same piece of memory, and if either of them went out of scope
+that would cause them to clean up the memory on the heap that the other pointer still points to.</p>
+<p>If you wanted to duplicate some string data, or something else inside a smart pointer, then you need to “clone” the data
+instead, which we’ll discuss below.</p>
+<p>One awesome thing <code>Copy</code> does is it changes how the language itself works.</p>
+<p>Because <code>Copy</code> can only apply to things on the Stack, and because copying into memory you already own is cheap, Rust
+won’t move ownership, and will use what are called “Copy Semantics” instead of “Move Semantics”. This means, unlike
+normal, when you reassign a variable, or pass it to a function, if the variable has the <code>Copy</code> trait, you can still
+use the original variable after.</p>
+<p>So ordinarily we can’t do something like this, you’ll get a compile time error:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let x = "str is not Copy";
+let y = x;
+print!("y owns the str {y}");
+print!("x no longer owns the str {x}");
+<span class="boring">}</span></code></pre></pre>
+<p>However for types that do implement <code>Copy</code> that does still work thanks to Copy Semantics:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let x = 42;
+let y = x;
+let x = print!("x still owns the value {x}, and so does y {y}");
+<span class="boring">}</span></code></pre></pre>
+<p>Copy is derivable, which we’ll discuss below too.</p>
+<h3 id="send--sync"><a class="header" href="#send--sync">Send / Sync</a></h3>
+<p>We haven’t talked about concurrent programming yet, however, you might have heard that Rust is extremely safe and
+efficient compared to many other languages that allow you to kick off potentially multiple processes that might all be
+trying to read and write to data at the same time.</p>
+<p>Much of that safety comes from these two marker traits, <code>Send</code> and <code>Sync</code>.</p>
+<p><code>Send</code> is used when data can be safely “sent” between threads. This might be achieved through the use of a channel or
+similar. Again, we’ll talk about this more in the future, so don’t worry what this means just yet, however, when
+something is “sent” from one thread to another, it moves ownership, like when you pass a variable to another function.</p>
+<p><code>Sync</code> is used when a reference to data can be safely sent from one thread to another, i.e. <code>T</code> is <code>Sync</code> is <code>&amp;T</code> is
+<code>Send</code>. This is perhaps easiest to explain with a type that isn’t <code>Sync</code>, the <code>Rc&lt;T&gt;</code> generic. <code>Rc</code> is Rust’s most basic
+reference counting type. You give it some data to hold, and pass clones of the container around. The <code>Rc</code> owns the data
+but keeps count of how many places using it there are. That count is not atomic and so two threads could attempt to
+change the value at the same time. This means that it is not <code>Sync</code>.</p>
+<p>We’ll talk a lot more about threaded programming later in the book so don’t worry if this doesn’t make sense yet, in
+fact, Send and Sync are auto-derived. This means you don’t even have to worry about implementing them for your own types
+so long as your types are entirely constructed from other types that are Send and/or Sync, the Rust compiler knows that
+your type is Send and/or Sync too</p>
+<h2 id="derivables"><a class="header" href="#derivables">Derivables</a></h2>
+<p>Apart from Send and Sync, most traits <em>need</em> to be manually opted in to, however, for some traits, the behaviour is so
+simplistic that the trait can be derived. For <em>most</em> derivable Rust traits there is a requirement that each child of
+your type implements the trait you’re attempting to implement yourself.</p>
+<p>To derive a trait we use the derive attribute.</p>
+<blockquote>
+<p>Attributes can be defined either inside or outside the item they are for, however, like
+<a href="./documentation.html">Documentation</a>, unless the attribute is being in some way applied to the whole file (for example,
+as a module), we exclusively use external attributes that come before the item they apply to. Like Documentation we
+use an exclamation mark to differentiate the two</p>
+<pre><code class="language-rust ignore">#![internal_attribute]
+
+#[external_attribute]
+fn item_with_external_attribute_applie() {}</code></pre>
+</blockquote>
+<p>The derive attribute itself, looks a bit like a function, but it takes a list of traits of any length. For example:</p>
+<pre><code class="language-rust ignore">#[derive(FirstTrait, SecondTrait, etc)]
+struct StrucToGetDerivedBehaviours {
+   // ...
+}</code></pre>
+<h3 id="clone-and-copy"><a class="header" href="#clone-and-copy">Clone (and Copy)</a></h3>
+<p><code>Clone</code> is a bit like copy but much more expensive. With <code>Copy</code>, we can make a copy of data into a variable on the
+stack, however, this restricts us to <code>Sized</code> data that is not a pointer to somewhere in memory. This means, for example,
+<code>String</code> which is a smart pointer, can not implement <code>Copy</code>. In order to duplicate <code>String</code> we’d need to request new
+memory in the Heap to place the data into, then create a new smart pointer to point to it. Requesting heap memory is
+considered expensive as you have to wait for the operating system to provide you a location you can use, so its really
+handy to differentiate <code>Clone</code> from <code>Copy</code>.</p>
+<p>Luckily, you don’t have to do all of this memory allocation stuff yourself. For any type that is built from other types
+that already implement <code>Clone</code> you can “derive” <code>Clone</code>. To do that we use the the <code>derive</code> attribute.</p>
+<p>The derive attribute is applied using the attribute syntax, and <code>derive</code> is given a list of things to be derived.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Clone)]
+struct MyNewType(String); // A tuple struct with one child, a string
+<span class="boring">}</span></code></pre></pre>
+<p>If you need to implement <code>Clone</code> yourself (typically perhaps because your type is built from types that don’t
+necessarily implement <code>Clone</code>), then you can do so.</p>
+<pre><code class="language-rust ignore">struct MyNewType(String);
+
+impl Clone for MyNewType {
+    fn clone(&amp;self) -&gt; Self {
+        // ...
+    }
+}</code></pre>
+<p>Finally, there is an optional method in the <code>Clone</code> trait called <code>clone_from</code>. Its optional because there is a default
+implementation built into the trait itself but, again, allows you to override it in case you want to do something like
+provide more efficient memory allocation.</p>
+<p>In order to derive <code>Copy</code>, not only must your type be made from only other types that implement <code>Copy</code>, but your type
+must also implement <code>Clone</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Copy, Clone)]
+struct MyNewType(u32); // This tuple uses a u32 which implements Copy and Clone
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p>Authors note: I’m not sure why there is no generic implementation of <code>impl&lt;T: Copy&gt; Clone for T { ... }</code>. If anyone
+knows the reason for this, get in touch!</p>
+</blockquote>
+<h3 id="default"><a class="header" href="#default">Default</a></h3>
+<p>Many built in types in Rust have a default value. Defaults for numbers are typically zero, while Strings, Vecs and other
+collections default to being empty. If your type is built from only types that implement <code>Default</code> then you can derive
+the behaviour of <code>Default</code> for your type to be, essentially, the instantiation of your type with all values set to
+<em>their</em> default.</p>
+<pre><pre class="playground"><code class="language-rust">#[derive(Default)]
+struct Person {
+    name: String,
+    age: u8,
+}
+
+fn main() {
+    let person = Person::default();
+    println!("Default persons name is '{}' and their age is '{}'", person.name, person.age);
+}</code></pre></pre>
+<p>Obviously, this may not always be the desired result, so you can obviously implement the trait directly:</p>
+<pre><pre class="playground"><code class="language-rust">struct Person {
+    name: String,
+    age: u8,
+}
+
+impl Default for Person {
+    fn default() -&gt; Self {
+        Person {
+            name: "Jane Doe".to_string(),
+            age: 30,
+        }
+    }
+}
+
+fn main() {
+    let person = Person::default();
+    println!("Default persons name is '{}' and their age is '{}'", person.name, person.age);
+}</code></pre></pre>
+<p>You might be wondering if you can derive <code>Default</code> for Enums, or if you have to implement it directly, and you actually
+can, using an additional attribute provided by the .</p>
+<pre><pre class="playground"><code class="language-rust">#[derive(Default)]
+enum SomeEnum {
+    Variant1,
+    #[default]
+    Variant2,
+}
+
+
+fn main() {
+    let choice = SomeEnum::default();
+    match choice {
+        SomeEnum::Variant1 =&gt; println!("choice is Variant1"),
+        SomeEnum::Variant2 =&gt; println!("choice is Variant2"),
+    }
+}</code></pre></pre>
+<p>Unfortunately the <code>default</code> attribute only works when deriving <code>Default</code> for unit enums, which means if your enum
+contains nested types, you will have to implement <code>Default</code> manually:</p>
+<pre><pre class="playground"><code class="language-rust">// The nested types here mean we can't derive default
+enum SomeEnum {
+    Variant1(u32),
+    Variant2(String),
+}
+
+impl Default for SomeEnum {
+    fn default() -&gt; Self {
+        SomeEnum::Variant2("Hello".to_string())
+    }
+}
+
+fn main() {
+    let choice = SomeEnum::default();
+    match choice {
+        SomeEnum::Variant1(x) =&gt; println!("Variant1 with value {x}"),
+        SomeEnum::Variant2(y) =&gt; println!("Variant2 with value {y}"),
+    }
+}</code></pre></pre>
+<h3 id="debug"><a class="header" href="#debug">Debug</a></h3>
+<p><code>Debug</code> is an extremely useful utility Trait that creates a default way to write out types to things like stdout/stderr.</p>
+<p>When printing a <code>Debug</code> value, we use <code>{:?}</code> for a positional marker, or you can put it after the name of a variable</p>
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+struct Cat {
+    name: String,
+    age: u8,
+}
+
+fn main() {
+    let cat = Cat {
+        name: "Yuki".to_string(),
+        age: 15
+    };
+    println!("{:?}", cat);
+}</code></pre></pre>
+<p>Ironically perhaps, you should try to avoid using <code>Debug</code> for debugging, that’s what a debugger is for. Debugging will
+allow you to set break points, inspect variables and step through code. The <code>Debug</code> macro though is very useful for
+logging, though be careful to not leak private information this way. Again, this might be where you want to implement
+<code>Debug</code> manually.</p>
+<p><code>Debug</code> works very similarly to <code>Display</code> taking a formater as a parameter.</p>
+<pre><code class="language-rust ignore">impl fmt::Debug for MyType {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter&lt;'_&gt;) -&gt; fmt::Result {
+        // ...
+    }
+}</code></pre>
+<p>You might be worried about making sure your implementation of the <code>Debug</code> trait behaves similarly to official/derived
+implementations, well that’s where the formatter gets <em>really</em> cool, providing a ton of different tools that help you
+build a well structured output. We won’t go into that here, but you can see more in the
+<a href="https://doc.rust-lang.org/std/fmt/trait.Debug.html" title="" target="_blank">official <code>Debug</code> documentation</a>.</p>
+<h3 id="partialeq--eq"><a class="header" href="#partialeq--eq">PartialEq / Eq</a></h3>
+<p><code>Eq</code> and <code>PartialEq</code> are Rust’s equivalency traits (that’s right, not equality)… but what does that mean and why are
+there two?</p>
+<p>Allow me to answer those questions with another question: Is <code>0</code> equivalent to <code>-0</code>. Mathematically, they have equal
+value, but inside a floating point number, the binary representation is different. Speaking of floating points, in
+binary representation its possible to represent many different things that are Not a Number (NaN). However, should two
+NaNs, even if they have the same binary representation, be considered as the same value? Probably not.</p>
+<p>For the most part in Rust, we’re only concerned with Partial Equivalence <code>PartialEq</code>, this is what allows us to compare
+values with the <code>==</code> operator. Given what we’ve just discussed, consider the code below before you run it, what do you
+think the output will be?</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main () {
+</span>if 0.0 == -0.0 {
+    println!("0.0 IS equivalent to -0.0");
+} else {
+    println!("0.0 is NOT equivalent to -0.0");
+}
+
+if f64::NAN == f64::NAN {
+    println!("NaN IS equivalent to NaN");
+} else {
+    println!("NaN is NOT equivalent to NaN");
+}
+<span class="boring">}</span></code></pre></pre>
+<p>You can derive <code>PartialEq</code> so long as all the parts of your type also implement <code>PartialEq</code>, or you can implement it
+yourself. Implementing it yourself can be really handy if you have a structure where some fields <em>can</em> be different but
+still be considered the same overall “thing”. The official Rust book uses ISBN’s as an example, though you might also
+want this kind of behaviour for aliased user information or something similar.</p>
+<p><code>PartialEq</code> has two methods, <code>eq</code> and <code>ne</code>. <code>ne</code> has a default behaviour so you don’t need to define it, but you can see
+how in the previous example, being able to make the logic for <code>ne</code> different from simple <code>!x.eq(y)</code> could be handy.</p>
+<p>Lets implement it ourselves below:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct User {
+    id: u64,
+    email: String,
+}
+
+impl PartialEq for User {
+    fn eq(&amp;self, other: &amp;Self) -&gt; bool {
+        self.id == other.id
+    }
+    
+    // fn eq(&amp;self, other: &amp;Self) -&gt; bool {
+         // We'll leave the default logic of `ne`, to be "not eq"
+    //}
+}
+<span class="boring">}</span></code></pre></pre>
+<p><code>PartialEq</code> has even more utility though! Its a generic trait where the generic parameter represents the type for the
+“right hand side” or RHS. This means we can write code that allows us to compare the equivalence of different types!</p>
+<p>Taking that User alias example again, what if we had a “root” user type, and an aliased User type.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct User {
+    id: u64,
+    email: String,
+}
+
+struct UserAlias {
+    id: u64,
+    rootId: u64,
+    email: String,
+}
+
+impl PartialEq&lt;UserAlias&gt; for User {
+    fn eq(&amp;self, other: &amp;UserAlias) -&gt; bool {
+        self.id == other.rootId
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>So that’s <code>PartialEq</code>, but what is <code>Eq</code>? <code>Eq</code> doesn’t actually provide any additional behaviour, its an empty trait that
+can only be applied to types that are also <code>PartialEq</code>. It’s purpose isn’t to provide functionality but to indicate to
+you, the software engineer, and anyone looking at your code, that types have exact equivalence. Those points we made
+about floating points earlier, different binary representations having equality, and the same binary representation not
+being considered equal, are not <code>Eq</code>, which is why <code>f32</code> and <code>f64</code> do not implement <code>Eq</code>.</p>
+<p>There’s no way for the compiler to guarantee the correct implementation of <code>Eq</code> so its something you need to be mindful
+of.</p>
+<p>Unlike <code>PartialEq</code>, <code>Eq</code> is not a generic that can be used with other types (since we’re talking about exact
+equivalence, this wouldn’t make sense).</p>
+<h3 id="partialord--ord"><a class="header" href="#partialord--ord">PartialOrd / Ord</a></h3>
+<p>As you can imagine, <code>PartialOrd</code> and <code>Ord</code> have a similar relationship to each other as <code>PartialEq</code> and <code>Eq</code>, and indeed</p>
+<ul>
+<li><code>PartialOrd</code> can only be applied to types with <code>PartialEq</code></li>
+<li>and <code>Ord</code> can only be applied to types with <code>Eq</code></li>
+</ul>
+<p>Both <code>PartialEq</code> and <code>Eq</code> have a required method each (<code>partial_cmp</code> and <code>cmp</code> respectively) as well as some methods with
+default behaviour. The required methods of each trait use the <code>Ordering</code> type which looks roughly like this:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum Ordering {
+    Less = -1,
+    Equal = 0,
+    Greater = 1,
+}
+<span class="boring">}</span></code></pre></pre>
+<p><code>PartialEq</code> is what gives us our usual greater than (<code>&gt;</code>), less than (<code>&lt;</code>), greater or equal to (<code>&gt;=</code>)  and less than or
+equal to (<code>&lt;=</code>) behaviour, through the use of the methods <code>gt</code>, <code>lt</code>, <code>ge</code> and <code>le</code> respectively, though unless these
+methods are implemented, their default behaviour relies on <code>partial_cmp</code>, which returns <code>Option&lt;Ordering&gt;</code>. Again,
+using floating point numbers, it’s easy to see why we use an <code>Option</code> on our comparisons. When comparing <code>NaN</code>, is it
+greater than, less than, or equal to <code>NaN</code>? In all cases the answer is no, so we use the <code>None</code> variant to represent
+that.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>// Using the Debug output, see above!
+println!("{:?}", f32::NAN.partial_cmp(&amp;f32::NAN));
+
+println!("NaN &gt; NaN  = {:?}", f32::NAN &gt; f32::NAN);
+println!("NaN &gt;= NaN  = {:?}", f32::NAN &gt;= f32::NAN);
+println!("NaN &lt; NaN  = {:?}", f32::NAN &lt; f32::NAN);
+println!("NaN &lt;= NaN  = {:?}", f32::NAN &lt;= f32::NAN);
+println!("NaN == NaN  = {:?}", f32::NAN == f32::NAN);
+<span class="boring">}</span></code></pre></pre>
+<p>One important thing to bear in mind when deriving <code>PartialOrd</code> is that although, yes you can do it if all parts of your
+type implement <code>PartialOrd</code>, when derived on structs, it will first check the ordering of the first field, and only move
+on to the next field if the first field is equal.</p>
+<p>Eg:</p>
+<pre><pre class="playground"><code class="language-rust">#[derive(PartialEq, PartialOrd)] // Remember PartialEq is required for PartialOrd
+struct BadRect {
+    width: u64,
+    height: u64,
+}
+
+fn main() {
+    let test_one_lhs = BadRect { width: 2, height: 1 };
+    let test_one_rhs = BadRect { width: 1, height: 1000 };
+<span class="boring">    assert!(test_one_lhs &gt; test_one_rhs);
+</span>    println!("test one: is lhs great than rhs - {}", test_one_lhs &gt; test_one_rhs);
+    
+    let test_two_lhs = BadRect { width: 2, height: 1 };
+    let test_two_rhs = BadRect { width: 2, height: 1000 }; 
+<span class="boring">    assert!(test_two_lhs &lt; test_two_rhs);
+</span>    println!("test two: is lhs great than rhs - {}", test_one_lhs &gt; test_one_rhs);
+}</code></pre></pre>
+<p>For this reason, it’s quite likely that you’d want to implement <code>PartialOrd</code> yourself, depending on how you think types
+should be compared.</p>
+<pre><pre class="playground"><code class="language-rust">#[derive(PartialEq)] // Remember PartialEq is required for PartialOrd
+struct BetterRect {
+    width: u64,
+    height: u64,
+}
+
+impl PartialOrd for BetterRect {
+    fn partial_cmp(&amp;self, rhs: &amp;Self) -&gt; Option&lt;std::cmp::Ordering&gt; {
+        let self_area = self.height * self.width;
+        let rhs_area = rhs.height * rhs.width;
+        self_area.partial_cmp(&amp;rhs_area)
+    }
+}
+
+fn main() {
+    let test_one_lhs = BetterRect { width: 2, height: 1 };
+    let test_one_rhs = BetterRect { width: 1, height: 1000 };
+<span class="boring">    assert!(test_one_lhs &lt; test_one_rhs);
+</span>    println!("test one: is lhs great than rhs - {}", test_one_lhs &gt; test_one_rhs);
+    
+    let test_two_lhs = BetterRect { width: 2, height: 1 };
+    let test_two_rhs = BetterRect { width: 2, height: 1000 }; 
+<span class="boring">    assert!(test_two_lhs &lt; test_two_rhs);
+</span>    println!("test two: is lhs great than rhs - {}", test_one_lhs &gt; test_one_rhs);
+}</code></pre></pre>
+<p>Finally <code>Ord</code> isn’t quite the same as <code>Eq</code> in that it does provide several methods; <code>cmp</code> which is like <code>partial_cmp</code>
+but returns <code>Ordering</code> without the <code>Option</code>, <code>max</code> which returns the greater of the two values, <code>min</code> which returns the
+lesser, and <code>clamp</code> which will return a value so long as its between two other values, or the closest value that is.</p>
+<p>Like with <code>PartialOrd</code>, <code>Ord</code> can be derived but has the same ordering quirk. If we want to implement it ourselves, we
+only need to implement <code>cmp</code>, and the other methods can use that for their default behaviour. Importantly, when
+implementing both <code>PartialOrd</code> <em>and</em> <code>Ord</code>, the result of <code>partial_cmp</code> <em>must</em> match <code>cmp</code>, though the compiler has no
+way of confirming this for you. The easiest way to handle this is if you need to manually implement <code>PartialOrd</code>, simply
+call <code>cmp</code> and wrap it in an <code>Option</code>. Let’s do that with our Rect type.</p>
+<pre><pre class="playground"><code class="language-rust">use std::cmp::Ordering;
+
+// Remember PartialEq is required for PartialOrd, Eq is required for Ord
+#[derive(PartialEq, Eq)] 
+struct BestRect {
+    width: u64,
+    height: u64,
+}
+
+impl Ord for BestRect {
+    fn cmp(&amp;self, rhs: &amp;Self) -&gt; Ordering {
+        let self_area = self.height * self.width;
+        let rhs_area = rhs.height * rhs.width;
+        self_area.cmp(&amp;rhs_area)
+    }
+}
+
+impl PartialOrd for BestRect {
+    fn partial_cmp(&amp;self, rhs: &amp;Self) -&gt; Option&lt;Ordering&gt; {
+        Some(self.cmp(rhs))
+    }
+}
+
+fn main() {
+    let test_one_lhs = BestRect { width: 2, height: 1 };
+    let test_one_rhs = BestRect { width: 1, height: 1000 };
+<span class="boring">    assert_eq!(test_one_lhs.cmp(&amp;test_one_rhs), Ordering::Less);
+</span>    println!("test one: lhs great is {:?} than rhs", test_one_lhs.cmp(&amp;test_one_rhs));
+
+}</code></pre></pre>
+<p>Unlike <code>PartialEq</code>, neither <code>PartialOrd</code> nor <code>Ord</code> are generic, they can only be implemented where both the left hand
+side and the right hand side are the same type.</p>
+<h3 id="hash"><a class="header" href="#hash">Hash</a></h3>
+<p>Hashing as a concept is more complex than we’ll go in to here, however, to keep it simple, in Rust there is a concept of
+a type that is <code>Hash</code> which means that it can be “hashed”, and another trait called <code>Hasher</code> which does the hashing.</p>
+<p>You <em>generally</em> don’t need to worry too much about this, but it is useful if you want your type to work as a key in a
+<code>HashMap</code> or similar data structure.</p>
+<p>So long as your type is constructed only of other types that implement <code>Hash</code>, then you can derive it, though if you
+need more control than that, then you can of course implement the trait methods yourself. This might be useful if you
+want to skip over types that can’t be hashed <em>BUT</em> when using <code>Eq</code>, if <code>A == B</code>, then <code>hash(A) == hash(B)</code> must also
+be true.</p>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<h3 id="display"><a class="header" href="#display">Display</a></h3>
+<p>Before we jump straight into the <code>Error</code> trait, lets recap on <code>Display</code>. This trait allows us to display information
+related to the type that implements it. You get to decide what that information is, but <code>Display</code> is pretty broad. Once
+you implement it, if you pass a value of your type into a macro like <code>println!</code> or <code>format!</code>, then <code>Display</code> defines
+how the type will be rendered.</p>
+<p><code>Display</code> only has one method which you must implement, it takes <code>&amp;self</code>, and a mutable pointer to a <code>Formatter</code> and
+returns a <code>fmt::Result</code> which is a type alias for <code>Result&lt;(), fmt::Error&gt;</code>. The easiest way to implement it is with
+<code>write!</code> macro which returns this same type, and to <code>use std::fmt</code> to slightly simplify the namespacing:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::fmt;
+
+struct MyUnitStruct;
+
+impl fmt::Display for MyUnitStruct {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+        writeln!(f, "MyUnitStruct")
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="error"><a class="header" href="#error">Error</a></h3>
+<p>The <code>Error</code> trait is applied to types that are specifically used to represent something that went wrong during the
+execution of the code.</p>
+<p>Although <code>Result</code>s do not <em>require</em> the <code>Error</code> trait be implemented for types in their Error variant, it is definitely
+worth doing as error types with the <code>Error</code> trait provide a lot of utility for very little effort.</p>
+<p>The trait itself has several “provided” methods but none that you need to implement yourself. You’re unlikely to want to
+alter the provided behaviour of the <code>Error</code> trait which means the only thing you need to do is make sure that your
+error type <em>also</em> implements <code>Debug</code> and <code>Display</code>. As we know, <code>Debug</code> is usually derivable, so that just leaves
+<code>Display</code>. Let’s create a custom Error for a fridge to demonstrate how we <em>might</em> do this.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::{fmt, error};
+
+#[derive(Debug)]
+enum FridgeError {
+    TooHot(f32),
+    TooCold(f32),
+    PowerFailure,
+}
+
+impl fmt::Display for FridgeError {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+        match self {
+            FridgeError::TooHot(temp) =&gt; write!(f, "Fridge temperature recorded at {temp} which is too hot"),
+            FridgeError::TooCold(temp) =&gt; write!(f, "Fridge temperature recorded at {temp} which is too cold"),
+            FridgeError::PowerFailure =&gt; write!(f, "A power failure has been detected in the fridge"),
+        }
+    }
+}
+
+impl error::Error for FridgeError {}
+<span class="boring">}</span></code></pre></pre>
+<p>While we’ve avoided talking about the wider ecosystem so far, it’s worth mentioned there are some <em>extremely</em> powerful
+Error libraries that might change the way you work with errors. We will cover these later in the book.</p>
+<h2 id="converters"><a class="header" href="#converters">Converters</a></h2>
+<h3 id="from--into"><a class="header" href="#from--into">From / Into</a></h3>
+<p>By now you’re probably beginning to understand how important types are to Rust, but sometimes, you need to take the data
+from one type, and move it to another type. <code>From</code> and <code>Into</code> are the easiest ways to do this, providing the <code>from</code> and
+<code>into</code> methods respectively. For example, you’ll regularly see people turning a string slice into a string in one of
+these two ways:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>let first = String::from("first");
+let second: String = "second".into();
+println!("{first}, {second}");
+<span class="boring">let hidden_example = String::from(second);
+</span><span class="boring">}</span></code></pre></pre>
+<p>You can immediately see a couple of difference here. In the first example, we don’t need to type hint the variable as
+its clear that we’re creating a <code>String</code> from another value. That value can be anything so long as there is a <code>From&lt;T&gt;</code>
+(in our case an <code>impl From&lt;&amp;str&gt; for String</code>) implementation for the type of that value, and String has quite a few
+<code>From</code> implementations.</p>
+<p>In the second example, we call <code>into</code> on the string slice however, we need to tell Rust “into what”, so we use a type
+hint to say we’re changing the reference to a string slice into a String. As with <code>From</code>, there could many types you can
+turn something into, so long as there is an <code>Into&lt;T&gt;</code> (in our case, <code>impl Into&lt;String&gt; for &amp;str</code>) for that type.</p>
+<p>What’s really cool though is you rarely have to implement <code>Into</code> yourself. You might have realised that the
+functionality of <code>impl Into&lt;String&gt; for &amp;str</code> is probably identical to <code>impl From&lt;&amp;str&gt; for String</code>, and Rusts
+maintainers realised that too! There is a generic implementation of Into that looks like this:</p>
+<pre><code class="language-rust ignore">impl&lt;T, U&gt; Into&lt;U&gt; for T
+where
+    U: From&lt;T&gt;,
+{
+    fn into(self) -&gt; U {
+        U::from(self)
+    }
+}</code></pre>
+<p>We haven’t talked about <code>where</code> yet, but its a way of providing type bounds (like when we’ve used colons in previous
+examples) that’s great for when the type bound is a little more complex. This generic implementation simply applies
+<code>Into&lt;U&gt;</code> for any type where <code>U</code> can already be gotten <code>From&lt;T&gt;</code>. Simple, but powerful. Because of this however, you
+should only ever implement <code>Into</code> if you <em>can’t</em> implement <code>From</code>, which rarely comes up outside of crate scoping which
+we’ll discuss in the next section of the book.</p>
+<h3 id="tryfrom--tryinto"><a class="header" href="#tryfrom--tryinto">TryFrom / TryInto</a></h3>
+<p>Sometimes, its just not possible to guarantee that a conversion from one thing into another will actually work.
+<code>TryFrom</code> and <code>TryInto</code> can help you with possible errors using another feature of traits we haven’t discussed,
+associated types.</p>
+<p>To oversimplify things a little, let’s say you’re talking to an external system that thinks about pets like this:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>enum PetType {
+    Cat,
+    Dog,
+    Rat, //..
+}
+
+struct Pet {
+    pet_type: PetType,
+    name: String,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>but your system <em>only</em> cares about Cats:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Cat {
+    name: String
+}
+<span class="boring">}</span></code></pre></pre>
+<p>We can’t <code>impl From&lt;Pet&gt; for Cat</code> because not all Pets are Cats. We can use <code>TryFrom</code> to manage this for us, however,
+we must tell the <code>TryFrom</code> trait what the potential error is going to be.</p>
+<pre><pre class="playground"><code class="language-rust">use std::convert::TryFrom; // You do not need to do this since Rust 2021, including for backwards compatability
+
+<span class="boring">#[derive(Debug,PartialEq)]
+</span><span class="boring">enum PetType {
+</span><span class="boring">    Cat,
+</span><span class="boring">    Dog,
+</span><span class="boring">    Rat, //..
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[derive(Debug)]
+</span><span class="boring">struct Pet {
+</span><span class="boring">    pet_type: PetType,
+</span><span class="boring">    name: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[derive(Debug)]
+</span><span class="boring">struct Cat {
+</span><span class="boring">    name: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span>#[derive(Debug)]
+struct NotACatError(Pet);
+
+impl TryFrom&lt;Pet&gt; for Cat {
+    type Error = NotACatError;
+    
+    fn try_from(pet: Pet) -&gt; Result&lt;Cat, Self::Error&gt; {
+        if pet.pet_type != PetType::Cat {
+            Err(NotACatError(pet))
+        } else {
+            Ok(Cat { name: pet.name })
+        }
+    }
+}
+
+fn main() {
+    let yuki_pet = Pet { pet_type: PetType::Cat, name: "Yuki".into() };
+    let yuki_cat_result = Cat::try_from(yuki_pet);
+    // This should display "Result: Ok(Cat { name: "Yuki" })"
+    println!("Result: {yuki_cat_result:?}");
+    
+    let lassie_pet = Pet { pet_type: PetType::Dog, name: "Lassie".into() };
+    let lassie_cat_result = Cat::try_from(lassie_pet);
+    // This should display "Result: Err(NotACatError(Pet { type: Dog, name: "Lassie" }))"
+    println!("Result: {lassie_cat_result:?}");
+}</code></pre></pre>
+<p>And yes <code>TryInto</code> is automatically provided by Rust for any types that already provide the reverse <code>TryFrom</code>
+implementation. One thing to note though is you still need to type hint to Rust what the generic parts are, but because
+they’re now inside a result its a little harder.</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">use std::convert::TryFrom; // You do not need to do this since Rust 2021, including for backwards compatability
+</span><span class="boring">
+</span><span class="boring">#[derive(Debug,PartialEq)]
+</span><span class="boring">enum PetType {
+</span><span class="boring">    Cat,
+</span><span class="boring">    Dog,
+</span><span class="boring">    Rat, //..
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[derive(Debug)]
+</span><span class="boring">struct Pet {
+</span><span class="boring">    pet_type: PetType,
+</span><span class="boring">    name: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[derive(Debug)]
+</span><span class="boring">struct Cat {
+</span><span class="boring">    name: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[derive(Debug)]
+</span><span class="boring">struct NotACatError(Pet);
+</span><span class="boring">
+</span><span class="boring">impl TryFrom&lt;Pet&gt; for Cat {
+</span><span class="boring">    type Error = NotACatError;
+</span><span class="boring">
+</span><span class="boring">    fn try_from(pet: Pet) -&gt; Result&lt;Cat, Self::Error&gt; {
+</span><span class="boring">        if pet.pet_type != PetType::Cat {
+</span><span class="boring">            Err(NotACatError(pet))
+</span><span class="boring">        } else {
+</span><span class="boring">            Ok(Cat { name: pet.name })
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">fn main() {
+</span>let yuki_pet = Pet { pet_type: PetType::Cat, name: "Yuki".into() };
+let yuki_cat_result: Result&lt;Cat, _&gt; = yuki_pet.try_into();
+println!("Result: {yuki_cat_result:?}");
+<span class="boring">}</span></code></pre></pre>
+<p>Note: that we only need to specify the Ok type of the <code>Result</code>, the Error type can be inferred from the <code>TryFrom</code>
+implementation, how clever is that! To ask Rust to infer a type, we can use <code>_</code>.</p>
+<h3 id="borrow--borrowmut"><a class="header" href="#borrow--borrowmut">Borrow / BorrowMut</a></h3>
+<p><code>Borrow</code> allows you to “borrow” one type as another and <code>BorrowMut</code> is allows you to borrow that data mutably.</p>
+<blockquote>
+<p>In Rust “borrowing” is the formal act of referencing data, with all of Rust’s careful checks to make sure you’re not
+misusing memory. As these checks are almost always turned on (we might talk about when they’re not much further into
+the book), the terms referencing and borrowing are often used interchangeably.</p>
+</blockquote>
+<p>Rust has a neat trick up its sleave when it comes to references though, you can reference data as if it were another
+type… sometimes.</p>
+<p><code>String</code>s are a great example of this. The heap data in <code>String</code>, the bit we as programmers care about, is identical to
+a string slice reference, <code>str</code></p>
+<p>There are blanket implementations of both traits so for any type <code>T</code> you know that <code>Borrow&lt;T&gt;</code> and <code>BorrowMut&lt;T&gt;</code> are
+already implemented.</p>
+<h3 id="asref--asmut"><a class="header" href="#asref--asmut">AsRef / AsMut</a></h3>
+<p>Sometimes, you might have a type where the internal representation could very cheaply be read and/or manipulated as a
+different type. For example <code>String</code> exists on the Heap, but the data that lives there is identical to a <code>str</code>. This
+means that any function that takes a reference to a string slice should really be able to also take a reference to a
+<code>String</code>. This is represented by the trait implementation <code>impl AsRef&lt;str&gt; for String</code>. In fact, what is a string but
+an array of <code>u8</code>s, and indeed you’ll find that there is <code>impl AsRef&lt;[u8]&gt; for String</code> too.</p>
+<blockquote>
+<p>Note: the AsRef trait generic type does not require an ampersand as this is implied.</p>
+</blockquote>
+<p>Remember earlier we had our <code>Cat</code> type which only had a name. We could, if we wanted, implement <code>AsRef&lt;str&gt;</code> so that
+it can be used in the place of a <code>&amp;str</code>:</p>
+<pre><pre class="playground"><code class="language-rust">struct Cat {
+    name: String,
+}
+
+impl AsRef&lt;str&gt; for Cat {
+    fn as_ref(&amp;self) -&gt; &amp;str {
+        &amp;self.name
+    }
+}
+
+fn cuddle(who: &amp;str) {
+    println!("Cuddle {who}");
+} 
+
+fn main() {
+    let yuki = Cat { name: "Yuki".into() };
+    cuddle(yuki.as_ref());
+}</code></pre></pre>
+<p>Arguably, we could make this code even friendly by changing the <code>cuddle</code> to take a generic, and then calling <code>.as_ref()</code>
+in the function itself. This code looks a little scarier, but once you get used to seeing code like this, you can write
+far more flexible and easy to use code.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Cat {
+</span><span class="boring">    name: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl AsRef&lt;str&gt; for Cat {
+</span><span class="boring">    fn as_ref(&amp;self) -&gt; &amp;str {
+</span><span class="boring">        &amp;self.name
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>fn cuddle&lt;S: AsRef&lt;str&gt;&gt;(who: &amp;S) {
+    println!("Cuddle {}", who.as_ref());
+} 
+
+fn main() {
+    let yuki = Cat { name: "Yuki".into() };
+    cuddle(&amp;yuki);
+}</code></pre></pre>
+<p><code>AsMut</code> is essentially the same as <code>AsRef</code> but for mutable references instead!</p>
+<h3 id="deref--derefmut"><a class="header" href="#deref--derefmut">Deref / DerefMut</a></h3>
+<p>If <code>AsRef</code> allows you to reference a type as if it were another type. <code>Deref</code> allows you to dereference a type as if it
+were another type. What’s the difference?</p>
+<p>With <code>AsRef</code> your</p>
+<h2 id="iterators"><a class="header" href="#iterators">Iterators</a></h2>
+<p>We’re going to talk about Iterators much more fully in the Iterators chapter, though I wanted to explain that there are
+two important Iterator traits <code>Iterator</code> and <code>IntoIterator</code>, the former being something that is iterable, and the latter
+allowing you to change another type into one that is iterable.</p>
+<p>We’ll go over these in more detail later in the book.</p>
+<h2 id="other"><a class="header" href="#other">Other</a></h2>
+<h3 id="drop"><a class="header" href="#drop">Drop</a></h3>
+<p>Rust is <em>very</em> good at cleaning up after itself, especially when you use the standard library:</p>
+<ul>
+<li>If you allocate heap memory, that memory is released when the variable that owns it goes out of scope</li>
+<li>If you open a file to read or write, it’s closed when the file handler goes out of scope</li>
+<li>If you start a TCP connection, its ended when the handler goes our of scope</li>
+</ul>
+<p>The Rust standard library is achieving this with the <code>Drop</code> trait.</p>
+<p>You can implement the drop trait yourself:</p>
+<pre><pre class="playground"><code class="language-rust">struct UnitStruct;
+
+impl Drop for UnitStruct {
+    fn drop(&amp;mut self) {
+        println!("UnitStruct was dropped")
+    }
+}
+
+fn main() {
+    println!("In main");
+    {
+        println!("In inner scope");
+        println!("Creating UnitStruct");
+        let unit_struct = UnitStruct;
+        println!("Leaving inner scope");
+    }
+    println!("Leaving main");
+}</code></pre></pre>
+<p>When a variable goes out of scope, if it implements the <code>Drop</code> trait, then the functionality on that trait is called,
+which allows you to write cleanup code for the type implementing the trait. Depending on the type of programming you do
+you may not need to think about this trait very much… <em>except</em>, there is one thing worth considering.</p>
+<p>Each of the examples I gave above is “blocking”. That means that the program will have to wait until whatever the <code>drop</code>
+method of the <code>Drop</code> trait needs to do is complete before continuing. You may want to be mindful of this when you allow
+things to go out of scope, and be aware of what any library code you’re consuming might be doing.</p>
+<p>Most of the time this isn’t worth worrying too much about, however, if you do find you want to very precisely control
+when variables are dropped and have any <code>Drop</code> functionality acted on, then let me introduce you to my all-time
+favourite function <code>std::mem::drop</code>. Here it is in full:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn drop&lt;T&gt;(_x: T) {}
+<span class="boring">}</span></code></pre></pre>
+<p>Yeah, that’s not a mistake. It has one generic variable and no function body. Remember that variables in Rust are owned
+by the function they exist in, and when they leave that function they’re dropped. The intention of this function is that
+at the exact moment you want to cause a variable to be cleaned up, you pass ownership of that variable into this
+function, the function immediately ends, and, if the variable has a <code>Drop</code> implementation, then that code is run then
+and there.</p>
+<h2 id="next-chapter"><a class="header" href="#next-chapter">Next Chapter</a></h2>
+<p>Now that we’ve learned about the <code>Error</code> trait, in the next chapter we’ll dive deeper into error handling.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../language-basics/traits.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../language-basics/traits.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
