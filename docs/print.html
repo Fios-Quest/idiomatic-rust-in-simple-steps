@@ -5540,26 +5540,26 @@ however I will give you a hint, it’s <em>something</em> to do with memory.</p>
 Rust standard library. This will also allow us to cover some Trait features we haven’t seen so far, including associated
 types!</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="common-traits"><a class="header" href="#common-traits">Common Traits</a></h1>
-<p>In the previous chapter we introduced the concept of traits and made our own Animal trait to fix some problems left over
-from the chapter before that!</p>
-<p>Rust provides a huge number of traits that you can implement on your own types, and in this chapter we’re going to
-discuss what I think are the most important to be aware of, whether that’s because you’ll want to implement them
-yourself, you’ll want to consume types that implement them, or they have interesting knock on effects you should be
-aware of.</p>
-<p>This chapter is broken into three main parts:</p>
+<p>In the previous chapter we introduced the concept of traits and made our own <code>Animal</code> trait to fix some problems left
+over from the chapter before that!</p>
+<p>The Rust standard library itself provides a huge number of traits that you can implement on your own types, and in this
+chapter we’re going to discuss what I think are the most important to be aware of, whether that’s because you’ll want
+to implement them yourself, you’ll want to consume types that implement them, or they have interesting knock on effects
+you should be aware of.</p>
+<p>This chapter is broken into sections:</p>
 <ul>
-<li>Markers - these can be considered intrinsic traits</li>
-<li>Derivables - traits for which the functionality is so easy to implement there are easy tools to automate it</li>
-<li>Error Handling - Traits related to handling</li>
-<li>Converters - traits that allow you to change one type to another</li>
-<li>Referencing and Dereferencing - traits that allow you to treat data as a different type without conversion</li>
-<li>Other - Things that didn’t fit nicely into the other categories</li>
+<li><strong>Markers</strong> - these can be considered intrinsic traits</li>
+<li><strong>Derivables</strong> - traits for which the functionality is so easy to implement there are easy tools to automate it</li>
+<li><strong>Error Handling</strong> - Traits related to handling</li>
+<li><strong>Converters</strong> - traits that allow you to change one type into another</li>
+<li><strong>Referencing and Dereferencing</strong> - traits that allow you to treat data as a different type without conversion</li>
+<li><strong>Other</strong> - Things that didn’t fit nicely into the other categories</li>
 </ul>
 <p>Two notable absences to this chapter are <code>Iterator</code> and <code>IntoIterator</code>. They are both very common traits that you will
 use pretty much all the time, <em>but</em> there’s so much to them, they deserve their own chapter.</p>
 <h2 id="markers"><a class="header" href="#markers">Markers</a></h2>
 <p>Markers are special traits that describe intrinsic properties of types, that is they relate to what you might call the
-core essence of the data within the type.</p>
+core essence of the type.</p>
 <h3 id="sized"><a class="header" href="#sized">Sized</a></h3>
 <p>We’re starting with a weird one here. You never need to implement this yourself, but you may choose to manually opt out
 of it.</p>
@@ -5567,20 +5567,22 @@ of it.</p>
 therefore it is sized. In fact, except for <code>str</code> (which you can’t use outside its reference form anyway) all primitives
 are sized. Any compound type you create from only <code>Sized</code> types is also considered to be <code>Sized</code>.</p>
 <blockquote>
-<p>ℹ️ Actually, u8 has a minimum size of 8 bits, however, its size at compilation may not be 8 bits. This <em>generally</em>
+<p>ℹ️ Actually, <code>u8</code> has a minimum size of 8 bits, however, its size at compilation may not be 8 bits. This <em>generally</em>
 shouldn’t impact your decisions about the types you use, but if you’re doing embedded programming you <em>may</em> need to
-check. <strong>Fun fact</strong>, <code>bool</code> is, as far as Rust cares, a 1 bit data type, however LLVM doesn’t have a concept of a
-1 bit data type, so uses i8 for Rust code instead.</p>
+check.</p>
+<p><strong>Fun fact</strong>, <code>bool</code> is, as far as Rust cares, a 1 bit data type, however LLVM doesn’t have a concept of a
+1 bit data type, so uses <code>i8</code> for Rust code instead.</p>
 </blockquote>
 <p>One place you will see <code>Sized</code> a lot is that due to a quirk in Rusts design, generic types are assumed to be <code>Sized</code>.
-For this reason you will regularly see the trait bound <code>?Sized</code> which means that it may or may not be <code>Sized</code>. Unlike
-any other trait bound, this has a widening effect on the number of types that can be used within the generic.</p>
-<p>For example, in the last chapter, I mentioned that I was printing a simplified version of Display. This was because I
-left out the <code>?Sized</code> trait bound, so Display actually looks more like this:</p>
-<pre><code class="language-ignore">impl&lt;T: Display + ?Sized&gt; ToString for T {
+For this reason you will regularly see the trait bound <code>?Sized</code> which means that the concrete type (the one used to fill
+in the generic) may or may not be <code>Sized</code>. Unlike any other trait bound, this has a widening effect on the number of
+types that can be used within the generic.</p>
+<p>For example, in the last chapter, I mentioned that I was printing a simplified version of <code>ToString</code> implementation for
+all type that implement <code>Display</code>. This was because I left out the <code>?Sized</code> trait bound, so the <code>ToString</code> generic
+implementation actually looks more like this:</p>
+<pre><code class="language-rust ignore">impl&lt;T: Display + ?Sized&gt; ToString for T {
     // ...
-}
-</code></pre>
+}</code></pre>
 <p>The <code>+</code> means the type <code>T</code> must abide both trait bounds, which includes <code>Display</code> but also may or may not be <code>Sized</code>.
 Without the <code>?Sized</code> trait bound, <code>T</code> would be assumed to be <code>Sized</code>.</p>
 <p>You do not need to implement <code>Sized</code> for traits yourself, however some types may explicitly implement <code>!Sized</code> to
@@ -5600,13 +5602,13 @@ instead, which we’ll discuss below.</p>
 won’t move ownership, and will use what are called “Copy Semantics” instead of “Move Semantics”. This means, unlike
 normal, when you reassign a variable, or pass it to a function, if the variable has the <code>Copy</code> trait, you can still
 use the original variable after.</p>
-<p>So ordinarily we can’t do something like this, you’ll get a compile time error:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<p>So ordinarily we can’t do something like this, you’ll get a compile time error. Try running this:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let x = "String is not Copy".to_string();
 let y = x;
-print!("y owns the str {y}");
-// print!("x no longer owns the str {x}");
+print!("y owns the str {y}"); 
+print!("x no longer owns the str {x}");
 <span class="boring">}</span></code></pre></pre>
 <p>However, for types that do implement <code>Copy</code> that does still work thanks to Copy Semantics:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -5628,8 +5630,12 @@ trying to read and write to data at the same time.</p>
 <p><code>Send</code> is used when data can be safely “sent” between threads. This might be achieved through the use of a channel or
 similar. Again, we’ll talk about this more in the future, so don’t worry what this means just yet, however, when
 something is “sent” from one thread to another, it moves ownership, like when you pass a variable to another function.</p>
-<p><code>Sync</code> is used when a <em>reference</em> to data can be safely sent from one thread to another, i.e. <code>T</code> is <code>Sync</code> is <code>&amp;T</code> is
-<code>Send</code>. This is perhaps easiest to explain with a type that isn’t <code>Sync</code>, the <code>Rc&lt;T&gt;</code> generic. <code>Rc</code> is Rust’s most basic
+<p><code>Sync</code> is used when a <em>reference</em> to data can be safely sent from one thread to another, i.e.:</p>
+<ul>
+<li><code>T</code> is <code>Send</code> if <code>T</code> can be SENT safely from one thread to another</li>
+<li><code>T</code> is <code>Sync</code> if <code>&amp;T</code> can be safely used across multiple threads SYNCHRONOUSLY (at the same time)</li>
+</ul>
+<p>This is perhaps easiest to explain with a type that isn’t <code>Sync</code>, the <code>Rc&lt;T&gt;</code> generic. <code>Rc</code> is Rust’s most basic
 reference counting type. You give it some data to hold, and pass clones of the container around. The <code>Rc</code> owns the data
 but keeps count of how many places using it there are. That count is not atomic and so two threads could attempt to
 change the value at the same time. This means that it is not <code>Sync</code>.</p>
@@ -5638,9 +5644,9 @@ fact, <code>Send</code> and <code>Sync</code>, like <code>Sized</code>, are auto
 for your own types so long as your types are entirely constructed from other types that are Send and/or Sync, the Rust
 compiler knows that your type is Send and/or Sync too</p>
 <h2 id="derivables"><a class="header" href="#derivables">Derivables</a></h2>
-<p>Apart from Sized, Send and Sync, most traits <em>need</em> to be manually opted in to, however, for some traits, the behaviour
-is so simplistic that the trait can be derived. For <em>most</em> derivable Rust traits there is a requirement that each child
-of your type implements the trait you’re attempting to implement yourself.</p>
+<p>Apart from <code>Sized</code>, <code>Send</code> and <code>Sync</code>, most traits <em>need</em> to be manually opted in to, however, for some traits, the
+behaviour is so simplistic that the trait can be derived. For <em>most</em> derivable Rust traits there is a requirement that
+each child of your type implements the trait you’re attempting to implement yourself.</p>
 <p>To derive a trait we use the derive attribute.</p>
 <blockquote>
 <p>Attributes can be defined either inside or outside the item they are for, however, like
@@ -5652,14 +5658,19 @@ use an exclamation mark to differentiate the two</p>
 #[external_attribute]
 fn item_with_external_attribute_applie() {}</code></pre>
 </blockquote>
-<p>The derive attribute itself, looks a bit like a function, but it takes a list of traits of any length. For example:</p>
+<p>The derive attribute itself, looks a bit like a function, but it takes a list of what <em>looks</em> like traits but are
+actually what we call “Derive Macros”:</p>
 <pre><code class="language-rust ignore">#[derive(FirstTrait, SecondTrait, etc)]
 struct StrucToGetDerivedBehaviours {
    // ...
 }</code></pre>
+<p>Not every trait has a Derive Macro meaning not all traits are derivable. You can write your own Derive Macros too
+(though this is a very advanced form of meta programming we probably won’t cover in this book), and many people do to
+provide custom derive macros for traits provided in their own libraries.</p>
 <h3 id="debug"><a class="header" href="#debug">Debug</a></h3>
 <p><code>Debug</code> is an extremely useful utility Trait that creates a default way to write out types to things like stdout/stderr.</p>
-<p>When printing a <code>Debug</code> value, we use <code>{:?}</code> for a positional marker, or you can put it after the name of a variable</p>
+<p>When printing a <code>Debug</code> value, we use <code>{:?}</code> for a positional marker, or you can put it after the name of a variable,
+eg <code>{name:?}</code>.</p>
 <pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
 struct Cat {
     name: String,
@@ -5671,10 +5682,12 @@ fn main() {
         name: "Yuki".to_string(),
         age: 15
     };
+
     println!("{:?}", cat);
+    println!("or {cat:?}");
 }</code></pre></pre>
 <p>Ironically perhaps, you should try to avoid using <code>Debug</code> for debugging, that’s what a debugger is for, head back to our
-Hello World chapter if you need a reminder.</p>
+<a href="language-basics/../getting-started/hello-world.html">Hello World</a> chapter if you need a reminder.</p>
 <p>The <code>Debug</code> macro though is very useful for logging, though be careful to not leak private information this way, this
 might be where you want to implement <code>Debug</code> manually.</p>
 <p>What <code>Debug</code> is needed for, is things like the <code>assert_eq!</code> macro, mainly used in testing. If you <code>assert_eq!</code> two
@@ -5691,13 +5704,14 @@ implementations, well that’s where the formatter gets <em>really</em> cool, pr
 build a well-structured output. We won’t go into that here, but you can see more in the
 <a href="https://doc.rust-lang.org/std/fmt/trait.Debug.html" title="" target="_blank">official <code>Debug</code> documentation</a>.</p>
 <h3 id="partialeq--eq"><a class="header" href="#partialeq--eq">PartialEq / Eq</a></h3>
-<p><code>Eq</code> and <code>PartialEq</code> are Rust’s equivalency traits (that’s right, not equality), but what does that mean and why are
-there two traits?</p>
-<p>Allow me to answer those questions with another question: Is <code>0</code> equivalent to <code>-0</code>. Mathematically, they have equal
-value, but inside a floating point number, the binary representation is different. Speaking of floating points, in
-binary representation its possible to represent many different things that are Not a Number (NaN). However, should two
-NaNs, even if they have the same binary representation, be considered as the same value when you can get there in
-different ways? Probably not.</p>
+<p><code>Eq</code> and <code>PartialEq</code> are Rust’s equivalency traits, that’s right, not equality.</p>
+<p>What’s the difference, what does equivalence mean and why are there two traits?</p>
+<p>Allow me to answer those questions with another question: Is <code>0</code> equivalent to <code>-0</code>. Mathematically, zero is neither
+positive nor negative, so these are identical, but inside a floating point number, the binary representation is
+different.</p>
+<p>Speaking of floating points, in binary representation its possible to represent many different things that are Not a
+Number (NaN). However, should two NaNs, even if they have the same binary representation, be considered as the same
+value when you can get there in different ways? Probably not.</p>
 <p>For the most part in Rust, we’re only concerned with Partial Equivalence <code>PartialEq</code>, this is what allows us to compare
 values with the <code>==</code> operator. Given what we’ve just discussed, consider the code below before you run it, what do you
 think the output will be?</p>
@@ -6065,7 +6079,7 @@ be true.</p>
 <p>I’ve actually secretly derived <code>Hash</code> on some types in the code examples in this chapter just to test my code behaves
 correctly. See if you can spot them and the assocciated tests!</p>
 </blockquote>
-<p>To derive it yourself simply use the derive macro, and you’ll be good to use it in a <code>HashMap</code>:</p>
+<p>To derive it yourself simply use the derive attribute, and you’ll be good to use it in a <code>HashMap</code>:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Hash)]
@@ -6250,7 +6264,7 @@ fn main() {
 <p>And yes <code>TryInto</code> is automatically provided by Rust for any types that already provide the reverse <code>TryFrom</code>
 implementation. One thing to note though is, like <code>into</code>, you still need to type hint to Rust what the generic parts
 are, but because they’re now inside a result its a little more verbose:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::convert::TryFrom; // You do not need to do this since Rust 2021, including for backwards compatability
+<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::convert::{TryFrom, TryInto}; // You do not need to do this since Rust 2021, including for backwards compatability
 </span><span class="boring">
 </span><span class="boring">#[derive(Debug,PartialEq)]
 </span><span class="boring">enum PetType {

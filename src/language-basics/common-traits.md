@@ -1,21 +1,21 @@
 Common Traits
 =============
 
-In the previous chapter we introduced the concept of traits and made our own Animal trait to fix some problems left over
-from the chapter before that!
+In the previous chapter we introduced the concept of traits and made our own `Animal` trait to fix some problems left
+over from the chapter before that!
 
-Rust provides a huge number of traits that you can implement on your own types, and in this chapter we're going to 
-discuss what I think are the most important to be aware of, whether that's because you'll want to implement them 
-yourself, you'll want to consume types that implement them, or they have interesting knock on effects you should be 
-aware of.
+The Rust standard library itself provides a huge number of traits that you can implement on your own types, and in this
+chapter we're going to discuss what I think are the most important to be aware of, whether that's because you'll want
+to implement them yourself, you'll want to consume types that implement them, or they have interesting knock on effects
+you should be aware of.
 
-This chapter is broken into three main parts:
-- Markers - these can be considered intrinsic traits
-- Derivables - traits for which the functionality is so easy to implement there are easy tools to automate it 
-- Error Handling - Traits related to handling
-- Converters - traits that allow you to change one type to another
-- Referencing and Dereferencing - traits that allow you to treat data as a different type without conversion
-- Other - Things that didn't fit nicely into the other categories
+This chapter is broken into sections:
+- **Markers** - these can be considered intrinsic traits
+- **Derivables** - traits for which the functionality is so easy to implement there are easy tools to automate it 
+- **Error Handling** - Traits related to handling
+- **Converters** - traits that allow you to change one type into another
+- **Referencing and Dereferencing** - traits that allow you to treat data as a different type without conversion
+- **Other** - Things that didn't fit nicely into the other categories
 
 Two notable absences to this chapter are `Iterator` and `IntoIterator`. They are both very common traits that you will
 use pretty much all the time, _but_ there's so much to them, they deserve their own chapter.
@@ -24,7 +24,7 @@ Markers
 -------
 
 Markers are special traits that describe intrinsic properties of types, that is they relate to what you might call the
-core essence of the data within the type.
+core essence of the type.
 
 ### Sized
 
@@ -35,19 +35,23 @@ So, anything that is of known size at compile time is consider to be `Sized`. Fo
 therefore it is sized. In fact, except for `str` (which you can't use outside its reference form anyway) all primitives
 are sized. Any compound type you create from only `Sized` types is also considered to be `Sized`.  
 
-> ℹ️ Actually, u8 has a minimum size of 8 bits, however, its size at compilation may not be 8 bits. This _generally_
+> ℹ️ Actually, `u8` has a minimum size of 8 bits, however, its size at compilation may not be 8 bits. This _generally_
 > shouldn't impact your decisions about the types you use, but if you're doing embedded programming you _may_ need to 
-> check. **Fun fact**, `bool` is, as far as Rust cares, a 1 bit data type, however LLVM doesn't have a concept of a 
-> 1 bit data type, so uses i8 for Rust code instead.
+> check.
+> 
+> **Fun fact**, `bool` is, as far as Rust cares, a 1 bit data type, however LLVM doesn't have a concept of a 
+> 1 bit data type, so uses `i8` for Rust code instead.
 
 One place you will see `Sized` a lot is that due to a quirk in Rusts design, generic types are assumed to be `Sized`.
-For this reason you will regularly see the trait bound `?Sized` which means that it may or may not be `Sized`. Unlike
-any other trait bound, this has a widening effect on the number of types that can be used within the generic.
+For this reason you will regularly see the trait bound `?Sized` which means that the concrete type (the one used to fill
+in the generic) may or may not be `Sized`. Unlike any other trait bound, this has a widening effect on the number of
+types that can be used within the generic.
 
-For example, in the last chapter, I mentioned that I was printing a simplified version of Display. This was because I
-left out the `?Sized` trait bound, so Display actually looks more like this:
+For example, in the last chapter, I mentioned that I was printing a simplified version of `ToString` implementation for
+all type that implement `Display`. This was because I left out the `?Sized` trait bound, so the `ToString` generic
+implementation actually looks more like this:
 
-```ignore
+```rust,ignore
 impl<T: Display + ?Sized> ToString for T {
     // ...
 }
@@ -79,13 +83,13 @@ won't move ownership, and will use what are called "Copy Semantics" instead of "
 normal, when you reassign a variable, or pass it to a function, if the variable has the `Copy` trait, you can still
 use the original variable after.
 
-So ordinarily we can't do something like this, you'll get a compile time error:
+So ordinarily we can't do something like this, you'll get a compile time error. Try running this:
 
-```rust
+```rust,compile_fail
 let x = "String is not Copy".to_string();
 let y = x;
-print!("y owns the str {y}");
-// print!("x no longer owns the str {x}");
+print!("y owns the str {y}"); 
+print!("x no longer owns the str {x}");
 ```
 
 However, for types that do implement `Copy` that does still work thanks to Copy Semantics:
@@ -114,8 +118,11 @@ Much of that safety comes from these two marker traits, `Send` and `Sync`.
 similar. Again, we'll talk about this more in the future, so don't worry what this means just yet, however, when
 something is "sent" from one thread to another, it moves ownership, like when you pass a variable to another function.
 
-`Sync` is used when a _reference_ to data can be safely sent from one thread to another, i.e. `T` is `Sync` is `&T` is
-`Send`. This is perhaps easiest to explain with a type that isn't `Sync`, the `Rc<T>` generic. `Rc` is Rust's most basic
+`Sync` is used when a _reference_ to data can be safely sent from one thread to another, i.e.:
+- `T` is `Send` if `T` can be SENT safely from one thread to another
+- `T` is `Sync` if `&T` can be safely used across multiple threads SYNCHRONOUSLY (at the same time)
+
+This is perhaps easiest to explain with a type that isn't `Sync`, the `Rc<T>` generic. `Rc` is Rust's most basic
 reference counting type. You give it some data to hold, and pass clones of the container around. The `Rc` owns the data
 but keeps count of how many places using it there are. That count is not atomic and so two threads could attempt to
 change the value at the same time. This means that it is not `Sync`. 
@@ -129,9 +136,9 @@ compiler knows that your type is Send and/or Sync too
 Derivables
 ----------
 
-Apart from Sized, Send and Sync, most traits _need_ to be manually opted in to, however, for some traits, the behaviour
-is so simplistic that the trait can be derived. For _most_ derivable Rust traits there is a requirement that each child
-of your type implements the trait you're attempting to implement yourself.
+Apart from `Sized`, `Send` and `Sync`, most traits _need_ to be manually opted in to, however, for some traits, the 
+behaviour is so simplistic that the trait can be derived. For _most_ derivable Rust traits there is a requirement that 
+each child of your type implements the trait you're attempting to implement yourself.
 
 To derive a trait we use the derive attribute.
 
@@ -147,7 +154,8 @@ To derive a trait we use the derive attribute.
 > fn item_with_external_attribute_applie() {}
 > ```
 
-The derive attribute itself, looks a bit like a function, but it takes a list of traits of any length. For example:
+The derive attribute itself, looks a bit like a function, but it takes a list of what _looks_ like traits but are 
+actually what we call "Derive Macros":
 
 ```rust,ignore
 #[derive(FirstTrait, SecondTrait, etc)]
@@ -156,11 +164,16 @@ struct StrucToGetDerivedBehaviours {
 }
 ```
 
+Not every trait has a Derive Macro meaning not all traits are derivable. You can write your own Derive Macros too
+(though this is a very advanced form of meta programming we probably won't cover in this book), and many people do to
+provide custom derive macros for traits provided in their own libraries.
+
 ### Debug
 
 `Debug` is an extremely useful utility Trait that creates a default way to write out types to things like stdout/stderr.
 
-When printing a `Debug` value, we use `{:?}` for a positional marker, or you can put it after the name of a variable
+When printing a `Debug` value, we use `{:?}` for a positional marker, or you can put it after the name of a variable, 
+eg `{name:?}`.
 
 ```rust
 #[derive(Debug)]
@@ -174,12 +187,14 @@ fn main() {
         name: "Yuki".to_string(),
         age: 15
     };
+
     println!("{:?}", cat);
+    println!("or {cat:?}");
 }
 ```
 
 Ironically perhaps, you should try to avoid using `Debug` for debugging, that's what a debugger is for, head back to our
-Hello World chapter if you need a reminder.
+[Hello World](../getting-started/hello-world.md) chapter if you need a reminder.
 
 The `Debug` macro though is very useful for logging, though be careful to not leak private information this way, this
 might be where you want to implement `Debug` manually.
@@ -205,14 +220,17 @@ build a well-structured output. We won't go into that here, but you can see more
 
 ### PartialEq / Eq
 
-`Eq` and `PartialEq` are Rust's equivalency traits (that's right, not equality), but what does that mean and why are
-there two traits?
+`Eq` and `PartialEq` are Rust's equivalency traits, that's right, not equality.
 
-Allow me to answer those questions with another question: Is `0` equivalent to `-0`. Mathematically, they have equal
-value, but inside a floating point number, the binary representation is different. Speaking of floating points, in
-binary representation its possible to represent many different things that are Not a Number (NaN). However, should two
-NaNs, even if they have the same binary representation, be considered as the same value when you can get there in
-different ways? Probably not.
+What's the difference, what does equivalence mean and why are there two traits?
+
+Allow me to answer those questions with another question: Is `0` equivalent to `-0`. Mathematically, zero is neither 
+positive nor negative, so these are identical, but inside a floating point number, the binary representation is 
+different.
+
+Speaking of floating points, in binary representation its possible to represent many different things that are Not a
+Number (NaN). However, should two NaNs, even if they have the same binary representation, be considered as the same 
+value when you can get there in different ways? Probably not.
 
 For the most part in Rust, we're only concerned with Partial Equivalence `PartialEq`, this is what allows us to compare
 values with the `==` operator. Given what we've just discussed, consider the code below before you run it, what do you
@@ -656,7 +674,7 @@ be true.
 > I've actually secretly derived `Hash` on some types in the code examples in this chapter just to test my code behaves
 > correctly. See if you can spot them and the assocciated tests!
 
-To derive it yourself simply use the derive macro, and you'll be good to use it in a `HashMap`:
+To derive it yourself simply use the derive attribute, and you'll be good to use it in a `HashMap`:
 
 ```rust
 #[derive(Hash)]
@@ -879,7 +897,7 @@ implementation. One thing to note though is, like `into`, you still need to type
 are, but because they're now inside a result its a little more verbose:
 
 ```rust
-# use std::convert::TryFrom; // You do not need to do this since Rust 2021, including for backwards compatability
+# use std::convert::{TryFrom, TryInto}; // You do not need to do this since Rust 2021, including for backwards compatability
 #
 # #[derive(Debug,PartialEq)]
 # enum PetType {
