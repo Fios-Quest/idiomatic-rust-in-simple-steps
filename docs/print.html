@@ -5677,15 +5677,17 @@ struct Cat {
     age: u8,
 }
 
-fn main() {
-    let cat = Cat {
-        name: "Yuki".to_string(),
-        age: 15
-    };
+<span class="boring">fn main() {
+</span>// --- Example use ---
+    
+let cat = Cat {
+    name: "Yuki".to_string(),
+    age: 15
+};
 
-    println!("{:?}", cat);
-    println!("or {cat:?}");
-}</code></pre></pre>
+println!("{:?}", cat);
+println!("or {cat:?}");
+<span class="boring">}</span></code></pre></pre>
 <p>Ironically perhaps, you should try to avoid using <code>Debug</code> for debugging, that’s what a debugger is for, head back to our
 <a href="language-basics/../getting-started/hello-world.html">Hello World</a> chapter if you need a reminder.</p>
 <p>The <code>Debug</code> macro though is very useful for logging, though be careful to not leak private information this way, this
@@ -5709,9 +5711,9 @@ build a well-structured output. We won’t go into that here, but you can see mo
 <p>Allow me to answer those questions with another question: Is <code>0</code> equivalent to <code>-0</code>. Mathematically, zero is neither
 positive nor negative, so these are identical, but inside a floating point number, the binary representation is
 different.</p>
-<p>Speaking of floating points, in binary representation its possible to represent many different things that are Not a
-Number (NaN). However, should two NaNs, even if they have the same binary representation, be considered as the same
-value when you can get there in different ways? Probably not.</p>
+<p>Speaking of floating points, in binary representation its possible to represent that something is Not a Number (NaN).
+However, should two NaNs, even if they have the same binary representation, be considered as the same value when you
+can get there in different ways? Probably not.</p>
 <p>For the most part in Rust, we’re only concerned with Partial Equivalence <code>PartialEq</code>, this is what allows us to compare
 values with the <code>==</code> operator. Given what we’ve just discussed, consider the code below before you run it, what do you
 think the output will be?</p>
@@ -5735,9 +5737,8 @@ want this kind of behaviour for aliased user information or something similar.</
 <p><code>PartialEq</code> has two methods, <code>eq</code> and <code>ne</code>. <code>ne</code> has a default behaviour so you don’t need to define it, but you can see
 how in the previous example, being able to make the logic for <code>ne</code> different from simple <code>!x.eq(y)</code> could be handy.</p>
 <p>Lets implement it ourselves below:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>struct User {
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+struct User {
     id: u64,
     email: String,
 }
@@ -5748,20 +5749,29 @@ impl PartialEq for User {
     }
     
     // fn ne(&amp;self, other: &amp;Self) -&gt; bool {
-         // We'll leave the default logic of `ne`, to be "not eq"
-    //}
+    //    // We'll leave the default logic of `ne`, to be "not eq"
+    // }
 }
+
+<span class="boring">fn main() {
+</span>// --- Example use ---
+
+let yuki = User { id: 1, email: "yuki@example.com".to_string() };
+let alias = User { id: 1, email: "other@example.com".to_string() };
+// Now that we know Debug and PartialEq we can use assertions!
+assert_eq!(yuki, alias);
 <span class="boring">}</span></code></pre></pre>
 <p><code>PartialEq</code> has even more utility though! It’s a generic trait where the generic parameter represents the type for the
-“right hand side” or RHS. This means we can write code that allows us to compare the equivalence of different types!</p>
+“right hand side” or RHS. This generic parameter defaults to being the same type, but we can write code that allows us
+to compare the equivalence of different types too!</p>
 <p>Taking that User alias example again, what if we had a “root” user type, and an aliased User type.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>struct User {
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+struct User {
     id: u64,
     email: String,
 }
 
+#[derive(Debug)]
 struct UserAlias {
     id: u64,
     root_id: u64,
@@ -5773,6 +5783,13 @@ impl PartialEq&lt;UserAlias&gt; for User {
         self.id == other.root_id
     }
 }
+
+<span class="boring">fn main() {
+</span>// --- Example use ---
+
+let yuki = User { id: 1, email: "yuki@example.com".to_string() };
+let alias = UserAlias { id: 2, root_id:1, email: "other@example.com".to_string() };
+assert_eq!(yuki, alias);
 <span class="boring">}</span></code></pre></pre>
 <p>So that’s <code>PartialEq</code>, but what is <code>Eq</code>?</p>
 <p><code>Eq</code> doesn’t actually provide any additional behaviour, it’s an empty trait that can only be applied to types that are
@@ -5786,9 +5803,8 @@ of.</p>
 equivalence, this wouldn’t make sense).</p>
 <p>Earlier we chose to make that <code>User</code> type partially equivalent if the id matched. If we instead checked the entire
 object, it could be considered to be exactly equivalent:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>struct User {
+<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+struct User {
     id: u64,
     email: String,
 }
@@ -5800,9 +5816,19 @@ impl PartialEq for User {
 }
 
 impl Eq for User {}
+
+<span class="boring">fn main() {
+</span>// --- Example use ---
+    
+let yuki = User { id: 1, email: "yuki@example.com".to_string() };
+let alias = User { id: 2, email: "other@example.com".to_string() };
+assert_ne!(yuki, alias);
+
+let other_yuki = User { id: 1, email: "yuki@example.com".to_string() };
+assert_eq!(yuki, other_yuki);
 <span class="boring">}</span></code></pre></pre>
-<p>Of course, in this case, it’d be far safer and simpler to use the derived version, which protects us making mistakes in
-complex code, or missing checking changes we make in our type later:</p>
+<p>Of course, in this case, it’d be far easier <em>and safer</em> to use the derived version, which protects us making mistakes in
+complex code, or forgetting to check changes we make in our type later:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(PartialEq, Eq)]
@@ -5811,35 +5837,14 @@ struct User {
     email: String,
 }
 <span class="boring">}</span></code></pre></pre>
-<p>Now, if we combine <code>PartialEq</code> and <code>Debug</code> we can use the <code>assert_eq!</code> macro which is very handy for documentation
-which, in Rust is run as if it were a test. In fact, even the documentation in this very book is run to make sure I’m
-not accidentally sharing bad code.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(PartialEq, Debug)]
-struct User {
-    id: u64,
-    email: String,
-}
-
-fn main() {
-    let daniel_one = User {
-        id: 10,
-        email: "daniel@example.com".to_string(),
-    };
-    let daniel_two = User {
-        id: 10,
-        email: "daniel@example.com".to_string(),
-    };
-    
-    assert_eq!(daniel_one, daniel_two);
-}</code></pre></pre>
 <h3 id="partialord--ord"><a class="header" href="#partialord--ord">PartialOrd / Ord</a></h3>
 <p>As you can imagine, <code>PartialOrd</code> and <code>Ord</code> have a similar relationship to each other as <code>PartialEq</code> and <code>Eq</code>, and
 indeed:</p>
 <ul>
 <li><code>PartialOrd</code> can only be applied to types with <code>PartialEq</code></li>
-<li>and <code>Ord</code> can only be applied to types with <code>Eq</code></li>
+<li><code>Ord</code> can only be applied to types with <code>Eq</code> (and <code>PartialOrd</code>)</li>
 </ul>
-<p>Both <code>PartialEq</code> and <code>Eq</code> have a required method each (<code>partial_cmp</code> and <code>cmp</code> respectively) as well as some methods
+<p>Both <code>PartialOrd</code> and <code>Ord</code> have a required method each (<code>partial_cmp</code> and <code>cmp</code> respectively) as well as some methods
 with default behaviour. The required methods of each trait use the <code>Ordering</code> type which looks roughly like this:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -5851,10 +5856,11 @@ with default behaviour. The required methods of each trait use the <code>Orderin
 <span class="boring">}</span></code></pre></pre>
 <p><code>PartialEq</code> is what gives us our usual greater than (<code>&gt;</code>), less than (<code>&lt;</code>), greater or equal to (<code>&gt;=</code>)  and less than or
 equal to (<code>&lt;=</code>) behaviour, through the use of the methods <code>gt</code>, <code>lt</code>, <code>ge</code> and <code>le</code> respectively, though unless these
-methods are implemented, their default behaviour relies on <code>partial_cmp</code>, which returns <code>Option&lt;Ordering&gt;</code>. Again,
-using floating point numbers, it’s easy to see why we use an <code>Option</code> on our comparisons. When comparing <code>NaN</code>, is it
-greater than, less than, or equal to <code>NaN</code>? In all cases the answer is no, so we use the <code>None</code> variant to represent
+methods are implemented, their default behaviour relies on <code>partial_cmp</code>, which returns <code>Option&lt;Ordering&gt;</code>.</p>
+<p>Again, using floating point numbers, it’s easy to see why we use an <code>Option</code> on our comparisons. When comparing <code>NaN</code>,
+is it greater than, less than, or equal to <code>NaN</code>? We can’t determine that, so we use the <code>None</code> variant to represent
 that.</p>
+<p>But how does that affect ordering? What do you think the output of the following code will be:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
 </span>// Using the Debug output, see above!
 println!("{:?}", f32::NAN.partial_cmp(&amp;f32::NAN));
@@ -5870,52 +5876,64 @@ type implement <code>PartialOrd</code>, when derived on structs, it will first c
 on to the next field if the first field is equal.</p>
 <p>Eg:</p>
 <pre><pre class="playground"><code class="language-rust">#[derive(PartialEq, PartialOrd)] // Remember PartialEq is required for PartialOrd
-struct BadRect {
+struct Rect {
     width: u64,
     height: u64,
 }
 
-fn main() {
-    let test_one_lhs = BadRect { width: 2, height: 1 };
-    let test_one_rhs = BadRect { width: 1, height: 1000 };
-    assert!(test_one_lhs &gt; test_one_rhs);
-    println!("test one: is lhs great than rhs? - {}", test_one_lhs &gt; test_one_rhs);
-    
-    let test_two_lhs = BadRect { width: 2, height: 1 };
-    let test_two_rhs = BadRect { width: 2, height: 1000 }; 
-    assert!(test_two_lhs &lt; test_two_rhs);
-    println!("test two: is lhs great than rhs? - {}", test_one_lhs &gt; test_one_rhs);
-}</code></pre></pre>
+// --- Example comparisons ---
+
+<span class="boring">fn main() {
+</span>let test_one_lhs = Rect { width: 2, height: 1 };
+let test_one_rhs = Rect { width: 1, height: 1000 };
+<span class="boring">assert!(test_one_lhs &gt; test_one_rhs);
+</span>println!("test one: is lhs great than rhs? - {}", test_one_lhs &gt; test_one_rhs);
+
+let test_two_lhs = Rect { width: 2, height: 1 };
+let test_two_rhs = Rect { width: 2, height: 1000 };
+<span class="boring">assert!(test_two_lhs &lt; test_two_rhs);
+</span>println!("test two: is lhs great than rhs? - {}", test_one_lhs &gt; test_one_rhs);
+<span class="boring">}</span></code></pre></pre>
 <p>For this reason, it’s quite likely that you’d want to implement <code>PartialOrd</code> yourself, depending on how you think types
 should be compared.</p>
 <pre><pre class="playground"><code class="language-rust">#[derive(PartialEq)] // Remember PartialEq is required for PartialOrd
-struct BetterRect {
+struct Rect {
     width: u64,
     height: u64,
 }
 
-impl PartialOrd for BetterRect {
-    fn partial_cmp(&amp;self, rhs: &amp;Self) -&gt; Option&lt;std::cmp::Ordering&gt; {
-        let self_area = self.height * self.width;
-        let rhs_area = rhs.height * rhs.width;
-        self_area.partial_cmp(&amp;rhs_area)
+impl Rect {
+    pub fn area(&amp;self) -&gt; u64 {
+        self.width * self.height 
     }
 }
 
-fn main() {
-    let test_one_lhs = BetterRect { width: 2, height: 1 };
-    let test_one_rhs = BetterRect { width: 1, height: 1000 };
-<span class="boring">    assert!(test_one_lhs &lt; test_one_rhs);
-</span>    println!("test one: is lhs great than rhs - {}", test_one_lhs &gt; test_one_rhs);
-    
-    let test_two_lhs = BetterRect { width: 2, height: 1 };
-    let test_two_rhs = BetterRect { width: 2, height: 1000 }; 
-<span class="boring">    assert!(test_two_lhs &lt; test_two_rhs);
-</span>    println!("test two: is lhs great than rhs - {}", test_one_lhs &gt; test_one_rhs);
-}</code></pre></pre>
-<p>Finally <code>Ord</code> isn’t quite the same as <code>Eq</code> in that it does provide extra methods; <code>cmp</code> which is like <code>partial_cmp</code>
-but returns <code>Ordering</code> without the <code>Option</code>, <code>max</code> which returns the greater of the two values, <code>min</code> which returns the
-lesser, and <code>clamp</code> which will return a value so long as its between two other values, or the closest value that is.</p>
+impl PartialOrd for Rect {
+    fn partial_cmp(&amp;self, rhs: &amp;Self) -&gt; Option&lt;std::cmp::Ordering&gt; {
+        self.area().partial_cmp(&amp;rhs.area())
+    }
+}
+
+// --- This is better, right? ---
+
+<span class="boring">fn main() {
+</span>let test_one_lhs = Rect { width: 2, height: 1 };
+let test_one_rhs = Rect { width: 1, height: 1000 };
+<span class="boring">assert!(test_one_lhs &lt; test_one_rhs);
+</span>println!("test one: is lhs greater than rhs? - {}", test_one_lhs &gt; test_one_rhs);
+
+let test_two_lhs = Rect { width: 2, height: 1 };
+let test_two_rhs = Rect { width: 2, height: 1000 }; 
+<span class="boring">assert!(test_two_lhs &lt; test_two_rhs);
+</span>println!("test two: is lhs greater than rhs? - {}", test_one_lhs &gt; test_one_rhs);
+<span class="boring">}</span></code></pre></pre>
+<p>Finally <code>Ord</code> isn’t quite the same as <code>Eq</code> in that it does provide extra methods;</p>
+<ul>
+<li><code>cmp</code> which is like <code>partial_cmp</code> but returns <code>Ordering</code> without the <code>Option</code></li>
+<li><code>max</code> which returns the greater of the two values</li>
+<li><code>min</code> which returns the lesser</li>
+<li><code>clamp</code> which will return a value so long as its between two other values, or the closest value that is</li>
+</ul>
 <p>Like with <code>PartialOrd</code>, <code>Ord</code> can be derived but has the same ordering quirk. If we want to implement it ourselves, we
 only need to implement <code>cmp</code>, and the other methods can use that for their default behaviour. Importantly, when
 implementing both <code>PartialOrd</code> <em>and</em> <code>Ord</code>, the result of <code>partial_cmp</code> <em>must</em> match <code>cmp</code>, though the compiler has no
@@ -5924,53 +5942,69 @@ call <code>cmp</code> and wrap it in an <code>Option</code>. Let’s do that wit
 <pre><pre class="playground"><code class="language-rust">use std::cmp::Ordering;
 
 // Remember PartialEq is required for PartialOrd, Eq is required for Ord
-#[derive(PartialEq, Eq)] 
-struct BestRect {
+#[derive(Debug, Eq, PartialEq)]
+struct Rect {
     width: u64,
     height: u64,
 }
 
-impl Ord for BestRect {
-    fn cmp(&amp;self, rhs: &amp;Self) -&gt; Ordering {
-        let self_area = self.height * self.width;
-        let rhs_area = rhs.height * rhs.width;
-        self_area.cmp(&amp;rhs_area)
+impl Rect {
+    pub fn area(&amp;self) -&gt; u64 {
+        self.width * self.height
     }
 }
 
-impl PartialOrd for BestRect {
+impl Ord for Rect {
+    fn cmp(&amp;self, rhs: &amp;Self) -&gt; Ordering {
+        self.area().cmp(&amp;rhs.area())
+    }
+}
+
+impl PartialOrd for Rect {
     fn partial_cmp(&amp;self, rhs: &amp;Self) -&gt; Option&lt;Ordering&gt; {
         Some(self.cmp(rhs))
     }
 }
 
-fn main() {
-    let test_one_lhs = BestRect { width: 2, height: 1 };
-    let test_one_rhs = BestRect { width: 1, height: 1000 };
-<span class="boring">    assert_eq!(test_one_lhs.cmp(&amp;test_one_rhs), Ordering::Less);
-</span>    println!("test one: lhs great is {:?} than rhs", test_one_lhs.cmp(&amp;test_one_rhs));
+<span class="boring">fn main() {
+</span>// --- Example comparison ---
+    
+let test_one_lhs = Rect { width: 2, height: 1 };
+let test_one_rhs = Rect { width: 1, height: 1000 };
+<span class="boring">assert_eq!(test_one_lhs.cmp(&amp;test_one_rhs), Ordering::Less);
+</span>println!("test one: lhs is {:?} than rhs", test_one_lhs.cmp(&amp;test_one_rhs));
 
-}</code></pre></pre>
+// --- You still need to be careful with default behaviour ---
+// --- What do you think happens here? ---
+
+let two_one = Rect { width: 2, height: 1 };
+let one_two = Rect { width: 1, height: 2 };
+let four_four = Rect { width: 4, height: 4 };
+println!("{:?}", four_four.clamp(two_one, one_two));
+<span class="boring">}</span></code></pre></pre>
 <p>Unlike <code>PartialEq</code>, neither <code>PartialOrd</code> nor <code>Ord</code> are generic, they can only be implemented where both the left hand
 side and the right hand side are the same type.</p>
 <h3 id="clone-and-copy"><a class="header" href="#clone-and-copy">Clone (and Copy)</a></h3>
-<p><code>Clone</code> is a bit like <code>Copy</code> but can be used where <code>Copy</code> can’t… if you’re willing to pay the price.</p>
-<p>With <code>Copy</code>, we can make a copy of data into a variable on the stack, however, this restricts us to <code>Sized</code> data that is
-not a pointer to somewhere in memory. This means, for example, <code>String</code> which is a smart pointer, can not implement
-<code>Copy</code>. In order to duplicate <code>String</code> we’d need to request new memory in the Heap to place the data into, then create
-a new smart pointer to point to it and copy the data to the new location.</p>
+<p><code>Clone</code> is a bit like <code>Copy</code> in that it allows you to duplicate values, however, where <code>Copy</code> is implicitly very cheap,
+<code>Clone</code> can get away with doing a bit more work.</p>
+<p>With <code>Copy</code>, we can make a copy of data on that is purely on the stack, however, this restricts us to <code>Sized</code> data. This
+means, for example, <code>String</code> which is a smart pointer to data on the heap, can not implement <code>Copy</code>. In order to
+duplicate <code>String</code> we’d need to request new memory on the Heap to place the data into, then copy the data to the new
+location, and create a new smart pointer on the stack to point to it.</p>
 <p>Requesting heap memory is considered expensive as you have to wait for the operating system to provide you a location
 you can use, so it’s really handy to differentiate <code>Clone</code> from <code>Copy</code>.</p>
 <p>Luckily, you don’t have to do all of this memory allocation stuff yourself. For any type that is built from other types
-that already implement <code>Clone</code> you can “derive” <code>Clone</code>.</p>
+that already implement <code>Clone</code> you can derive <code>Clone</code>.</p>
 <pre><pre class="playground"><code class="language-rust">#[derive(Clone, PartialEq, Debug)]
 struct MyNewType(String); // String already implements Clone, PartialEq and Debug
 
-fn main() {
-    let a = MyNewType("Hello, world!".to_string());
-    let b = a.clone();
-    assert_eq!(a, b);
-}</code></pre></pre>
+// --- Testing clone ---
+
+<span class="boring">fn main() {
+</span>let a = MyNewType("Hello, world!".to_string());
+let b = a.clone();
+assert_eq!(a, b);
+<span class="boring">}</span></code></pre></pre>
 <p>If you need to implement <code>Clone</code> yourself (rare and only required in very specific and advanced circumstances), then you
 can do so:</p>
 <pre><code class="language-rust ignore">struct MyNewType(String);
@@ -5988,11 +6022,13 @@ must also implement <code>Clone</code>.</p>
 <pre><pre class="playground"><code class="language-rust">#[derive(Copy, Clone, PartialEq, Debug)]
 struct MyNewType(u32); // This tuple struct uses a u32 which implements Copy and Clone
 
-fn main() {
-    let a = MyNewType(1);
-    let b = a; // Copy is automatic when its available
-    assert_eq!(a, b);
-}</code></pre></pre>
+// --- Testing copy ---
+
+<span class="boring">fn main() {
+</span>let a = MyNewType(1);
+let b = a; // Copy is automatic when its available
+assert_eq!(a, b);
+<span class="boring">}</span></code></pre></pre>
 <h3 id="default"><a class="header" href="#default">Default</a></h3>
 <p>Many built in types in Rust have a default value. Defaults for numbers are typically zero, while <code>String</code>s, <code>Vec</code>s and
 other collections default to being empty. If your type is built from only types that implement <code>Default</code> then you can
@@ -6503,8 +6539,8 @@ far more flexible and easy to use code.</p>
 fn main() {
     let yuki = Cat { name: "Yuki".into() };
     cuddle(&amp;yuki);
-    let daniel = "Daniel";
-    cuddle(daniel); // &amp;str also implements AsRef&lt;str&gt;
+    let yuki = "Yuki";
+    cuddle(yuki); // &amp;str also implements AsRef&lt;str&gt;
 }</code></pre></pre>
 <p><code>AsMut</code> is essentially the same as <code>AsRef</code> but for mutable references instead!</p>
 <h3 id="deref--derefmut"><a class="header" href="#deref--derefmut">Deref / DerefMut</a></h3>
