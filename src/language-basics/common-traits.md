@@ -20,6 +20,39 @@ This chapter is broken into sections:
 Two notable absences to this chapter are `Iterator` and `IntoIterator`. They are both very common traits that you will
 use pretty much all the time, _but_ there's so much to them, they deserve their own chapter.
 
+Required and Provided Methods
+-----------------------------
+
+Before we dive in, I want to quickly cover something we didn't mention in the last chapter. Traits can not only define
+the header for methods you need to provide yourself, but they can also define methods with default behaviour that you
+can optionally override. We call the methods you need to write **Required** and the ones you can optionally override
+as **Provided**.
+
+For example, in the last chapter we defined the trait `Animal` like this:
+
+```rust
+pub trait Animal {
+    fn get_name(&self) -> &str;
+}
+```
+
+In this case, `get_name` doesn't have a body, so anyone implementing `Animal` for their type must provide it. This is
+a Required method.
+
+If, instead, we were to write some default functionality, this becomes a Provided method which implementors of the
+Animal trait can choose to override if they want to:
+
+```rust
+pub trait Animal {
+    fn get_name(&self) -> &str {
+        "Unknown"
+    }
+}
+```
+
+It's up to you when you do this. In the case of `Animal::get_name`, I think making it a Required method was the right
+way to go.
+
 Markers
 -------
 
@@ -64,6 +97,8 @@ You do not need to implement `Sized` for traits yourself, however some types may
 prevent their type being treated as `Sized`. For now don't worry too much beyond when you need to add `?Sized` trait
 bounds to your generics.
 
+Official Documentation: [`Sized`][Sized]
+
 ### Copy
 
 The `Copy` marker trait means that the data the type contains can be copied, however, "copy" has a very specific meaning
@@ -106,6 +141,8 @@ print!("we've added 10 to x, which is now {x}, but y is still {y}");
 You can implement `Copy` directly, though you must also implement `Clone` which we'll discuss later, and since both
 traits are derivable, its very rare you'd ever do it manually.
 
+Official Documentation: [`Copy`][Copy]
+
 ### Send / Sync
 
 We haven't talked about concurrent programming yet, however, you might have heard that Rust is extremely safe and
@@ -129,8 +166,10 @@ change the value at the same time. This means that it is not `Sync`.
 
 We'll talk a lot more about threaded programming later in the book so don't worry if this doesn't make sense yet, in 
 fact, `Send` and `Sync`, like `Sized`, are auto-derived. This means you don't even have to worry about implementing them
-for your own types so long as your types are entirely constructed from other types that are Send and/or Sync, the Rust
-compiler knows that your type is Send and/or Sync too
+for your own types so long as your types are entirely constructed from other types that are `Send` and/or `Sync`, the 
+Rust compiler knows that your type is `Send` and/or `Sync` too.
+
+Official Documentation: [`Send`][Send], [`Sync`][Sync]
 
 
 Derivables
@@ -218,7 +257,9 @@ impl fmt::Debug for MyType {
 You might be worried about making sure your implementation of the `Debug` trait behaves similarly to official/derived
 implementations, well that's where the formatter gets _really_ cool, providing a ton of different tools that help you
 build a well-structured output. We won't go into that here, but you can see more in the
-[official `Debug` documentation](https://doc.rust-lang.org/std/fmt/trait.Debug.html).
+official `Debug` documentation. 👇🏻
+
+Official Documentation: [`Debug`][Debug] 
 
 ### PartialEq / Eq
 
@@ -380,6 +421,8 @@ struct User {
     email: String,
 }
 ```
+
+Official Documentation: [`PartialEq`][PartialEq], [`Eq`][Eq]
 
 ### PartialOrd / Ord
 
@@ -548,6 +591,8 @@ println!("{:?}", four_four.clamp(two_one, one_two));
 Unlike `PartialEq`, neither `PartialOrd` nor `Ord` are generic, they can only be implemented where both the left hand
 side and the right hand side are the same type.
 
+Official Documentation: [`PartialOrd`][PartialOrd], [`Ord`][Ord]
+
 ### Clone (and Copy)
 
 `Clone` is a bit like `Copy` in that it allows you to duplicate values, however, where `Copy` is implicitly very cheap,
@@ -568,9 +613,9 @@ that already implement `Clone` you can derive `Clone`.
 #[derive(Clone, PartialEq, Debug)]
 struct MyNewType(String); // String already implements Clone, PartialEq and Debug
 
+# fn main() {
 // --- Testing clone ---
 
-# fn main() {
 let a = MyNewType("Hello, world!".to_string());
 let b = a.clone();
 assert_eq!(a, b);
@@ -610,6 +655,8 @@ assert_eq!(a, b);
 # }
 ```
 
+Official Documentation: [`Clone`][Clone], [`Copy`][Copy]
+
 ### Default
 
 Many built in types in Rust have a default value. Defaults for numbers are typically zero, while `String`s, `Vec`s and
@@ -624,12 +671,14 @@ struct Person {
     age: u8,
 }
 
-fn main() {
-    let person = Person::default();
-    assert_eq!(&person.name, "");
-    assert_eq!(person.age, 0);
-    println!("Default persons name is '{}' and their age is '{}'", person.name, person.age);
-}
+# fn main() {
+// --- Usage ---
+    
+let person = Person::default();
+assert_eq!(&person.name, "");
+assert_eq!(person.age, 0);
+println!("Default persons name is '{}' and their age is '{}'", person.name, person.age);
+# }
 ```
 
 Obviously, this may not always be the desired result, so you can obviously implement the trait directly:
@@ -650,12 +699,14 @@ impl Default for Person {
     }
 }
 
-fn main() {
-    let person = Person::default();
-    assert_eq!(&person.name, "Jane Doe");
-    assert_eq!(person.age, 30);
-    println!("Default persons name is '{}' and their age is '{}'", person.name, person.age);
-}
+# fn main() {
+// --- Usage ---
+
+let person = Person::default();
+assert_eq!(&person.name, "Jane Doe");
+assert_eq!(person.age, 30);
+println!("Default persons name is '{}' and their age is '{}'", person.name, person.age);
+# }
 ```
 
 You might be wondering if you can derive `Default` for Enums, or if you have to implement it directly, and you actually
@@ -669,15 +720,16 @@ enum SomeEnum {
     Variant2,
 }
 
+# fn main() {
+// --- Usage ---
 
-fn main() {
-    let choice = SomeEnum::default();
-    assert_eq!(choice, SomeEnum::Variant2);
-}
+let choice = SomeEnum::default();
+assert_eq!(choice, SomeEnum::Variant2);
+# }
 ```
 
 Unfortunately the `default` attribute only works when deriving `Default` for unit enums, which means if your enum 
-contains nested types, you will have to implement `Default` manually:
+contains nested types, you _will_ have to implement `Default` manually:
 
 ```rust
 // The nested types here mean we can't derive default
@@ -693,28 +745,32 @@ impl Default for SomeEnum {
     }
 }
 
-fn main() {
-    let choice = SomeEnum::default();
-    assert_eq!(choice, SomeEnum::Variant2("Hello".to_string()));
-}
+# fn main() {
+// --- Usage ---
+
+let choice = SomeEnum::default();
+assert_eq!(choice, SomeEnum::Variant2("Hello".to_string()));
+# }
 ```
+
+Official Documentation: [`Default`][Default]
 
 ### Hash
 
 Hashing as a concept is more complex than we'll go in to here, however, to keep it simple, in Rust there is trait that
-describes a type that is `Hash` which means that it can be "hashed", and another trait called `Hasher` which does the
-hashing.
+describes a type that is `Hash` which means that it can be "[hashed](https://en.wikipedia.org/wiki/Hash_function)", and
+another trait called `Hasher` which does the hashing.
 
 You _generally_ don't need to worry too much about this, but it is useful if you want your type to work as a key in a
 `HashMap` or similar data structure.
 
 So long as your type is constructed only of other types that implement `Hash`, then you can derive it, though if you 
 need more control than that, then you can of course implement the trait methods yourself. This might be useful if you
-want to skip over types that can't be hashed _BUT_ when using `Eq`, if `A == B`, then `hash(A) == hash(B)` must also
-be true.
+want to skip over types inside your compound type that can't be hashed _BUT_ when using `Eq`, if `A == B`, then 
+`hash(A) == hash(B)` must also be true.
 
-> I've actually secretly derived `Hash` on some types in the code examples in this chapter just to test my code behaves
-> correctly. See if you can spot them and the assocciated tests!
+> 😉 I've actually secretly derived `Hash` on some types in the code examples in this chapter just to test my code
+> behaves correctly. See if you can spot them and the associated tests!
 
 To derive it yourself simply use the derive attribute, and you'll be good to use it in a `HashMap`:
 
@@ -723,19 +779,21 @@ To derive it yourself simply use the derive attribute, and you'll be good to use
 struct Email(String);
 ```
 
+Official Documentation: [`Hash`][Hash]
+
 Error Handling
 --------------
 
 ### Display
 
 Before we jump straight into the `Error` trait, lets recap on `Display`. This trait allows us to display information
-related to the type that implements it. You get to decide what that information is, but `Display` is pretty broad. Once
-you implement it, if you pass a value of your type into a macro like `println!` or `format!`, then `Display` defines
-how the type will be rendered.
+related to the type that implements it. Once you implement it, if you pass a value of your type into a macro like
+`println!` or `format!`, then `Display` defines how the type will be rendered.
 
 `Display` only has one method which you must implement, it takes `&self`, and a mutable pointer to a `Formatter` and
-returns a `fmt::Result` which is a type alias for `Result<(), fmt::Error>`. The easiest way to implement it is with
-`write!` macro which returns this same type, and to `use std::fmt` to slightly simplify the namespacing:
+returns a `fmt::Result` which is a type alias for `Result<(), fmt::Error>`. The easiest way to implement it is with the
+`write!` macro which returns this same type, and to `use std::fmt` so that you can reference things in the module
+namespace rather than contaminating your own.
 
 ```rust
 use std::fmt;
@@ -748,6 +806,8 @@ impl fmt::Display for MyUnitStruct {
     }
 }
 ```
+
+Official Documentation: [`Display`][Display]
 
 ### Error
 
@@ -788,6 +848,8 @@ impl error::Error for FridgeError {}
 While we've avoided talking about the wider ecosystem so far, it's worth mentioned there are some _extremely_ powerful
 Error libraries that might change the way you work with errors. We will cover these in the Ecosystem part of the book.
 
+Official Documentation: [`Error`][Error]
+
 Converters
 ----------
 
@@ -818,7 +880,7 @@ turn something into, so long as there is an `Into<T>` (in our case, `impl Into<S
 
 What's really cool though is you rarely have to implement `Into` yourself. You might have realised that the 
 functionality of `impl Into<String> for &str` is probably identical to `impl From<&str> for String`, and Rusts
-maintainers realised that too! There is a generic implementation of Into that looks like this:
+maintainers realised that too! There is a generic implementation of `Into` that looks like this:
 
 ```rust,ignore
 impl<T, U> Into<U> for T
@@ -836,6 +898,123 @@ examples) that's great for when the type bound is a little more complex. This ge
 `Into<U>` for any type where `U` can already be gotten `From<T>`. Simple, but powerful. Because of this however, you
 should only ever implement `Into` if you _can't_ implement `From`, which rarely comes up outside of crate scoping which
 we'll discuss in the next section of the book.
+
+We'll give an example of implementing `From` yourself in the next section which covers one of the most common use cases.
+
+#### `From`, `Error` and the `?` Operator
+
+Once you understand `From` and `Error` you have access to another incredibly powerful tool in Rust's arsenal, the `?`
+operator.
+
+We've discussed previously that in Rust, we don't use exceptions, when a function can fail, it should return a 
+`Result<T, E>`.
+
+As you can imagine, when we have deeply nested function calls, all of which can fail, it would get a bit annoying to
+have to constantly handle each possible error separately. That's where we use `?`. When used on a `Result` it will,
+immediately extract the `Ok` variant if the `Result` is `Ok`, otherwise it will return the `Err` variant as an `Error`
+of the current function.
+
+eg:
+```rust,ignore
+let value_if_ok = function_that_returns_result()?;
+```
+
+Of course, it's unlikely that the calling function returns the exact same `Error` type in its `Result` as a function
+it's called, however, if there is a `From` implementation that can convert them, then the `?` operator will use that
+to propagate the error.
+
+Here's an example of a job we need to run that will get a user from a store, and then do something with them.
+
+```rust
+// A lot of boilerplate code hidden here, use the 👁️ icon if you want to see it. ->
+
+# use std::fmt;
+# use std::error::Error;
+#
+# struct User;
+#
+# #[derive(Debug)]
+# struct DbError;
+# #[derive(Debug)]
+# struct InvalidUserError;
+# #[derive(Debug)]
+# struct ProductStoreError;
+#
+// This Error describes a specific UserStore problem 
+#[derive(Debug)]
+enum UserStoreError {
+    DatabaseError(DbError),
+    UnknownEmail(String),
+}
+# 
+# impl fmt::Display for UserStoreError {
+#     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+#         write!(f, "UserStoreError")
+#     }
+# }
+#
+# impl Error for UserStoreError {}
+
+// This Error describes wider problems that might occur in our application
+#[derive(Debug)]
+enum ApplicationError {
+    UserStoreError(UserStoreError),
+    ProductStoreError(ProductStoreError),
+}
+#
+# impl fmt::Display for ProductStoreError {
+#     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+#         write!(f, "ProductStoreError")
+#     }
+# }
+#
+# impl Error for ProductStoreError {}
+
+// We Implement From our UserStore error to our general application error
+impl From<UserStoreError> for ApplicationError {
+    fn from(value: UserStoreError) -> ApplicationError {
+        ApplicationError::UserStoreError(value)
+    }
+}
+
+struct UserStore;
+
+impl UserStore {
+    // This function produces our first error
+    fn get_user_by_email(email: &str) -> Result<User, UserStoreError> { 
+        // ...
+        Err(UserStoreError::UnknownEmail(String::from(email)))
+    }
+}
+
+// This function returns a different error type
+fn run_job() -> Result<(), ApplicationError> {
+    // If the Result is Ok, then the Ok value is given to `user`  
+    // Otherwise it converts the UserStoreError to an ApplicationError and returns it
+    let user = UserStore::get_user_by_email("wrong-email@example.com")?;
+    // It's equivalent to:
+    // ```
+    // let get_user_result = UserStore::get_user_by_email("wrong-email@example.com");
+    // let user = match get_user_result {
+    //     Ok(value) => value,
+    //     Err(error) => { return Err(ApplicationError::from(error)); }
+    // };
+    // ```
+    // So you can see it saves a lot of time!
+    
+    // ... do stuff with the user ...
+    
+    Ok(())
+}
+
+fn main() {
+    if let Err(error) = run_job() {
+        eprintln!("{error:?}");
+    }
+}
+```
+
+Official Documentation: [`From`][From], [`Into`][Into], [`?`][?]
 
 ### TryFrom / TryInto
 
@@ -873,12 +1052,10 @@ error type in the generic or what we're implementing for.
 
 It's time to introduce "Associated Types".
 
-TODO: Add link for Associated Types
-
-The official Rust book has a detailed explanation of Associated Types, but I think the best way to think about them is
-they are a bit like private static placeholder types. They're similar to generics in that they are defined once and
-reused throughout a trait implementation, however, you are not leaving the type up to the person calling the generic
-code. 
+The official Rust book has a detailed explanation of [Associated Types][Associated Types], but I think the best way 
+to think about them is they are a bit like private static placeholder types. They're similar to generics in that they
+are defined once and reused throughout a trait implementation, however, you are not leaving the type up to the person 
+calling the generic code. 
 
 This loss of flexibility comes with two significant upsides however;
 
@@ -921,20 +1098,22 @@ impl TryFrom<Pet> for Cat {
     }
 }
 
-fn main() {
-    let yuki_pet = Pet { pet_type: PetType::Cat, name: "Yuki".into() };
-    let yuki_cat_result = Cat::try_from(yuki_pet);
-    // This should display "Result: Ok(Cat { name: "Yuki" })"
-    println!("Result: {yuki_cat_result:?}");
-    
-    let lassie_pet = Pet { pet_type: PetType::Dog, name: "Lassie".into() };
-    let lassie_cat_result = Cat::try_from(lassie_pet);
-    // This should display "Result: Err(NotACatError(Pet { type: Dog, name: "Lassie" }))"
-    println!("Result: {lassie_cat_result:?}");
-}
+# fn main() {
+// --- Usage ---
+
+let yuki_pet = Pet { pet_type: PetType::Cat, name: "Yuki".into() };
+let yuki_cat_result = Cat::try_from(yuki_pet);
+// This should display "Result: Ok(Cat { name: "Yuki" })"
+println!("Result: {yuki_cat_result:?}");
+
+let lassie_pet = Pet { pet_type: PetType::Dog, name: "Lassie".into() };
+let lassie_cat_result = Cat::try_from(lassie_pet);
+// This should display "Result: Err(NotACatError(Pet { type: Dog, name: "Lassie" }))"
+println!("Result: {lassie_cat_result:?}");
+# }
 ```
 
-And yes `TryInto` is automatically provided by Rust for any types that already provide the reverse `TryFrom`
+And yes, `TryInto` is automatically provided by Rust for any types that already provide the reverse `TryFrom`
 implementation. One thing to note though is, like `into`, you still need to type hint to Rust what the generic parts
 are, but because they're now inside a result its a little more verbose:
 
@@ -980,15 +1159,18 @@ println!("Result: {yuki_cat_result:?}");
 # }
 ```
 
-Note: that we only need to specify the Ok type of the `Result`, the Error type can be inferred from the `TryFrom` 
-implementation, how clever is that! To ask Rust to infer a type, we can use `_`.
+Note: we only need to specify the ok variant of the `Result`, the error type can be inferred from the `TryFrom` 
+associated type, how clever is that! To ask Rust to infer a type, we use `_`.
+
+Official Documentation: [`TryFrom`][TryFrom], [`TryInto`][TryInto], [Associated Types][Associated Types],
+[Inference][Inference]
 
 Referencing and Dereferencing
 -----------------------------
 
 We've talked about this a little bit already but in Rust, rather than having to pass around ownership of a value, you
 can instead reference it, while leaving ownership wherever it originated (so long as the reference never outlives the
-owned data it points to). Reference's in rust are similar to pointers in other languages that you might have heard of,
+owned data it points to). Reference's in Rust are similar to pointers in other languages that you might have heard of,
 in that they are a value which "points at" another location in memory where the actual value is.
 
 Since the reference only points at the data, if you pass it into a function, when the function ends, only the reference
@@ -1014,8 +1196,9 @@ The next few traits deal specifically with traits that make references and smart
 `Borrow` allows you to borrow the data of one type as another if its another type, and `BorrowMut` allows you to borrow
 that data mutably.
 
-One type that already implements this is `String`. As I mentioned above, `String` is a smart pointer to a string slice
-stored on the heap, and it implements `Borrow<str>` to allow us to borrow the data as if it were a string slice type.
+One type that already implements `Borrow` is `String`. As I mentioned above, `String` is a smart pointer to a string
+slice stored on the heap, and it implements `Borrow<str>` to allow us to borrow the data as if it were a string slice 
+type.
 
 ```rust
 // We need to bring the trait in scope
@@ -1027,7 +1210,7 @@ fn say_hello(who: &str) {
 
 fn main() {
     let name = "Yuki".to_string();
-    say_hello(name.borrow());
+    say_hello(name.borrow()); // Borrows name as if it were a str
 }
 ```
 
@@ -1036,8 +1219,8 @@ into a function that accepts a `&str` _and_ that `String` implements `Borrow<str
 reference to a string slice, `&str`.
 
 There are blanket implementations of both traits, so, for any type `T` you know that `Borrow<T>` and `BorrowMut<T>` are
-already implemented, meaning that any value of type `T` can be borrowed as its referenced type `&T`, and any mutable
-value of type `T` can be mutably borrowed as `&mut T`.
+already implemented, meaning that any value of type `T` can be borrowed as itself, i.e. `&T`, and any mutable value of
+type `T` can be mutably borrowed as itself, `&mut T`.
 
 You can also provide further implementations of `Borrow` yourself allowing you to borrow the same data as if it were a
 variety of types, however there are some important restrictions that effectively mean you should only implement borrow
@@ -1045,10 +1228,10 @@ for types where the internal representation remains the same. This means you sho
 returns part of the underlying data. One way to check this is to be sure the hash of a value `v` must be the same as the
 hash `v.borrow()`.
 
-A common pattern in Rust is to use wrappers around other types, this is the "new type" pattern. Imagine you have a type
-that represents an email address. Obviously a sensible type to store that data in is some kind of string (lets say
-specifically a `String` for simplicity), however, there's no validation on creating a String, so how do we know if any
-given string contains a valid email. For that we can wrap the string in a "new type" (often written as "newtype").
+A common pattern in Rust is to use wrappers around other types, this is the "new type" (often written as "newtype") 
+pattern. Imagine you have a type that represents an email address. Obviously a sensible type to store that data in might
+be `String`, however, there's no validation on creating a `String`, so how do we know if any given string contains a
+valid email. For that we can wrap the string in a "new type".
 
 ```rust
 use std::borrow::Borrow;
@@ -1056,7 +1239,7 @@ use std::borrow::Borrow;
 # use std::fmt;
 # use std::ops::Deref;
 # use std::hash::{DefaultHasher, Hash, Hasher};
-# 
+
 # #[derive(Debug)]
 struct InvalidEmailError; // Use the eye icon to see all the error code ->
 # // Arguably the error code isn't necessary for this example but now we've explained 
@@ -1074,6 +1257,7 @@ struct InvalidEmailError; // Use the eye icon to see all the error code ->
 struct Email(String);
 
 impl Email {
+    // We'll validate the email when we create it, returning a Result
     pub fn new(email: String) -> Result<Email, InvalidEmailError> {
         if Email::is_valid(&email) {
             Ok(Email(email))
@@ -1082,15 +1266,18 @@ impl Email {
         }
     }
     
+    // This will validate any &str
     fn is_valid(email: &str) -> bool {
-        // Note: this is oversimplified but is less likely to give false negatives than many approaches
+        // Check there is an '@' and its at neither the beginning nor end
         let at_pos = email.find('@');
         if let Some(at_pos) = at_pos {
-            return email.len() >= 3 && at_pos > 0 && at_pos < email.len() - 1;
+            return at_pos > 0 && at_pos < email.len() - 1;
         }
         false
     }
 }
+
+// --- Our Borrows ---
 
 impl Borrow<String> for Email {
     fn borrow(&self)  -> &String {
@@ -1104,6 +1291,8 @@ impl Borrow<str> for Email {
     }
 }
 
+// --- Functions that accept our borrow types, but not email ---
+
 fn test_str(s: &str) {
     println!("{s} is an &str")
 }
@@ -1112,14 +1301,16 @@ fn test_string(s: &String) {
     println!("{s} is an &String")
 }
 
-fn main() {
-    let good_address = "example@example.com";
-    let possible_email = Email::new(good_address.to_string());
-    let email = possible_email.expect("failed to create email, check result");
+// --- Code that shows it all works: ---
 
-    // We can borrow the string slice inside of email
-    test_str(email.borrow());
-    test_string(email.borrow());
+# fn main() {
+let good_address = "example@example.com";
+let email = Email::new(good_address.to_string())
+    .expect("failed to create email, check result");
+
+// We can borrow the string slice inside of email
+test_str(email.borrow());
+test_string(email.borrow());
 # 
 #     // Hello curious reader 👋🏻. When using borrow the hash of the borrowed value must be equal to the hash of the 
 #     // original value (as I understand it) 
@@ -1131,7 +1322,7 @@ fn main() {
 #     assert!(!Email::is_valid("@ab"));
 #     assert!(!Email::is_valid("ab@"));
 #     assert!(Email::is_valid("example@example.com"));
-}
+# }
 # 
 # fn hash<H: Hash + ?Sized>(hashable: &H) -> u64 {
 #     let mut hasher = DefaultHasher::new();
@@ -1140,30 +1331,29 @@ fn main() {
 # }
 ```
 
-`BorrowMut` does exactly the same thing but gives you a mutable reference instead. In our `Email` example we could give
-a mutable reference to the underlying `String`... but in this case, should we? Allowing mutation of the data inside the
-email would bypass the logic of our `Email` type that guarantees the email address is valid.
+`BorrowMut` does exactly the same thing but gives you a mutable reference instead. In our `Email` example we _could_
+implement it to get a mutable reference to the underlying `String`... but in this case, should we?
 
-Now, there's an important caveat to `Borrow` and `BorrowMut`.
+Allowing mutation of the data inside the email would bypass the logic of our `Email` type that guarantees the email
+address is valid.
 
-- If a type implements borrow, where it's rue that `x == y`, then it must also be true that `x.borrow() == y.borrow()` 
+Now, there's some important caveats to `Borrow` and `BorrowMut`.
+
+- If a type implements borrow, where it's true that `x == y`, then it must also be true that `x.borrow() == y.borrow()` 
 - If your type implements `Eq` then your borrowed type must also implement `Eq`
 - Furthermore, if `x > y` then `x.borrow() > y.borrow()`, if `x < y` then `x.borrow() < y.borrow()`, etc
 - Finally, if we have a hashing function, if `hash(x) == hash(y)` then `hash(x.borrow()) == hash(y.borrow())`
 
-There are no compiler checks for this, you need to be sure that its true when you implement Borrow and, as you can 
-probably guess, `Borrow` really only works for changing the exact binary representation of a value from one type to
-another, making it less useful for compound types. What if you only want to borrow _part_ of a type.
+There are no compiler checks for these caveats, you need to be sure that its true when you implement `Borrow` and, as
+you can probably guess, `Borrow` really only works for changing the exact binary representation of a value from one type
+to another, making it less useful for compound types.
+
+Official Documentation: [`Borrow`][Borrow], [`BorrowMut`][BorrowMut]
 
 ### AsRef / AsMut
 
-Sometimes, you might have a type where the internal representation could very cheaply be read and/or manipulated as a
-different type. For example `String` exists on the Heap, but the data that lives there is identical to a `str`. This
-means that any function that takes a reference to a string slice should really be able to also take a reference to a
-`String`. This is represented by the trait implementation `impl AsRef<str> for String`. In fact, what is a string but
-an array of `u8`s, and indeed you'll find that there is `impl AsRef<[u8]> for String` too. 
-
-> Note: the AsRef trait generic type does not require an ampersand as this is implied.
+So we now have a way to borrow an entire type as a different type, but we won't be able to do that with more complex
+compound types. If we have a more complex object and want to internally reference 
 
 Remember earlier we had our `Cat` type which only had a name. We could, if we wanted, implement `AsRef<str>` so that
 it can be used in the place of a `&str`:
@@ -1179,6 +1369,8 @@ impl AsRef<str> for Cat {
         &self.name
     }
 }
+
+// --- Example Use ---
 
 fn cuddle(who: &str) {
     println!("Cuddle {who}");
@@ -1205,19 +1397,22 @@ far more flexible and easy to use code.
 #     }
 # }
 # 
-fn cuddle<S: AsRef<str> + ?Sized>(who: &S) {
+fn cuddle<S>(who: &S)
+where
+    S: AsRef<str> + ?Sized 
+{
     println!("Cuddle {}", who.as_ref());
 } 
 
 fn main() {
     let yuki = Cat { name: "Yuki".into() };
-    cuddle(&yuki);
-    let yuki = "Yuki";
-    cuddle(yuki); // &str also implements AsRef<str>
+    cuddle(&yuki); // We can now just pass a reference to Cat
 }
 ```
 
 `AsMut` is essentially the same as `AsRef` but for mutable references instead!
+
+Official Documentation: [`AsRef`][AsRef], [`AsMut`][AsMut]
 
 ### Deref / DerefMut
 
@@ -1226,18 +1421,18 @@ moving back from the reference to whatever is underneath. This can be esspeciall
 to references:
 
 ```text
-       <--- reference -----        <--- reference -----
-&&Cat                        &Cat                        Cat
-       --- dereference --->        --- dereference --->
+     ---- reference ---->        ---- reference ---->
+Cat                        &Cat                        &&Cat
+     <-- dereference ----        <-- dereference ----
 ```
 
 We also talked a bit about smart pointers which are not references but a way to wrap data with additional functionality.
 To get inside a smart pointer, we use the `Deref` trait, this is why `String` can be used as if it were a `str`.
 
 ```text
-        <--- Smart Pointer -----
-String                            str
-        ----- dereference ----->
+     --- Smart Pointer ----->
+str                            String
+     <----- dereference -----
 ```
 
 When a smart pointer wraps a mutable type (remember `str` is not itself mutable) then you can also implement `DerefMut`
@@ -1269,22 +1464,22 @@ struct Email(String);
 
 impl Email {
     // ...
-    pub fn new(email: String) -> Result<Email, InvalidEmailError> {
-        if Email::is_valid(&email) {
-            Ok(Email(email))
-        } else {
-            Err(InvalidEmailError)
-        }
-    }
-    
-    pub fn is_valid(email: &str) -> bool {
-        // Note: this is oversimplified but is less likely to give false negatives than many approaches
-        let at_pos = email.find('@');
-        if let Some(at_pos) = at_pos {
-            return email.len() >= 3 && at_pos > 0 && at_pos < email.len() - 1;
-        }
-        false
-    }
+#     pub fn new(email: String) -> Result<Email, InvalidEmailError> {
+#         if Email::is_valid(&email) {
+#             Ok(Email(email))
+#         } else {
+#             Err(InvalidEmailError)
+#         }
+#     }
+#     
+#     pub fn is_valid(email: &str) -> bool {
+#         // Note: this is oversimplified but is less likely to give false negatives than many approaches
+#         let at_pos = email.find('@');
+#         if let Some(at_pos) = at_pos {
+#             return email.len() >= 3 && at_pos > 0 && at_pos < email.len() - 1;
+#         }
+#         false
+#     }
 }
 
 impl Deref for Email {
@@ -1301,10 +1496,11 @@ fn test_str(s: &str) {
 
 fn main() {
     let good_address = "example@example.com";
-    let possible_email = Email::new(good_address.to_string());
-    let email = possible_email.expect("failed to create email, check result");
+    let email = Email::new(good_address.to_string())
+        .expect("failed to create email, check result");
 
-    // We can deref the Email into a string slice simply by referencing it... yes, I know, it's weird
+    // We can deref the Email into a string slice simply by referencing it...
+    // ...yes, I know, it's weird
     test_str(&email);
     
     // We can even pass the email type to its own validation function now!
@@ -1365,7 +1561,8 @@ impl Email {
 }
 
 impl Deref for Email {
-    // Note that DerefMut requires Deref _and_ uses it's target so it must be the same type
+    // Note that DerefMut requires Deref and uses _it's_ target
+    // This means you can not DerefMut to a different type
     type Target = String;
 
     // ...
@@ -1373,36 +1570,41 @@ impl Deref for Email {
 #         &self.0
 #     }
 }
+
 impl DerefMut for Email {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
 }
 
-fn main() {
-    let good_address = "example@example.com";
-    let possible_email = Email::new(good_address.to_string());
-    let mut email = possible_email.expect("failed to create email, check result");
-    
-    match Email::is_valid(&email) {
-        true => println!("{} is a valid email", email.deref()),
-        false => println!("{} is NOT a valid email", email.deref()),
-    }
-    
-    email.remove(7);
-    
-    match Email::is_valid(&email) {
-        true => println!("{} is a valid email", email.deref()),
-        false => println!("{} is NOT a valid email", email.deref()),
-    }
+// --- And here's why we shouldn't implement DerefMut, BorrowMut or AsMut for Email ---
+
+# fn main() {
+let good_address = "example@example.com";
+let mut email = Email::new(good_address.to_string())
+    .expect("failed to create email, check result");
+
+match Email::is_valid(&email) {
+    true => println!("{} is a valid email", email.deref()),
+    false => println!("{} is NOT a valid email", email.deref()),
+}
+
+email.remove(7);
+
+match Email::is_valid(&email) {
+    true => println!("{} is a valid email", email.deref()),
+    false => println!("{} is NOT a valid email", email.deref()),
+}
 # 
 #     // I kept these tests in case I change anything by mistake 
 #     assert!(Email::is_valid("a@b"));
 #     assert!(!Email::is_valid("@ab"));
 #     assert!(!Email::is_valid("ab@"));
 #     assert!(Email::is_valid("example@example.com"));
-}
+# }
 ```
+
+Official Documentation: [`Deref`][Deref], [`DerefMut`][DerefMut]
 
 Other
 -----
@@ -1423,19 +1625,21 @@ struct UnitStruct;
 
 impl Drop for UnitStruct {
     fn drop(&mut self) {
-        println!("UnitStruct was dropped")
+        println!("Dropping: UnitStruct")
     }
 }
 
 fn main() {
-    println!("In main");
+    println!("Starting: Outer scope");
     {
-        println!("In inner scope");
-        println!("Creating UnitStruct");
+        println!("Starting: Inner scope");
+        
+        println!("Creating: UnitStruct");
         let unit_struct = UnitStruct;
-        println!("Leaving inner scope");
-    }
-    println!("Leaving main");
+        
+        println!("Leaving: Inner scope");
+    } // <- Drop happens here
+    println!("Leaving: Outer scope");
 }
 ```
 
@@ -1448,8 +1652,9 @@ method of the `Drop` trait needs to do is complete before continuing. You may wa
 things to go out of scope, and be aware of what any library code you're consuming might be doing.
 
 Most of the time this isn't worth worrying too much about, however, if you do find you want to very precisely control
-when variables are dropped and have any `Drop` functionality acted on, then let me introduce you to my all-time
-favourite function `std::mem::drop`. Here it is in full:
+_when_ variables are dropped, then let me introduce you to my all-time favourite function `std::mem::drop`.
+
+Here it is in full:
 
 ```rust
 pub fn drop<T>(_x: T) {}
@@ -1461,8 +1666,42 @@ at the exact moment you want to cause a variable to be cleaned up, you pass owne
 function, the function immediately ends, and, if the variable has a `Drop` implementation, then that code is run then 
 and there.
 
+Official Documentation: [`Drop`][Drop], [`drop`][drop()]
+
 Next Chapter
 ------------
 
-Now that we've learned about the `Error` trait, in the next chapter we'll dive deeper into error handling, including
-learning a whole new operator that makes working with errors in Rust simply sublime.
+I've skipped Iterators in this chapter because, despite them being a very common trait, there is a _lot_ to talk about,
+and this chapter already got out of hand. 😉 Before we get to them though, I want to talk about Collections (like `Vec`)
+which will make Iterators easier to understand.
+
+[Sized]: https://doc.rust-lang.org/std/marker/trait.Sized.html
+[Copy]: https://doc.rust-lang.org/std/marker/trait.Copy.html
+[Send]: https://doc.rust-lang.org/std/marker/trait.Send.html
+[Sync]: https://doc.rust-lang.org/std/marker/trait.Sync.html
+[Debug]: https://doc.rust-lang.org/std/fmt/trait.Debug.html
+[PartialEq]: https://doc.rust-lang.org/std/cmp/trait.PartialEq.html
+[Eq]: https://doc.rust-lang.org/std/cmp/trait.Eq.html
+[PartialOrd]: https://doc.rust-lang.org/std/cmp/trait.PartialOrd.html
+[Ord]: https://doc.rust-lang.org/std/cmp/trait.Ord.html
+[Clone]: https://doc.rust-lang.org/std/clone/trait.Clone.html
+[Default]: https://doc.rust-lang.org/std/default/trait.Default.html
+[Hash]: https://doc.rust-lang.org/std/hash/trait.Hash.html
+[Display]: https://doc.rust-lang.org/std/fmt/trait.Display.html
+[Error]: https://doc.rust-lang.org/std/error/trait.Error.html
+[From]: https://doc.rust-lang.org/std/convert/trait.From.html
+[Into]: https://doc.rust-lang.org/std/convert/trait.Into.html
+[TryFrom]: https://doc.rust-lang.org/std/convert/trait.TryFrom.html
+[TryInto]: https://doc.rust-lang.org/std/convert/trait.TryInto.html
+[Borrow]: https://doc.rust-lang.org/std/borrow/trait.Borrow.html
+[BorrowMut]: https://doc.rust-lang.org/std/borrow/trait.BorrowMut.html
+[AsRef]: https://doc.rust-lang.org/std/convert/trait.AsRef.html
+[AsMut]: https://doc.rust-lang.org/std/convert/trait.AsMut.html
+[Deref]: https://doc.rust-lang.org/std/ops/trait.Deref.html
+[DerefMut]: https://doc.rust-lang.org/std/ops/trait.DerefMut.html
+[Drop]: https://doc.rust-lang.org/std/ops/trait.Drop.html
+[drop()]: https://doc.rust-lang.org/std/mem/fn.drop.html
+
+[?]: https://doc.rust-lang.org/reference/expressions/operator-expr.html#the-question-mark-operator
+[Associated Types]: https://doc.rust-lang.org/rust-by-example/generics/assoc_items/types.html
+[Inference]: https://doc.rust-lang.org/rust-by-example/types/inference.html

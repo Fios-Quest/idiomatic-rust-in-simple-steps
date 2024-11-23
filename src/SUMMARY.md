@@ -17,7 +17,6 @@
     - [Giving types functionality](./language-basics/impl.md)
     - [Traits Intro](./language-basics/traits.md)
     - [Common Traits](./language-basics/common-traits.md)
-    - [Error Handling]()
     - [Collections]()
     - [Iterators]()
     - [Attributes]()
