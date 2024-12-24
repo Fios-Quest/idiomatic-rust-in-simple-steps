@@ -1197,7 +1197,9 @@ The next few traits deal specifically with traits that make references and smart
 that data mutably.
 
 All types, references and mutable references implement `Borrow` for themselves, with `BorrowMut` implemented for all
-types and their mutable references.
+types and their mutable references. So, for any type `T` you know that `Borrow<T>` and `BorrowMut<T>` are already
+implemented, meaning that any value of type `T` can be borrowed as itself, i.e. `&T`, and any mutable value of type `T`
+can be mutably borrowed as itself, `&mut T`.
 
 You can also `Borrow` types other than the one you're implementing it for, so long as the data representation is the 
 same. 
@@ -1222,10 +1224,6 @@ fn main() {
 In this case, instead of borrowing the `String` as `&String` like it normally would, Rust sees that it's being passed 
 into a function that accepts a `&str` _and_ that `String` implements `Borrow<str>` so it can use that to provide a
 reference to a string slice, `&str`.
-
-There are blanket implementations of both traits, so, for any type `T` you know that `Borrow<T>` and `BorrowMut<T>` are
-already implemented, meaning that any value of type `T` can be borrowed as itself, i.e. `&T`, and any mutable value of
-type `T` can be mutably borrowed as itself, `&mut T`.
 
 You can also provide further implementations of `Borrow` yourself allowing you to borrow the same data as if it were a
 variety of types, however there are some important restrictions that effectively mean you should only implement borrow

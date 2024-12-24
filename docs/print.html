@@ -6511,7 +6511,9 @@ this. We’ll cover this later in the <code>unsafe</code> chapter which I promis
 <p><code>Borrow</code> allows you to borrow the data of one type as another if its another type, and <code>BorrowMut</code> allows you to borrow
 that data mutably.</p>
 <p>All types, references and mutable references implement <code>Borrow</code> for themselves, with <code>BorrowMut</code> implemented for all
-types and their mutable references.</p>
+types and their mutable references. So, for any type <code>T</code> you know that <code>Borrow&lt;T&gt;</code> and <code>BorrowMut&lt;T&gt;</code> are already
+implemented, meaning that any value of type <code>T</code> can be borrowed as itself, i.e. <code>&amp;T</code>, and any mutable value of type <code>T</code>
+can be mutably borrowed as itself, <code>&amp;mut T</code>.</p>
 <p>You can also <code>Borrow</code> types other than the one you’re implementing it for, so long as the data representation is the
 same.</p>
 <p>One type that does this is <code>String</code>. As I mentioned above, <code>String</code> is a smart pointer to a string slice stored on the
@@ -6530,9 +6532,6 @@ fn main() {
 <p>In this case, instead of borrowing the <code>String</code> as <code>&amp;String</code> like it normally would, Rust sees that it’s being passed
 into a function that accepts a <code>&amp;str</code> <em>and</em> that <code>String</code> implements <code>Borrow&lt;str&gt;</code> so it can use that to provide a
 reference to a string slice, <code>&amp;str</code>.</p>
-<p>There are blanket implementations of both traits, so, for any type <code>T</code> you know that <code>Borrow&lt;T&gt;</code> and <code>BorrowMut&lt;T&gt;</code> are
-already implemented, meaning that any value of type <code>T</code> can be borrowed as itself, i.e. <code>&amp;T</code>, and any mutable value of
-type <code>T</code> can be mutably borrowed as itself, <code>&amp;mut T</code>.</p>
 <p>You can also provide further implementations of <code>Borrow</code> yourself allowing you to borrow the same data as if it were a
 variety of types, however there are some important restrictions that effectively mean you should only implement borrow
 for types where the internal representation remains the same. This means you should never implement borrow that only
