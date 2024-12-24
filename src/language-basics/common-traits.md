@@ -1196,9 +1196,14 @@ The next few traits deal specifically with traits that make references and smart
 `Borrow` allows you to borrow the data of one type as another if its another type, and `BorrowMut` allows you to borrow
 that data mutably.
 
-One type that already implements `Borrow` is `String`. As I mentioned above, `String` is a smart pointer to a string
-slice stored on the heap, and it implements `Borrow<str>` to allow us to borrow the data as if it were a string slice 
-type.
+All types, references and mutable references implement `Borrow` for themselves, with `BorrowMut` implemented for all
+types and their mutable references.
+
+You can also `Borrow` types other than the one you're implementing it for, so long as the data representation is the 
+same. 
+
+One type that does this is `String`. As I mentioned above, `String` is a smart pointer to a string slice stored on the
+heap, and it implements `Borrow<str>` to allow us to borrow the data as if it were a string slice type.
 
 ```rust
 // We need to bring the trait in scope
