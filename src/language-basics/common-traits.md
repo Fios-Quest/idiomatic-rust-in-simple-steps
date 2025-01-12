@@ -190,7 +190,7 @@ To derive a trait we use the derive attribute.
 > #![internal_attribute]
 > 
 > #[external_attribute]
-> fn item_with_external_attribute_applie() {}
+> fn item_with_external_attribute_applied() {}
 > ```
 
 The derive attribute itself, looks a bit like a function, but it takes a list of what _looks_ like traits but are 
