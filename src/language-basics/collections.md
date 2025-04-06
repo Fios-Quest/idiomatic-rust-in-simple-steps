@@ -343,6 +343,46 @@ assert_eq!(list.iter().copied().collect::<Vec<_>>(), &[1, 2, 3, 4, 5]);
 # assert_eq!(right.iter().copied().collect::<Vec<_>>(), &[]);
 ```
 
+### BinaryHeap
+
+`BinaryHeap`s allow you to add items to a heap in any order, but the first item off the heap is always the largest item
+according to `Ord`.
+
+```rust
+use std::collections::BinaryHeap;
+
+let mut heap = BinaryHeap::new();
+
+heap.push("A".to_string());
+heap.push("Z".to_string());
+heap.push("M".to_string());
+
+assert_eq!(heap.pop(), Some("Z".to_string()));
+assert_eq!(heap.pop(), Some("M".to_string()));
+assert_eq!(heap.pop(), Some("A".to_string()));
+assert_eq!(heap.pop(), None);
+```
+
+The obvious limitation here though is, what do you do if you need to know the smallest value in the stack?
+
+In the standard library there's a cool little newtype that can wrap other types and inverts their ordering:
+
+```rust
+use std::collections::BinaryHeap;
+use std::cmp::Reverse;
+
+let mut heap = BinaryHeap::new();
+
+heap.push(Reverse("A".to_string()));
+heap.push(Reverse("Z".to_string()));
+heap.push(Reverse("M".to_string()));
+
+// Bear in mind that the Reverse type is part of what is stored
+assert_eq!(heap.pop(), Some(Reverse("A".to_string())));
+// Though the inner field is public
+assert_eq!(heap.pop().expect("heap was empty").0, "M".to_string());
+```
+
 HashMap
 -------
 
@@ -379,25 +419,118 @@ let mut hashmap_from_array = HashMap::from([
 ```
 
 To access data you've stored in your hashmap, there's a few handy methods:
-- `.get(key: &K)` and `.get_mut(key: &K)` will get references 
+
+1. `.get(key: &K)` and `.get_mut(key: &K)` will get references to data if it exists using `Option`s
+    ```rust
+    use std::collections::HashMap;
+    
+    let mut map = HashMap::from([
+        ("Key".to_string(), "Value".to_string()),
+    ]);
+    
+    if let Some(value) = map.get("Key") {
+        assert_eq!(value, "Value");
+    }
+    
+    if let Some(mut value) = map.get_mut("Key") {
+        value.push_str(" Changed");
+    }
+    
+    assert_eq!(map.get("Key"), Some(&"Value Changed".to_string()));
+    ```
+
+2. `.entry(key: &K)` returns a special [`Entry`](https://doc.rust-lang.org/std/collections/hash_map/enum.Entry.html) enum
+   that allows you to modify and existing value if it exists, or insert a value if it doesn't
+    ```rust
+    use std::collections::HashMap;
+    
+    let mut map = HashMap::from([
+        ("Existing Key".to_string(), "Value".to_string()),
+    ]);
+   
+   map.entry("Existing Key".to_string())
+        .and_modify(|value| value.push_str(" Changed"))
+        .or_insert("Inserted Value".to_string());
+   
+   map.entry("Nonexistent Key".to_string())
+        .and_modify(|value| value.push_str(" Changed"))
+        .or_insert("Inserted Value".to_string());
+    
+    assert_eq!(map.get("Existing Key"), Some(&"Value Changed".to_string()));
+    assert_eq!(map.get("Nonexistent Key"), Some(&"Inserted Value".to_string()));
+    ```
+
+
+3. `.remove(key: &K)` takes a value out of the HashMap (if it exists), allowing you to take ownership of it, and
+   `.remove_entry(key: &K)` can be used to gain ownership of both the value _and_ the key as you remove it from the map
+    ```rust
+    use std::collections::HashMap;
+    
+    let key = "Key".to_string();
+    let value = "Value".to_string();
+    // At this point we own these 👆🏻values
+     
+    let mut map = HashMap::with_capacity(1);
+    
+    map.insert(key, value);
+    // Here 👆🏻we move ownership into the hashmap
+    
+    // So this will no longer work:
+    // println!("{key}, {value}");
+   
+    // We can recover both the key and the value using `.remove_entry()`
+    let (recovered_key, recovered_value) = map.remove_entry("Key")
+        .expect("key not found");
+    
+    assert_eq!(&recovered_key, "Key");
+    assert_eq!(&recovered_value, "Value");
+    println!("Found {recovered_key}, {recovered_value}");
+   
+    // Obviously the key abd value will no longer be part of the HashMap
+    assert_eq!(map.get("Key"), None);
+    ```
 
 ### BTreeMap
 
-### BinaryHeap
+`BTreeMap` is a Binary Search Tree version of `HashMap`. For generally storing data its a touch slower than `HashMap`,
+but it internally sorts keys so that you can get the values at the largest ad smallest keys:
+
+```rust
+use std::collections::BTreeMap;
+
+let mut map = BTreeMap::from([
+    ("F Key".to_string(), "Value 1".to_string()),   
+    ("A Key".to_string(), "Value 2".to_string()),   
+    ("Q Key".to_string(), "Value 3".to_string()),   
+    ("C Key".to_string(), "Value 4".to_string()),   
+]);
+
+// Get references to the first or last key/values according to Ord
+assert_eq!(map.first_key_value(), Some((&"A Key".to_string(), &"Value 2".to_string())));
+assert_eq!(map.last_key_value(), Some((&"Q Key".to_string(), &"Value 3".to_string())));
+
+// There are also methods that return `Entry`s so you can insert of modify as necessary.
+map.first_entry().expect("Map had no entries").into_mut().push_str(" Modified First");
+map.last_entry().expect("Map had no entries").into_mut().push_str(" Modified Last");
+
+// Finally you can pop from the "front" (first) and "back" (last) of a BTreeMap
+assert_eq!(map.pop_first(), Some(("A Key".to_string(), "Value 2 Modified First".to_string())));
+assert_eq!(map.pop_last(), Some(("Q Key".to_string(), "Value 3 Modified Last".to_string())));
+assert_eq!(map.pop_first(), Some(("C Key".to_string(), "Value 4".to_string())));
+assert_eq!(map.pop_last(), Some(("F Key".to_string(), "Value 1".to_string())));
+```
 
 Sets
 ----
 
-### HashSet
+There are two Set types in Rust that allow you to store values with no duplicates, `HashSet` and `BTreeSet`. These are
+implemented using `HashMap<K, ()>` and `BTreeMap<K, ()>`, though they "fix" some of the issues you might run in to if
+you were to naively do this yourself. 
 
-### BTreeSet
+For example, `.insert(T)` only takes a single value, and methods like `.get(K)` return an Option with only one value.
 
+The differences between `HashSet` and `BTreeSet` are the same as between `HashMap` and `BTreeMap`, including `BTreeSet`
+allowing easy access to the "first" and "last". Furthermore, when you turn `BTreeSet` into an Iterator, it will be in
+order!
 
-- vectors
-  - talk about Vec, mention VecDeque, quick mention Linked Lists
-- hashmap
-  - talk about hashmap, mention btreemap
-- sets
-  - quick mention that hashmap and btreemap have variants for sets 
-- heaps
-  - 
+We'll talk more about Iterators in the next chapter.
