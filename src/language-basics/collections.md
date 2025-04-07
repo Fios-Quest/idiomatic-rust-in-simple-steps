@@ -1,7 +1,7 @@
 Collections
 ===========
 
-The Rust standard library gives you several ways to store a collection of items that are all the same type*. Some of them
+The Rust standard library gives you several ways to store a collection of items that are all the same type. Some of them
 you'll use quite a lot, like `Vec` and `HashMap`, but there's a few more that have interesting features that can be
 useful in specific circumstances.
 
