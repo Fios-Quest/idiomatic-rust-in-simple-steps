@@ -1,0 +1,850 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Control Flow - Idiomatic Rust in Simple Steps</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Learn idiomatic Rust in simple steps even if you have no former knowledge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Idiomatic Rust in Simple Steps</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="control-flow"><a class="header" href="#control-flow">Control Flow</a></h1>
+<p>Programs are typically executed one line at a time (this is called flow), but we can alter what the next line is with
+control flow.</p>
+<p>There are two main ways of doing this <a href="#branching">branching</a> and <a href="#looping">looping</a>.</p>
+<p>Before we do that though, lets talk about two of Rusts coolest features, which will come up a lot later,
+<a href="#patterns">patterns</a> and how <a href="#blocks-are-expressions">blocks are also expressions</a>.</p>
+<h2 id="patterns"><a class="header" href="#patterns">Patterns</a></h2>
+<p>In the last chapter we talked about compound types. Tuples, Structs, and Enums allow the construction of more complex
+data from less complex data. However, if we want to extract any of the component parts of that data we can do that!</p>
+<p>Patterns can be used to "destructure" compound data types like tuples fairly trivially:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let point = (123, 456);
+let (x, y) = point;
+println!("The point was at x: {x} and y: {y}");
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p>It's important to note though, that the original data will no longer be accessible if it doesn't implement <code>Copy</code>:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// This code won't compile!
+let point = (123.to_string(), 456.to_string());
+let (x, y) = point;
+let this_wont_work = point.0;
+<span class="boring">println!("using these variable to remove irrelevant warnings {x}, {y}, {this_wont_work}");
+</span><span class="boring">}</span></code></pre></pre>
+<p>We'll talk more about copy, ownership and move semantics later in the book.</p>
+</blockquote>
+<p>Destructuring with patterns also works for Tuple Structs, however, you need to specify the name of the struct like
+you're doing a weird backwards struct instantiation.</p>
+<pre><pre class="playground"><code class="language-rust">struct Point (u64, u64);
+
+fn main() {
+    let point = Point(123, 456);
+    
+    let Point(x, y) = point;
+    
+    println!("The point was at x: {x} and y: {y}");
+}</code></pre></pre>
+<p>The same thing also works for Structs with Named Fields:</p>
+<pre><pre class="playground"><code class="language-rust">struct Point {
+    x: u64,
+    y: u64,
+}
+
+fn main() {
+    let point = Point { x: 123, y: 456 };
+    
+    let Point { x, y } = point;
+    
+    println!("The point was at x: {x} and y: {y}");
+}</code></pre></pre>
+<p>In the above example we extract the structs named fields straight into variables of the same name as its easy and the
+names were appropriate. However, it might be better in the context of your program to name them something else. Below
+we've renamed <code>x</code> to <code>width</code> and <code>y</code> to <code>height</code>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Point {
+</span><span class="boring">   x: u64,
+</span><span class="boring">   y: u64,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">   let rect = Point { x: 123, y: 456 };
+</span><span class="boring">
+</span>let Point { x: width, y: height } = rect;
+
+println!("The rect was {width} wide and {height} high");
+<span class="boring">}</span></code></pre></pre>
+<p>Unfortunately, you can not extract data from Enums this way as the value of an Enum is one of a set of, not only values,
+but potentially subtypes or shapes or however you'd like to describe them. Take for example the humble Options:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let maybe_yuki: Option&lt;char&gt; = Some('雪');
+let maybe_not: Option&lt;char&gt; = None;
+<span class="boring">}</span></code></pre></pre>
+<p>How can we extract a <code>char</code> from <code>Option&lt;char&gt;</code> if we don't know whether the variable is <code>Some</code> or <code>None</code>... well,
+actually, we'll come to that soon. 🙂</p>
+<h2 id="blocks-are-expressions"><a class="header" href="#blocks-are-expressions">Blocks are Expressions</a></h2>
+<p>Before we get too deep into Rusts control flow I want to show you one of Rusts coolest features, expressions.</p>
+<p>An expression in Rust is anything that could have a value. So, for example, <code>a + b</code> is an expression where we're adding
+<code>a</code> to <code>b</code> which results in a value. You will also use expressions like <code>a == b</code> to compare whether the values of <code>a</code>
+and <code>b</code> are the same, this results in a value of <code>true</code> or <code>false</code>.</p>
+<p>Usually you might use an expression as part of an assignment or an evaluation, for example <code>let c = a + b</code> or
+<code>if a == b { ... }</code>, however, Rust also allows you to use a block (code between <code>{</code> and <code>}</code>) as an expression <em>and</em> the
+final value of that block can itself be an expression.</p>
+<p>Here's a very contrived example:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let c = {
+    let a = 3;
+    let b = 5;
+    a + b
+};
+println!("{c}");
+<span class="boring">}</span></code></pre></pre>
+<p>Some cool things to note:</p>
+<ul>
+<li><code>a</code> and <code>b</code> only exist within the code block</li>
+<li>the lines with <code>let</code> have semicolons</li>
+<li>the line with the expression <code>a + b</code> does not</li>
+<li><code>c</code> will be equal to the evaluation of the code block, which itself is equal to the result of <code>a + b</code></li>
+<li>the code block which <code>c</code> is equal to is also terminated with an exclamation</li>
+</ul>
+<p>Why is this so cool? Because branches, loops and even functions all use code blocks!</p>
+<h2 id="branching"><a class="header" href="#branching">Branching</a></h2>
+<h3 id="if"><a class="header" href="#if">If</a></h3>
+<p>The most basic form of branching is the <code>if</code> statement.</p>
+<p>In its most simple form it's an <code>if</code> followed by an expression (unlike many languages this does not need to be in
+brackets) followed by a code block. The expression must evaluate to a boolean, either <code>true</code> or <code>false</code>. If the
+expression evaluates to <code>true</code>, then the code in the block will be run, otherwise it won't be:</p>
+<pre><code class="language-text">if &lt;expression&gt; {
+    &lt;code to run if expression is true&gt;
+}
+</code></pre>
+<p>For example, we could create an expression that evaluates to a boolean by comparing if two numbers are the same, using
+double equals:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let a = 1;
+let b = 1;
+    
+if a == b {
+    println!("if expression is true print this");
+}
+println!("regardless of whether expression was true print this");
+<span class="boring">}</span></code></pre></pre>
+<p>If you want to run some code if the expression is <code>true</code>, but some different code if its <code>false</code>, then you can extend
+<code>if</code> with <code>else</code>. Here we compare if the first number is greater than the second number.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let a = 1;
+let b = 1;
+    
+if a &gt; b {
+    println!("if expression is true print this");
+} else {
+    println!("if expression is false print this instead");
+}
+<span class="boring">}</span></code></pre></pre>
+<p>You can chain <code>if</code>/<code>else</code> statements to create more complex branches.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let a = 1;
+let b = 1;
+    
+if a &gt; b {
+    println!("a is greater than b");
+} else if a == b {
+    println!("a is equal to b");
+} else {
+    println!("a must be less than b");
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Remember though, code blocks, including those in <code>if</code> and <code>else</code> are themselves expressions. This means they can
+effectively return their own values</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let a = 1;
+let b = 1;
+    
+let message = if a &gt; b {
+    "a is greater than b".to_string() 
+} else if a == b {
+    "a is equal to b".to_string()
+} else {
+    "a must be less than b".to_string()
+};
+    
+println!("{message}");
+<span class="boring">}</span></code></pre></pre>
+<p>Some important things to note:</p>
+<ol>
+<li>The last line of each code block has no semicolon</li>
+<li>When we create expressions like this, we must terminate them with a semicolon (see after the final <code>}</code>)</li>
+<li>All branches must evaluate to the same <em>Type</em>, even if they don't evaluate to the same <em>value</em></li>
+<li>Doing big blocks of <code>if</code>/<code>else if</code>/<code>else</code> is a mess, there's a <a href="#match">better way</a>!</li>
+</ol>
+<h4 id="pattern-matching-inside-if-and-else"><a class="header" href="#pattern-matching-inside-if-and-else">Pattern Matching inside <code>if</code> and <code>else</code></a></h4>
+<p>There is another way you can branch with <code>if</code> that doesn't require a boolean expression, pattern matching.</p>
+<p>There are two ways to do this <code>if let ...</code> and <code>let ... else</code>.</p>
+<p>Let's go back to that Option from earlier:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let maybe_yuki: Option&lt;char&gt; = Some('雪');
+let maybe_not: Option&lt;char&gt; = None;
+    
+if let Some(c) = maybe_yuki {
+    // This line will be printed
+    println!("The character was '{}'", c);
+}
+    
+if let Some(c) = maybe_not {
+    // This line will not
+    println!("The character was '{}'", c);
+}
+<span class="boring">}</span></code></pre></pre>
+<p>In the line <code>if let Some(c) = maybe_yuki</code> we are pattern matching on the Option, if it matches the pattern of
+<code>Some(&lt;variable&gt;)</code>, then we extract the contents of the <code>Some</code> into the <code>&lt;variable&gt;</code>. Within the block (and only within
+the block), the variable <code>c</code> has the value from inside the <code>Some</code> variant of the <code>Option</code>.</p>
+<p>This may be easier to observe with our own enum type. Imagine the following:</p>
+<pre><pre class="playground"><code class="language-rust">enum Vector {
+    Two(f32, f32),
+    Three(f32, f32, f32),
+}
+
+fn main() {
+    let v = Vector::Three(3.0, 4.0, 5.0);
+    
+    if let Vector::Two(x, y) = v {
+        // This line will not be printed
+        println!("The 2D vector has the magnitude '{}'", (x*x + y*y).sqrt());
+    }
+    
+    if let Vector::Three(x, y, z) = v {
+        // This line will
+        println!("The 3D vector has the magnitude '{}'", (x*x + y*y + z*z).sqrt());
+    }
+}</code></pre></pre>
+<p>This example is a little contrived, there are better ways to do this.</p>
+<p>You can also do the opposite, branch if the pattern does not match, using <code>let ... else</code>. The important thing to note
+here is that execution can not continue after the code block, you must exit the current flow, whether thats returning
+from a function or breaking from a loop</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn some_function() {
+    let maybe_yuki: Option&lt;char&gt; = Some('雪');
+        
+    let Some(c) = maybe_yuki else {
+        // This code is executed if the maybe_yuki was None
+        // We must exit from the code here, as we can not go back to the normal execution
+        return;
+    };
+    // From this point forward, the contents of the Option has been extracted into the variable `c`
+    println!("The character was '{}'", c);
+}
+<span class="boring">some_function();
+</span><span class="boring">}</span></code></pre></pre>
+<h3 id="match"><a class="header" href="#match">Match</a></h3>
+<p>This pattern matching stuff is really handy, right?!</p>
+<p>Well the creators of Rust thought so too, in fact, they made a whole control flow mechanism around it!</p>
+<p><code>match</code> is a bit like <code>if</code> in that it can branch, and act as an expression. However, <code>match</code> can do a lot more than
+<code>if</code>, it will match against multiple possibilities, allows match guards for fine grain control of pattern matching, and
+its exhaustive, meaning that a match <em>must</em> deal with every possibility.</p>
+<p>Lets look at our Vector example again:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">enum Vector {
+</span><span class="boring">    Two(f32, f32),
+</span><span class="boring">    Three(f32, f32, f32),
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>let v = Vector::Three(3.0, 4.0, 5.0);
+
+match v {
+    Vector::Two(x, y) =&gt; println!("The 2D vector has magnitude '{}'", (x*x + y*y).sqrt()),
+    Vector::Three(x, y, z) =&gt; println!("The 3D vector has magnitude '{}'", (x*x + y*y + z*z).sqrt()),
+}
+<span class="boring">}</span></code></pre></pre>
+<p>First of all, you can see that this pattern is <em>much</em> cleaner than having a lot of <code>if let</code>s. We're matching against
+the variants of an enum, and can immediately extract the contents from each variant. We could also use match as an
+expression:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">enum Vector {
+</span><span class="boring">    Two(f32, f32),
+</span><span class="boring">    Three(f32, f32, f32),
+</span><span class="boring">}
+</span><span class="boring">
+</span>let v = Vector::Three(3.0, 4.0, 5.0);
+    
+let magnitude = match v {
+    Vector::Two(x, y) =&gt; (x*x + y*y).sqrt(),
+    Vector::Three(x, y, z) =&gt; (x*x + y*y + z*z).sqrt(),
+};
+
+println!("The vector has the magnitude '{}'", magnitude);
+<span class="boring">}</span></code></pre></pre>
+<p>(This gets even more exciting when we get into functions)</p>
+<p>What happens if we add another variant to the enum though? Well, that <code>match</code> statement will see that not every case is
+handled, and cause an error.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail">enum Vector {
+    Two(f32, f32),
+    Three(f32, f32, f32),
+    Four(f32, f32, f32, f32),
+}
+
+fn main() {
+    let v = Vector::Three(3.0, 4.0, 5.0);
+    
+    // This match will no longer compile
+    let magnitude = match v {
+        Vector::Two(x, y) =&gt; (x*x + y*y).sqrt(),
+        Vector::Three(x, y, z) =&gt; (x*x + y*y + z*z).sqrt(),
+    };
+
+    println!("The vector has the magnitude '{}'", magnitude);
+}</code></pre></pre>
+<p>We can deal with this by either adding the missing case, or using <code>_</code>, which is a special variable that immediately
+discards whatever is put into it and will match anything.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">enum Vector {
+</span><span class="boring">   Two(f32, f32),
+</span><span class="boring">   Three(f32, f32, f32),
+</span><span class="boring">   Four(f32, f32, f32, f32),
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">let v = Vector::Three(3.0, 4.0, 5.0);
+</span><span class="boring">
+</span>let magnitude = match v {
+    Vector::Two(x, y) =&gt; (x*x + y*y).sqrt(),
+    Vector::Three(x, y, z) =&gt; (x*x + y*y + z*z).sqrt(),
+    // This specific example isn't great, now any variant that doesn't match will return zero, an error might be better
+    _ =&gt; 0.0,
+};
+<span class="boring">println!("The vector has the magnitude '{}'", magnitude);
+</span><span class="boring">}</span></code></pre></pre>
+<p>Patterns on match arms are tested from top to bottom, and you can also match on more specific patterns, like values:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">enum Vector {
+</span><span class="boring">    Two(f32, f32),
+</span><span class="boring">    Three(f32, f32, f32),
+</span><span class="boring">}
+</span><span class="boring">
+</span>let v = Vector::Two(0.0, 0.0);
+
+let magnitude = match v {
+    // This arm will match, print the statement and return 0
+    Vector::Two(0.0, y) =&gt;  {
+        println!("Hey, did you know that x was zero?");
+        y
+    },
+    // Although `v` does match this arm, because we already matched on the previous arm, this block won't be run
+    Vector::Two(x, 0.0) =&gt; {
+        println!("Hey, did you know that y was zero?");
+        x
+    }
+    // Nor will this one
+    Vector::Two(x, y) =&gt; (x*x + y*y).sqrt(),
+    Vector::Three(x, y, z) =&gt; (x*x + y*y + z*z).sqrt(),
+};
+<span class="boring">   println!("The vector has the magnitude '{}'", magnitude);
+</span><span class="boring">}</span></code></pre></pre>
+<p>There's one more trick up <code>match</code>'s sleeve which is match guards. Say we want to do something similar to the above, but
+instead of matching on exactly zero, we want to match on values less than 10. We could make an arm for every variant, or
+we could use a match guard which is like a mini if statement:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">enum Vector {
+</span><span class="boring">   Two(f32, f32),
+</span><span class="boring">   Three(f32, f32, f32),
+</span><span class="boring">}
+</span><span class="boring">
+</span>let v = Vector::Two(0.0, 0.0);
+
+let magnitude = match v {
+    // This arm will match, print the statement and return 0
+    Vector::Two(x, y) if x &lt; 10.0 =&gt;  {
+        println!("Hey, did you know that x was small?");
+        (x*x + y*y).sqrt()
+    },
+    // Although `v` does match this arm, because we already matched on the previous arm, this block won't be run
+    Vector::Two(x, y)  if y &lt; 10.0  =&gt; {
+        println!("Hey, did you know that y was small?");
+        (x*x + y*y).sqrt()
+    }
+    // Nor will this one
+    Vector::Two(x, y) =&gt; (x*x + y*y).sqrt(),
+    Vector::Three(x, y, z) =&gt; (x*x + y*y + z*z).sqrt(),
+};
+<span class="boring">   println!("The vector has the magnitude '{}'", magnitude);
+</span><span class="boring">}</span></code></pre></pre>
+<h2 id="looping"><a class="header" href="#looping">Looping</a></h2>
+<h3 id="loop"><a class="header" href="#loop">Loop</a></h3>
+<p>The most basic loop is, well, <code>loop</code>.</p>
+<p>When you enter a loop, the code inside it will run until its explicitly told to stop. For example:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">let mut protect_the_loop: u8 = 0;
+</span>loop {
+    println!("These lines will print out forever");
+    println!("Unless the program is interrupted, eg, with Ctrl + C");
+<span class="boring">    protect_the_loop = protect_the_loop + 1;
+</span><span class="boring">    if protect_the_loop &gt;= 10 {
+</span><span class="boring">        println!("I hid a break in this code as you can't Ctrl + C if you run this on Rust Playground / via the book");
+</span><span class="boring">        break;
+</span><span class="boring">    } 
+</span>}
+<span class="boring">}</span></code></pre></pre>
+<p>This might seem a little bit unhelpful, surely you never want to get trapped inside a loop forever, but actually, we
+often want to keep a program running inside a loop.</p>
+<p>You can manually exit the loop using the <code>break</code> keyword. Like other languages, you can simply break from a loop, but
+remember that blocks can be expressions, and this applies to loops too! That means we can have a loop that does some
+work, and once the work is done, break with the value we want to take from the loop.</p>
+<p>In the example below, we run a loop until we find some cool number (note the use of <code>if let</code>), then break with that
+value. The Type of found is an <code>u64</code> (don't forget you can expand the code in the example if you're curious), and by
+breaking with that value, the Type of the whole loop becomes <code>u64</code> too!</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::time::*;
+</span><span class="boring">use std::thread::*;
+</span><span class="boring">fn prep() {
+</span><span class="boring">    loop {    
+</span><span class="boring">        let secs = UNIX_EPOCH
+</span><span class="boring">            .elapsed()
+</span><span class="boring">            .expect("Call the Doctor, time went backwards")
+</span><span class="boring">            .as_secs();
+</span><span class="boring">        if secs % 2 == 1 {
+</span><span class="boring">            break;
+</span><span class="boring">        } 
+</span><span class="boring">        sleep(Duration::from_millis(100));
+</span><span class="boring">    }   
+</span><span class="boring">}
+</span><span class="boring">fn find_a_cool_number() -&gt; Option&lt;u64&gt; {
+</span><span class="boring">    let secs = UNIX_EPOCH
+</span><span class="boring">        .elapsed()
+</span><span class="boring">        .expect("Call the Doctor, time went backwards")
+</span><span class="boring">        .as_secs();
+</span><span class="boring">    (secs % 2 == 0).then_some(secs / 2)
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>let some_cool_number = loop {
+    println!("Looking for a cool number...");
+
+    if let Some(found) = find_a_cool_number() {
+        break found;
+    }
+<span class="boring">   sleep(Duration::from_millis(100));
+</span>};
+
+println!("The number we found was {some_cool_number}");
+<span class="boring">}</span></code></pre></pre>
+<p>Another useful keyword when looping is <code>continue</code>. Imagine you have a series of things that need to be processed but
+you can skip over <em>some</em> of those things.</p>
+<p>The following example will continuously get images, and run a time-consuming <code>process_image</code> function, unless the image
+is an SVG, in which can it will skip it.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::{
+</span><span class="boring">    io::{stdout, Write},
+</span><span class="boring">    thread::sleep,
+</span><span class="boring">    time::{Duration, UNIX_EPOCH}
+</span><span class="boring">};
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let mut protect_the_loop: u8 = 0;
+</span>loop {
+    let image = get_image();
+    if image.is_svg {
+        println!("Skipping SVG");
+        continue;
+    }
+    process_image(image);
+<span class="boring">
+</span><span class="boring">        protect_the_loop = protect_the_loop + 1;
+</span><span class="boring">        if protect_the_loop &gt;= 10 {
+</span><span class="boring">            println!("Protecting the loop again, this is only for demo purposes");
+</span><span class="boring">            break;
+</span><span class="boring">        }
+</span>}
+<span class="boring">}
+</span><span class="boring">
+</span><span class="boring">
+</span><span class="boring">struct Image {
+</span><span class="boring">    is_svg: bool,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn get_image() -&gt; Image {
+</span><span class="boring">    let micros = UNIX_EPOCH
+</span><span class="boring">        .elapsed()
+</span><span class="boring">        .expect("Call the Doctor, time went backwards")
+</span><span class="boring">        .as_micros();
+</span><span class="boring">    Image {
+</span><span class="boring">        is_svg: micros % 3 == 0,
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn process_image(_image: Image) {
+</span><span class="boring">    println!("Processing Image, please wait... done");
+</span><span class="boring">}</span></code></pre></pre>
+<p>There's one more neat trick up Rust's sleeve. As with most languages, Rust of course supports nested loops, but to aid
+with things like <code>break</code> and <code>continue</code> it also supports labels.</p>
+<p>Labels start with a single quote <code>'</code> and mark the loop they are for with a colon.</p>
+<p>This very contrived example steps through a set of instructions. See if you can guess what will happen (see below
+for the answer).</p>
+<pre><pre class="playground"><code class="language-rust">enum LoopInstructions {
+    DoNothing,
+    ContinueInner,
+    ContinueOuter,
+    BreakInner,
+    BreakOuter,
+}
+
+fn main() {
+    let sequence = [
+        LoopInstructions::DoNothing,
+        LoopInstructions::ContinueInner,
+        LoopInstructions::ContinueOuter,
+        LoopInstructions::BreakInner,
+        LoopInstructions::BreakOuter
+    ];
+
+    // This lets us get one bit of the sequence at a time
+    // Don't worry too much about it for now!
+    let mut iter = sequence.iter();
+
+    'outer: loop {
+        println!("Start outer");
+        'inner: loop {
+            println!("Start inner");
+
+            match iter.next() {
+                Some(LoopInstructions::ContinueInner) =&gt; continue 'inner,
+                Some(LoopInstructions::ContinueOuter) =&gt; continue 'outer,
+                Some(LoopInstructions::BreakInner) =&gt; break 'inner,
+                Some(LoopInstructions::BreakOuter) =&gt; break 'outer,
+                _ =&gt; {}
+            }
+
+            println!("End inner");
+        }
+        println!("End outer");
+    }
+}</code></pre></pre>
+<ol>
+<li>The outer loop starts so we get <strong>"Start outer"</strong></li>
+<li>We enter the inner loop so we see <strong>"Start inner"</strong></li>
+<li>The <strong>first</strong> instruction <code>DoNothing</code> is read, it matches the last arm which does nothing so we continue</li>
+<li>After the match we hit <strong>"End inner"</strong></li>
+<li>The inner loop starts again so we get <strong>"Start inner"</strong></li>
+<li>The <strong>second</strong> instruction <code>ContinueInner</code> matches, we execute <code>contine 'inner</code> so we start the inner loop again</li>
+<li>We've started the inner loop again due to the previous instruction and get <strong>"Start inner"</strong></li>
+<li>The third instruction <code>ContinueOuter</code> matches, we execute <code>continue 'outer</code> so go to the beginning of that loop</li>
+<li>We're back at the start so we see <strong>"Start outer"</strong></li>
+<li>And re-enter the inner loop <strong>"Start inner"</strong></li>
+<li>The <strong>fourth</strong> instruction is <code>BreakInner</code> so we execute <code>break 'inner</code>, when exits the inner loop</li>
+<li>We exit the inner loop and continue from that point so we finally see <strong>"End outer"</strong></li>
+<li>The outer loop starts over so we see <strong>"Start outer"</strong></li>
+<li>We enter the inner loop and see <strong>"Start inner"</strong></li>
+<li>The <strong>final</strong> instruction <code>BreakOuter</code> matches so we execute <code>break 'outer</code>, which exits the outer loop and ends
+the program</li>
+</ol>
+<h3 id="while"><a class="header" href="#while">While</a></h3>
+<p>While <code>loop</code> is great for programs that actually do want to try to keep running forever (or perhaps has many exit
+conditions), we often only want to loop over something <code>while</code> something is true. The <code>while</code> loop takes an expression
+that evaluates to true or false. The expression is checked at the start of each iteration through the loop, if its
+true, the loop will execute.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>let mut counter = 0;
+while counter &lt; 10 {
+    println!("The counter is at {counter}");
+    counter += 1;
+}
+println!("The loop has finished");
+<span class="boring">}</span></code></pre></pre>
+<p>The above is actually not a great way to loop over numbers, imagine if we forgot to add to counter!</p>
+<p>Here's a different example where we call a function until we're happy with the result.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn get_seconds() -&gt; u64 {
+</span><span class="boring">    std::time::UNIX_EPOCH
+</span><span class="boring">        .elapsed()
+</span><span class="boring">        .expect("Call the Doctor, time went backwards")
+</span><span class="boring">        .as_secs()
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>while get_seconds() % 3 != 0 {
+    println!("The time in seconds is not divisible by 3");
+}
+println!("The time was successfully divided by 3!");
+<span class="boring">}</span></code></pre></pre>
+<p>What's really cool though is that you can do all the tricks we've learned above, including pattern matching with
+<code>while let</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span><span class="boring">let mut messages = "The quick brown fox jumped over the lazy dog".split(" ");
+</span><span class="boring">let mut get_message = move || messages.next();
+</span>while let Some(message) = get_message() {
+    println!("Message received: {message}")
+}
+println!("All messages processed");
+<span class="boring">}</span></code></pre></pre>
+<p><code>while let</code> is extremely useful, and we'll see it more in the future, particularly when we deal with async await later.</p>
+<h3 id="for-in"><a class="header" href="#for-in">For In</a></h3>
+<p>A very common reason for looping in software is because we want to loop over every item in a collection and perform the
+same set of instructions for each. This is where <code>for ... in ...</code> comes in.</p>
+<p>For In allows you to step through an <code>Iterator</code>, or anything that implements <code>IntoIterator</code>, both of which we'll talk
+more about in a later chapter. Simply put though, this lets us step over each item in a collection, stream or series of
+data, even series' that might be infinite!</p>
+<p>Often times you might want to do this with a collection such as an <a href="data-types.html#arrays">Array</a>. For example:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>let messages: [&amp;str;2] = ["Hello", "world"];
+for message in messages {
+    println!("Message received: {message}")
+}
+println!("All messages processed");
+<span class="boring">}</span></code></pre></pre>
+<h4 id="range"><a class="header" href="#range">Range</a></h4>
+<p>Another neat Rust type that works really well here is the Range. We haven't covered Range yet but if you've been peaking
+at the code samples throughout the last few chapters, you might have spotted a few!</p>
+<p>Range's allow you to specify a "closed" or "half open" range of numbers... kinda, see below.</p>
+<blockquote>
+<p>Actually, Range's allow you to specify a range of anything so long as it implements the traits <code>PartialEq</code> and
+<code>PartialOrd</code>. I've personally never seen this done for anything except numbers and characters, but its worth pointing
+out. We'll talk more about PartialEq and PartialOrd in a later chapter.</p>
+</blockquote>
+<p>We write Ranges in the form <code>start..end</code> where <code>start</code> is inclusive and <code>end</code> is <code>exclusive</code>. This means that <code>2..5</code>
+includes 2 but not 5. If you want to create a range that includes the final number, prefix that number with <code>=</code>, eg
+<code>2..=5</code>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>let exclusive = 0..5;
+let inclusive = 0..=5;
+    
+// This is another way of using variables in println!
+// We use empty curly brackets as a positional marker
+// and then fill those markers in with values after string slice
+println!("Does exclusive range contain end: {}", exclusive.contains(&amp;5)); 
+println!("Does inclusive range contain end: {}", inclusive.contains(&amp;5));
+<span class="boring">}</span></code></pre></pre>
+<p>As mentioned, Range's can be "half open" which means you can get away with specifying only the start or the end. This is
+where the Type of the start and end really start to matter though.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>let u8_range = 0u8..; // this Range is explicitly defined with a u8
+let i8_range = ..0i8; // this Range is defined with an i8
+<span class="boring">}</span></code></pre></pre>
+<p>A big warning here though: half open Ranges are dangerous when it comes to <code>for ... in ... </code> loops. Ranges with no start
+can't be used at all, and Ranges with no end will continue to try to produce numbers beyond the upper limits of the
+type being used at which point your program will crash.</p>
+<p>They're great though, if we just want to do something 10 times.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>for i in 0..10 {
+    println!("Loop: {i}");
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="homework"><a class="header" href="#homework">Homework</a></h2>
+<p>The best way to learn anything is to practice it. For this section, I'd like you create a program call Fizz Buzz.</p>
+<p>In Fizz Buzz we want to run through a series of numbers (say 1 to 100 inclusive). For each number:</p>
+<ul>
+<li>if the number is divisible by 3, print the word Fizz</li>
+<li>if the number is divisible by 5, print the word Buzz</li>
+<li>if the number is divisible by both 3 and 5, print FizzBuzz</li>
+<li>otherwise, just print the number</li>
+</ul>
+<p>You can do this a few ways, but you'll need to loop over each number and then choose what to do with it with those
+numbers. As a starting point, you could use a range to generate the numbers, then use a <code>for ... in ...</code> loop to get
+each number one at a time, then some <code>if</code>/<code>else</code> statements to get the output.</p>
+<p>Can you work out any other ways to do it?</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../language-basics/data-types.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../language-basics/functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../language-basics/data-types.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../language-basics/functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
