@@ -588,9 +588,6 @@ println!("{:?}", four_four.clamp(two_one, one_two));
 # }
 ```
 
-Unlike `PartialEq`, neither `PartialOrd` nor `Ord` are generic, they can only be implemented where both the left hand
-side and the right hand side are the same type.
-
 Official Documentation: [`PartialOrd`][PartialOrd], [`Ord`][Ord]
 
 ### Clone (and Copy)
