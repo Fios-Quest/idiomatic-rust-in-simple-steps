@@ -309,19 +309,6 @@ assert_eq!(v, vec![0, 1, 12, 3, 4, 5]);
 # }
 ```
 
-Finally, we can also create slice using square brackets and this actually works without panicking:
-
-```rust
-# fn main() {
-let v = vec![0, 1, 2, 3, 4, 5];
-
-// This would panic:
-// assert_eq!(v[6], 0);
-// But this doesn't:
-assert_eq!(v[6..], []);
-# }
-```
-
 #### A note on ownership
 
 When you put a variable into a `Vec`, or any other collection, unless that variable is copy you are moving ownership
