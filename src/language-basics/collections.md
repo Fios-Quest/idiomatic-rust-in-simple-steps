@@ -440,11 +440,11 @@ let mut hashmap: HashMap<String, String> = HashMap::new();
 
 // Create a hashmap with _at least_ this capacity (helps prevent reallocation if you
 // know the largest your hashmap will likely be)
-let mut hashmap_with_capcity = HashMap::with_capacity(1);
+let mut hashmap_with_capacity = HashMap::with_capacity(1);
 
 // You usually won't have to specifically type the HashMap so long as Rust can infer
 // the types by what you're inserting into it.
-hashmap_with_capcity.insert(
+hashmap_with_capacity.insert(
     "Key".to_string(), // Can be anything that implements Hash
     "Value".to_string(), // Can be anything
 );
