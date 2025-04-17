@@ -313,7 +313,7 @@ assert_eq!(v, vec![0, 1, 12, 3, 4, 5]);
 
 When you put a variable into a `Vec`, or any other collection, unless that variable is copy you are moving ownership
 into the collection. Using methods like `get` will give you a reference to the data, but the only way to get ownership
-back is to either clone in (and take the potential memory and runtime hit), or to remove to use a method that removes
+back is to either clone it (and take the potential memory and runtime hit), or to remove to use a method that removes
 the element from the collection, like `pop` in `Vec`. We'll discuss similar methods for other collections as we go.
 
 ### VecDequeue
