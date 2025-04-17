@@ -480,7 +480,7 @@ To access data you've stored in your hashmap, there's a few handy methods:
     ```
 
 2. `.entry(key: &K)` returns a special [`Entry`](https://doc.rust-lang.org/std/collections/hash_map/enum.Entry.html)
-   enum that allows you to modify and existing value if it exists, or insert a value if it doesn't
+   enum that allows you to modify a value if it exists in the map, or insert a value if it doesn't
     ```rust
     use std::collections::HashMap;
     
