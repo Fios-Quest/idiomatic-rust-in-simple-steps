@@ -527,7 +527,7 @@ To access data you've stored in your hashmap, there's a few handy methods:
     assert_eq!(&recovered_value, "Value");
     println!("Found {recovered_key}, {recovered_value}");
    
-    // Obviously the key abd value will no longer be part of the HashMap
+    // Obviously the key and value will no longer be part of the HashMap
     assert_eq!(map.get("Key"), None);
     # }
     ```
