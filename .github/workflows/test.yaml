@@ -1,0 +1,23 @@
+name: Test
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+#          mdbook-version: '0.4.43'
+          mdbook-version: 'latest'
+
+      - name: Test
+        run: mdbook test
+
+      - name: Build
+        run: mdbook build
