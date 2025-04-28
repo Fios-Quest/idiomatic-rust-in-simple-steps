@@ -18,7 +18,7 @@
     - [Traits Intro](./language-basics/traits.md)
     - [Common Traits](./language-basics/common-traits.md)
     - [Collections](./language-basics/collections.md)
-    - [Iterators]()
+    - [Iterators](./language-basics/iterators.md)
     - [Attributes]()
     - [Derive]()
     - [Threads]()
