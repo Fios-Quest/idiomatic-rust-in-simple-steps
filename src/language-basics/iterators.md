@@ -98,101 +98,12 @@ in the iterator, it merely takes ownership of it. Rust iterators are "lazy" mean
 necessary to get the next item in the list. This has huge performance benefits, and we'll talk more about this later in
 the chapter.
 
----
+Facts you should know about Iterators
+-------------------------------------
 
-[^fib-seq]: Ok, it depends on who you ask, and this can be a good clarifying questions. Some people start the sequence
-`1, 1, ...`, some people start it `0, 1, ...`, although Fibonacci himself actually started it `1, 2, ...`. Making our
-code work for the sequence `1, 2, ...` is trivial, just changing the starting numbers, but as a challenge, can you make
-it work starting at `0, 1, ...` (one way to do it hidden below)
+Iterators are designed to be chained together.
 
-```rust
-// Press ▶️ to see this code work, press 👁️ to reveal the method I used
-# struct Fibonacci {
-#     current: Option<u8>,
-#     next: Option<u8>,
-# }
-# 
-# impl Fibonacci {
-#     fn new() -> Self {
-#         Self {
-#             current: Some(0),
-#             next: Some(1),
-#         }
-#     }
-# }
-# 
-# impl Iterator for Fibonacci {
-#     type Item = u8;
-# 
-#     fn next(&mut self) -> Option<Self::Item> {
-#         // Store "current" value (we're going to overwrite it)
-#         let current = self.current?;
-# 
-#         self.current = self.next;
-#         
-#         if let Some(next) = self.next {
-#             // Update internal values
-#             self.next = current.checked_add(next);
-#         }
-# 
-#         // Return the "current" value
-#         Some(current)
-#     }
-# }
-# 
-# fn main() {
-#     let mut fib = Fibonacci::new();
-# 
-#     assert_eq!(fib.next(), Some(0));
-#     assert_eq!(fib.next(), Some(1));
-#     assert_eq!(fib.next(), Some(1));
-#     assert_eq!(fib.next(), Some(2));
-#     assert_eq!(fib.next(), Some(3));
-#     assert_eq!(fib.next(), Some(5));
-#     assert_eq!(fib.next(), Some(8));
-# 
-#     // Make sure we definitely return the last number correctly!
-#     assert_eq!(fib.last(), Some(233));
-# 
-#     for (n, f) in Fibonacci::new().enumerate() {
-#         println!("{n}: {f}");
-#     }
-# }
-```
-
-
-[^fib-interview]: In my opinion... it's not a very good question to ask. It's supposed to show that you have an 
-                  understanding of recursion, and can lead to follow up questions on things like memoization, but it's a
-                  bad test of whether you are a good software engineer. You're unlikely to ever use the Fibonacci
-                  sequence outside an interview. Even if you were asked to find the nth number, you'd simply look up
-                  a formula (see one way to do it below). You wouldn't solve it in this way you're expected to do in
-                  the interview.
-```rust
-// Press 👁️ to reveal a method of calculating the nth value of the sequence
-// without having to use recursion of a loop!
-# const GOLDEN_RATIO: f64 = 1.618033988749894848204586834365638118;
-# const SQRT_FIVE: f64 = 2.23606797749979;
-# 
-# fn fib(n: i32) -> i32 {
-#     ((GOLDEN_RATIO.powi(n) - (1.0 - GOLDEN_RATIO).powi(n)) / SQRT_FIVE).round() as i32
-# }
-# 
-# fn main() {
-#     assert_eq!(fib(6), 8);
-#     assert_eq!(fib(19), 4181);
-#
-#     // We can even test it against our version
-#     for (i, f) in Fibonacci::new().enumerate() {
-#         // Note this fib(0) => 0 so we'll add 1 to match our sequence
-#         // or you could use the version from the previous footnote
-#         assert_eq!(f, fib(i as i32 + 1) as u8);
-#     }
-# }
-#
-# // ------- Our version below -------
-#
-# {{#rustdoc_include iterators/src/fibonacci.rs:0}}
-```
+Iterators in Rust are "lazy". That means that each item is only processed as it's needed.  
 
 Getting Iterators
 -----------------
@@ -342,6 +253,39 @@ assert_eq!(
 );
 ```
 
+Copying and cloning Items
+-------------------------
+
+Using what we've learned above, what if we want to use owned data, but we need to keep the original collection, so 
+`.into_iter()` is out of the question?
+
+There are two methods on `Iterator` for dealing with the `.copied()` and `.cloned()`.
+
+`.copied()` only works on Iterators where the item is `Copy` will consume the iterator and return a new iterator which
+returns each Item copied. 
+
+```rust
+let v = vec![1, 2, 3, 4, 5];
+
+let iter: Vec<_> = v.iter().collect();
+let copied: Vec<_> = v.iter().copied().collect();
+
+assert_eq!(iter, vec![&1, &2, &3, &4, &5]);
+assert_eq!(copied, vec![1, 2, 3, 4, 5]);
+```
+
+`.cloned()` does the same for types that are `Clone`. 
+
+```rust
+let v = vec![String::from("Hello"), String::from("World")];
+
+let iter: Vec<_> = v.iter().collect();
+let cloned: Vec<_> = v.iter().cloned().collect();
+
+assert_eq!(iter, vec![&"Hello", &"World"]);
+assert_eq!(cloned, vec![String::from("Hello"), String::from("World")]);
+```
+
 Other Ways to get Iterators
 ---------------------------
 
@@ -421,6 +365,13 @@ let i2 = vec![3, 4, 5].into_iter(); // i2 does not need to be mutable as we're t
 assert_eq!(i1.chain(i2).collect::<Vec<_>>(), vec![0, 1, 2, 3, 4, 5]);
 ```
 
+Many other Types in Rust can also be broken down into Iterators. This Chapter of the book can be represented as one
+large `String`, which Dereferences to `str` which allows you to break the data down by `.lines()`, `.chars()` or 
+`.bytes()`.
+
+> ℹ️ Don't forget a `char` is not the same as a byte (`u8`) in Rust, and in this Chapter I've used several multibyte 
+> characters 😉
+
 Cool ways to use Iterators
 --------------------------
 
@@ -470,6 +421,15 @@ let v = vec!['H', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'];
 
 assert_eq!(v.iter().min(), Some(&'H'));
 assert_eq!(v.iter().max(), Some(&'w'));
+```
+
+We could also find out how many items are in the iterator using `.count()` but its worth noting this does consume the
+iterator, and that _most_ collections allow you to get their size directly from
+
+```rust
+let v = vec!['H', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'];
+
+assert_eq!(v.iter().count(), v.len());
 ```
 
 #### ⚠️ Warning!
@@ -581,7 +541,194 @@ As with most iterators, you can chain them:
 assert_eq!(v.iter().skip(1).take(4).collect::<Vec<_>>(), vec![&2, &3, &4, &5]);
 ```
 
-An Iterator method we used earlier, `.enumerate()` allows us to add an index to our Iterator. This can be really handy
-in combination with other iterators.
+An Iterator method we used earlier, `.enumerate()`, allows us to add an index to our Iterator by changing the type of
+the iterator `T` to a tuple: `(usize, T)`. This can be really handy in combination with other iterators when the
+position in an iterator is important. For example, lets say we want to filter every other item out of a `Vec`. We can
+do that by chaining together several of the Iterators we've just learned.
 
-Rev
+```rust
+let v1 = vec!["This", "sentence", "is", "not", "shorter"];
+
+let v2: Vec<_> = v1.into_iter()
+    .enumerate()
+    .filter(|(i, _)| i % 2 == 0) // Use the index added by enumerate to skip odd items
+    .map(|(_, s)| s) // Turn the iterator (usize, T) back into T
+    .collect();
+
+assert_eq!(v2, vec!["This", "is", "shorter"]);
+```
+
+Although, any time you see a `filter` and a `map` next to each other, you might be able to abbreviate this. Booleans can
+be turned into `Option`s with `.then_some()`:
+
+```rust
+let v1 = vec!["This", "sentence", "is", "not", "shorter"];
+
+let v2: Vec<_> = v1.into_iter()
+    .enumerate()
+    .filter_map(|(i, s)| (i % 2 == 0).then_some(s))
+    .collect();
+
+assert_eq!(v2, vec!["This", "is", "shorter"]);
+```
+
+More Iterator Traits
+--------------------
+
+There's a few more traits you may want to be aware of when making your own iterators:
+
+`IntoIterator` can be implemented on any type that can be turned into an `Iterator`. One place you may find yourself
+using it is on newtypes.
+
+```rust
+{{#include iterators/src/bin/albums.rs:Albums}}
+
+{{#include iterators/src/bin/albums.rs:IntoIterator}}
+
+fn main() {
+{{#include iterators/src/bin/albums.rs:UseIntoIterator}}
+}
+```
+
+`FromIterator` allows you to turn an Iterator into another type, usually through the `.collect()` method on `Iterator`s
+
+```rust
+{{#include iterators/src/bin/albums.rs:Albums}}
+
+{{#include iterators/src/bin/albums.rs:FromIterator}}
+
+fn main() {
+{{#include iterators/src/bin/albums.rs:UseFromIterator}}
+}
+```
+
+Finally, the last two traits you should be aware of are `DoubleEndedIterator` and `ExactSizeIterator`. The Iterators 
+returned from collections are all both of these (to my surprise, even the `Iter` structs used for `LinkedList` and 
+`BinaryHeap` are `DoubleEndedIterator`).
+
+`ExactSizeIterator` can tell you the size of the iterator _without_ consuming it, using the `.len()` method (if you need
+to see if the iterator is empty, you should us `.is_empty()` instead).
+
+```rust
+let v = vec![1, 2, 3, 4, 5];
+
+let iter = v.into_iter();
+
+assert_eq!(iter.len(), 5); // iter still exists after this
+assert_eq!(iter.count(), 5); // iter is consumed
+```
+
+`DoubleEndedIterator` allows you to reverse the order of an Iterator with `.rev()`.
+
+```rust
+let v = vec![1, 2, 3];
+
+let mut iter = v.into_iter().rev();
+
+assert_eq!(iter.next(), Some(3));
+assert_eq!(iter.next(), Some(2));
+assert_eq!(iter.next(), Some(1));
+assert_eq!(iter.next(), None);
+```
+
+Next Chapter
+------------
+
+We've now covered all of what I'd describe as the core, synchronous language features (at least... I hope). We're going
+move on to Threads in the next chapter, discuss what they are and some of the most important and useful tools to use
+when working with them.
+
+---
+
+[^fib-seq]: Ok, it depends on who you ask, and this can be a good clarifying questions. Some people start the sequence
+`1, 1, ...`, some people start it `0, 1, ...`, although Fibonacci himself actually started it `1, 2, ...`. Making our
+code work for the sequence `1, 2, ...` is trivial, just changing the starting numbers, but as a challenge, can you make
+it work starting at `0, 1, ...` (one way to do it hidden below)
+```rust
+// Press ▶️ to see this code work, press 👁️ to reveal the method I used
+# struct Fibonacci {
+#     current: Option<u8>,
+#     next: Option<u8>,
+# }
+# 
+# impl Fibonacci {
+#     fn new() -> Self {
+#         Self {
+#             current: Some(0),
+#             next: Some(1),
+#         }
+#     }
+# }
+# 
+# impl Iterator for Fibonacci {
+#     type Item = u8;
+# 
+#     fn next(&mut self) -> Option<Self::Item> {
+#         // Store "current" value (we're going to overwrite it)
+#         let current = self.current?;
+# 
+#         self.current = self.next;
+#         
+#         if let Some(next) = self.next {
+#             // Update internal values
+#             self.next = current.checked_add(next);
+#         }
+# 
+#         // Return the "current" value
+#         Some(current)
+#     }
+# }
+# 
+# fn main() {
+#     let mut fib = Fibonacci::new();
+# 
+#     assert_eq!(fib.next(), Some(0));
+#     assert_eq!(fib.next(), Some(1));
+#     assert_eq!(fib.next(), Some(1));
+#     assert_eq!(fib.next(), Some(2));
+#     assert_eq!(fib.next(), Some(3));
+#     assert_eq!(fib.next(), Some(5));
+#     assert_eq!(fib.next(), Some(8));
+# 
+#     // Make sure we definitely return the last number correctly!
+#     assert_eq!(fib.last(), Some(233));
+# 
+#     for (n, f) in Fibonacci::new().enumerate() {
+#         println!("{n}: {f}");
+#     }
+# }
+```
+
+
+[^fib-interview]: In my opinion... it's not a very good question to ask. It's supposed to show that you have an
+understanding of recursion, and can lead to follow up questions on things like memoization, but it's a
+bad test of whether you are a good software engineer. You're unlikely to ever use the Fibonacci
+sequence outside an interview. Even if you were asked to find the nth number, you'd simply look up
+a formula (see one way to do it below). You wouldn't solve it in this way you're expected to do in
+the interview.
+```rust
+// Press 👁️ to reveal a method of calculating the nth value of the sequence
+// without having to use recursion of a loop!
+# const GOLDEN_RATIO: f64 = 1.618033988749894848204586834365638118;
+# const SQRT_FIVE: f64 = 2.23606797749979;
+# 
+# fn fib(n: i32) -> i32 {
+#     ((GOLDEN_RATIO.powi(n) - (1.0 - GOLDEN_RATIO).powi(n)) / SQRT_FIVE).round() as i32
+# }
+# 
+# fn main() {
+#     assert_eq!(fib(6), 8);
+#     assert_eq!(fib(19), 4181);
+#
+#     // We can even test it against our version
+#     for (i, f) in Fibonacci::new().enumerate() {
+#         // Note this fib(0) => 0 so we'll add 1 to match our sequence
+#         // or you could use the version from the previous footnote
+#         assert_eq!(f, fib(i as i32 + 1) as u8);
+#     }
+# }
+#
+# // ------- Our version below -------
+#
+# {{#rustdoc_include iterators/src/fibonacci.rs:0}}
+```
