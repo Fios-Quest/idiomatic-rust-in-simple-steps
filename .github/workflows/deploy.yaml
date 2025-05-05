@@ -1,10 +1,9 @@
-name: github pages
+name: Deploy
 
 on:
   push:
     branches:
       - main
-  pull_request:
 
 jobs:
   deploy:
@@ -12,7 +11,8 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup mdBook
         uses: peaceiris/actions-mdbook@v2
@@ -20,11 +20,14 @@ jobs:
 #          mdbook-version: '0.4.43'
            mdbook-version: 'latest'
 
-      - run: mdbook build
+      - name: Test
+        run: mdbook test
+
+      - name: Build
+        run: mdbook build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
-        if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs

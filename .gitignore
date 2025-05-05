@@ -1,1 +1,6 @@
+# Built files
 /docs
+
+# For nested projects used for code
+target/
+Cargo.lock
