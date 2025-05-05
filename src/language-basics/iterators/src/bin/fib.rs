@@ -62,4 +62,10 @@ fn main() {
         println!("{i}: {f}");
     }
     // ANCHOR_END: enumerate
+    
+    // ANCHOR: take
+    for (i, f) in Fibonacci::new().enumerate().take(4) {
+        println!("{i}: {f}");
+    }
+    // ANCHOR_END: take
 }
