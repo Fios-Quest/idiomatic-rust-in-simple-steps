@@ -1,0 +1,1186 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Iterators - Idiomatic Rust in Simple Steps</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Learn idiomatic Rust in simple steps even if you have no former knowledge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Idiomatic Rust in Simple Steps</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="iterators"><a class="header" href="#iterators">Iterators</a></h1>
+<p>Iterators are a way to produce, and perform operations on, a sequence of values.</p>
+<p>We often use them with <a href="collections.html">collections</a> so that we can perform the same operation on each item in a
+collection, or reduce a collection to a single value. They're also often used implicitly in some forms of loop.</p>
+<p>We'll talk about these common uses later in the chapter, but to get an understanding of how Iterators work, lets make
+our own.</p>
+<h2 id="the-iterator-trait"><a class="header" href="#the-iterator-trait">The Iterator Trait</a></h2>
+<p>The Iterator trait can be applied to any type and has a single required method:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Iterator {
+    type Item;
+
+    // Required method
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p>ℹ️ Iterator also has 75 provided methods, which perhaps goes to show how incredibly useful and flexible this trait is.
+We'll be talking about some of these methods, but it's well worth checking out the documentation to see what else
+is possible.</p>
+</blockquote>
+<p>We're going to build an Iterator that produces the Fibonacci sequence.</p>
+<p>The Fibonacci sequence is a sequence of numbers starting <code>1, 1</code>* where each subsequent number is the previous
+two added together.</p>
+<blockquote>
+<p>*Aside 1: Ok, it depends on who you ask, and this can be a good clarifying questions. Some people start the sequence
+<code>1, 1, ...</code>, some people start it <code>0, 1, ...</code>, although Fibonacci himself actually started it <code>1, 2, ...</code>. Making our
+code work for the sequence <code>1, 2, ...</code> is trivial, just changing the starting numbers, but as a challenge, can you
+make it work starting at <code>0, 1, ...</code> (one way to do it hidden below):</p>
+<pre><pre class="playground"><code class="language-rust">// Press ▶️ to see this code work, press 👁️ to reveal the method I used
+<span class="boring">struct Fibonacci {
+</span><span class="boring">    current: Option&lt;u8&gt;,
+</span><span class="boring">    next: Option&lt;u8&gt;,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Fibonacci {
+</span><span class="boring">    fn new() -&gt; Self {
+</span><span class="boring">        Self {
+</span><span class="boring">            current: Some(0),
+</span><span class="boring">            next: Some(1),
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Iterator for Fibonacci {
+</span><span class="boring">    type Item = u8;
+</span><span class="boring">
+</span><span class="boring">    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+</span><span class="boring">        // Store "current" value (we're going to overwrite it)
+</span><span class="boring">        let current = self.current?;
+</span><span class="boring">
+</span><span class="boring">        self.current = self.next;
+</span><span class="boring">        
+</span><span class="boring">        if let Some(next) = self.next {
+</span><span class="boring">            // Update internal values
+</span><span class="boring">            self.next = current.checked_add(next);
+</span><span class="boring">        }
+</span><span class="boring">
+</span><span class="boring">        // Return the "current" value
+</span><span class="boring">        Some(current)
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    let mut fib = Fibonacci::new();
+</span><span class="boring">
+</span><span class="boring">    assert_eq!(fib.next(), Some(0));
+</span><span class="boring">    assert_eq!(fib.next(), Some(1));
+</span><span class="boring">    assert_eq!(fib.next(), Some(1));
+</span><span class="boring">    assert_eq!(fib.next(), Some(2));
+</span><span class="boring">    assert_eq!(fib.next(), Some(3));
+</span><span class="boring">    assert_eq!(fib.next(), Some(5));
+</span><span class="boring">    assert_eq!(fib.next(), Some(8));
+</span><span class="boring">
+</span><span class="boring">    // Make sure we definitely return the last number correctly!
+</span><span class="boring">    assert_eq!(fib.last(), Some(233));
+</span><span class="boring">
+</span><span class="boring">    for (n, f) in Fibonacci::new().enumerate() {
+</span><span class="boring">        println!("{n}: {f}");
+</span><span class="boring">    }
+</span><span class="boring">}</span></code></pre></pre>
+</blockquote>
+<p>Creating a function that returns the <code>n</code>th Fibonacci number is a common question in software engineering interviews*,
+intending to show your understanding of recursion.</p>
+<blockquote>
+<p>*Aside 2: In my opinion... it's not a very good question to ask. It's supposed to show that you have an understanding
+of recursion, and can lead to follow up questions on things like memoization, but it's a bad test of whether you are
+a good software engineer. You're unlikely to ever use the Fibonacci sequence outside an interview. Even if you were
+asked to find the nth number, you'd simply look up a formula (see one way to do it below). You wouldn't solve it in
+this way you're expected to do in the interview.</p>
+<pre><pre class="playground"><code class="language-rust">// Press 👁️ to reveal a method of calculating the nth value of the sequence
+// without having to use recursion of a loop!
+<span class="boring">const GOLDEN_RATIO: f64 = 1.618033988749894848204586834365638118;
+</span><span class="boring">const SQRT_FIVE: f64 = 2.23606797749979;
+</span><span class="boring">
+</span><span class="boring">fn fib(n: i32) -&gt; i32 {
+</span><span class="boring">    ((GOLDEN_RATIO.powi(n) - (1.0 - GOLDEN_RATIO).powi(n)) / SQRT_FIVE).round() as i32
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span><span class="boring">    assert_eq!(fib(6), 8);
+</span><span class="boring">    assert_eq!(fib(19), 4181);
+</span><span class="boring">
+</span><span class="boring">    // We can even test it against our version
+</span><span class="boring">    for (i, f) in Fibonacci::new().enumerate() {
+</span><span class="boring">        assert_eq!(f, fib(i as i32) as u8);
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">// ------- Our version from below -------
+</span><span class="boring">
+</span><span class="boring">struct Fibonacci {
+</span><span class="boring">    current: Option&lt;u8&gt;,
+</span><span class="boring">    next: Option&lt;u8&gt;,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Fibonacci {
+</span><span class="boring">    fn new() -&gt; Self {
+</span><span class="boring">        Self {
+</span><span class="boring">            current: Some(0),
+</span><span class="boring">            next: Some(1),
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Iterator for Fibonacci {
+</span><span class="boring">    type Item = u8;
+</span><span class="boring">
+</span><span class="boring">    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+</span><span class="boring">        // Store "current" value (we're going to overwrite it)
+</span><span class="boring">        let current = self.current?;
+</span><span class="boring">
+</span><span class="boring">        self.current = self.next;
+</span><span class="boring">        
+</span><span class="boring">        if let Some(next) = self.next {
+</span><span class="boring">            // Update internal values
+</span><span class="boring">            self.next = current.checked_add(next);
+</span><span class="boring">        }
+</span><span class="boring">
+</span><span class="boring">        // Return the "current" value
+</span><span class="boring">        Some(current)
+</span><span class="boring">    }
+</span><span class="boring">}</span></code></pre></pre>
+</blockquote>
+<p>Instead of using recursion though, we'll create an iterator type that produces the numbers in sequence. To do this,
+we'll create a struct that stores the current state of the Iterator. To keep things simple, we'll use a <code>u8</code> to store
+the current number (that gives us numbers 0-255), and we'll use an Option to prevent overflowing the <code>u8</code>.</p>
+<pre><code class="language-rust ignore">struct Fibonacci {
+    previous: u8,
+    next: Option&lt;u8&gt;,
+}
+
+impl Fibonacci {
+    fn new() -&gt; Self {
+        Self {
+            previous: 0,
+            next: Some(1),
+        }
+    }
+}
+<span class="boring">fn main() {}</span></code></pre>
+<p>The only method we need to provide to implement Iterator is <code>next</code>, though we also use an associated type to provide
+the information on what is returned from <code>next</code>. The reason for the associated type is that it is re-used multiple times
+throughout the Provided methods, and there should only ever be one Iterator trait applied to a type, so generics aren't
+the right solution.</p>
+<pre><code class="language-rust ignore">impl Iterator for Fibonacci {
+    type Item = u8;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        // Store "current" value (we're going to overwrite it)
+        let current = self.next?;
+
+        // Update internal values
+        self.next = current.checked_add(self.previous);
+        self.previous = current;
+
+        // Return the "current" value
+        Some(current)
+    }
+}
+<span class="boring">fn main() {}</span></code></pre>
+<p>So now we have our iterator type! We can now get each item off the iterator one at a time by calling the next function:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Fibonacci {
+</span><span class="boring">    previous: u8,
+</span><span class="boring">    next: Option&lt;u8&gt;,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Fibonacci {
+</span><span class="boring">    fn new() -&gt; Self {
+</span><span class="boring">        Self {
+</span><span class="boring">            previous: 0,
+</span><span class="boring">            next: Some(1),
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Iterator for Fibonacci {
+</span><span class="boring">    type Item = u8;
+</span><span class="boring">
+</span><span class="boring">    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+</span><span class="boring">        // Store "current" value (we're going to overwrite it)
+</span><span class="boring">        let current = self.next?;
+</span><span class="boring">
+</span><span class="boring">        // Update internal values
+</span><span class="boring">        self.next = current.checked_add(self.previous);
+</span><span class="boring">        self.previous = current;
+</span><span class="boring">
+</span><span class="boring">        // Return the "current" value
+</span><span class="boring">        Some(current)
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>    let mut fib = Fibonacci::new();
+
+    assert_eq!(fib.next(), Some(1));
+    assert_eq!(fib.next(), Some(1));
+    assert_eq!(fib.next(), Some(2));
+    assert_eq!(fib.next(), Some(3));
+    assert_eq!(fib.next(), Some(5));
+    assert_eq!(fib.next(), Some(8));
+<span class="boring">}</span></code></pre></pre>
+<p>You can see that each item in the sequence is wrapped in an <code>Option</code>. When an Iterator has no more items to provide, it
+will produce a <code>None</code>. The final number this Iterator will produce is <code>233</code>, after which we would overflow the <code>u8</code>
+we've used.</p>
+<p>Just calling <code>.next()</code> is pretty boring, no one wants to iterate through things by hand. What if we want to print out
+all the Fibonacci values that fit inside a <code>u8</code>? You can give an Iterator to a <code>for ... in ...</code> loop, and it will
+automatically unwrap the <code>Option</code> for you. Once the loop hits a <code>None</code> the loop ends.</p>
+<p>This code will print out each number on a new line, try hitting the play button to see it in action!</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Fibonacci {
+</span><span class="boring">    previous: u8,
+</span><span class="boring">    next: Option&lt;u8&gt;,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Fibonacci {
+</span><span class="boring">    fn new() -&gt; Self {
+</span><span class="boring">        Self {
+</span><span class="boring">            previous: 0,
+</span><span class="boring">            next: Some(1),
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Iterator for Fibonacci {
+</span><span class="boring">    type Item = u8;
+</span><span class="boring">
+</span><span class="boring">    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+</span><span class="boring">        // Store "current" value (we're going to overwrite it)
+</span><span class="boring">        let current = self.next?;
+</span><span class="boring">
+</span><span class="boring">        // Update internal values
+</span><span class="boring">        self.next = current.checked_add(self.previous);
+</span><span class="boring">        self.previous = current;
+</span><span class="boring">
+</span><span class="boring">        // Return the "current" value
+</span><span class="boring">        Some(current)
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>    for f in Fibonacci::new() {
+        println!("{f}");
+    }
+<span class="boring">}</span></code></pre></pre>
+<p>That's cool, but on its own, it's still not very interesting.</p>
+<p>Iterators are designed to be chained. Those 75 provided methods I mentioned earlier allow you to do some exceptional
+tricks. For example, a list of Fibonacci numbers might be more useful if we knew what number in the sequence we're on.
+We can chain a method called <code>.enumerate</code> which will take the old iterator and give us a new one where each <code>next</code>
+now returns a tuple of <code>(position, T)</code> where <code>T</code> was the original piece of data.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Fibonacci {
+</span><span class="boring">    previous: u8,
+</span><span class="boring">    next: Option&lt;u8&gt;,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Fibonacci {
+</span><span class="boring">    fn new() -&gt; Self {
+</span><span class="boring">        Self {
+</span><span class="boring">            previous: 0,
+</span><span class="boring">            next: Some(1),
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Iterator for Fibonacci {
+</span><span class="boring">    type Item = u8;
+</span><span class="boring">
+</span><span class="boring">    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+</span><span class="boring">        // Store "current" value (we're going to overwrite it)
+</span><span class="boring">        let current = self.next?;
+</span><span class="boring">
+</span><span class="boring">        // Update internal values
+</span><span class="boring">        self.next = current.checked_add(self.previous);
+</span><span class="boring">        self.previous = current;
+</span><span class="boring">
+</span><span class="boring">        // Return the "current" value
+</span><span class="boring">        Some(current)
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>    for (i, f) in Fibonacci::new().enumerate() {
+        println!("{i}: {f}");
+    }
+<span class="boring">}</span></code></pre></pre>
+<p>What's brilliant about this though is that when I say it "takes the iterator", it doesn't try to process every item
+in the iterator (a process in Rust we refer to as "consuming" the iterator), it merely takes ownership of it. Rust
+iterators are "lazy" meaning that they only call <code>next</code> when its necessary to get the next item in the list.</p>
+<p>For example, we can chain another method that only takes the first <code>n</code> items:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Fibonacci {
+</span><span class="boring">    previous: u8,
+</span><span class="boring">    next: Option&lt;u8&gt;,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Fibonacci {
+</span><span class="boring">    fn new() -&gt; Self {
+</span><span class="boring">        Self {
+</span><span class="boring">            previous: 0,
+</span><span class="boring">            next: Some(1),
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl Iterator for Fibonacci {
+</span><span class="boring">    type Item = u8;
+</span><span class="boring">
+</span><span class="boring">    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+</span><span class="boring">        // Store "current" value (we're going to overwrite it)
+</span><span class="boring">        let current = self.next?;
+</span><span class="boring">
+</span><span class="boring">        // Update internal values
+</span><span class="boring">        self.next = current.checked_add(self.previous);
+</span><span class="boring">        self.previous = current;
+</span><span class="boring">
+</span><span class="boring">        // Return the "current" value
+</span><span class="boring">        Some(current)
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>    for (i, f) in Fibonacci::new().enumerate().take(4) {
+        println!("{i}: {f}");
+    }
+<span class="boring">}</span></code></pre></pre>
+<p>This gives us a new iterator that only produces 4 items, but it only calls <code>enumerate</code> four times, which only calls our
+Fibonacci Iterator four times. This has huge performance benefits, and we'll talk more about this later in the chapter.</p>
+<p>To recap:</p>
+<ul>
+<li>Iterators are designed to be chained together.</li>
+<li>Iterators in Rust are "lazy". That means that each item is only processed as it's needed.</li>
+</ul>
+<h2 id="getting-iterators"><a class="header" href="#getting-iterators">Getting Iterators</a></h2>
+<p>I wanted to show you how to make your own Iterator to give you an understanding of how they work, but usually you'll get
+an Iterator from a collection.</p>
+<p>As with most things in Rust, Iterators (or specifically, the items being iterated) can be thought of in three groups,
+and all the collections we discussed in <a href="collections.html">the last chapter</a> can give you an iterator in any of the following forms.</p>
+<h3 id="1-referenced-data-t"><a class="header" href="#1-referenced-data-t">1. Referenced data (<code>&amp;T</code>)</a></h3>
+<p>Often we don't actually need to <em>own</em> the data we're iterating over, it can be enough to just read it. All built in
+collections have a method called <code>.iter()</code> which returns an Iterator type where the items are references to the data
+held in the collection.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let hello = String::from("Hello");
+let world = String::from("World");
+
+// Ownership moves into v
+let v = vec![hello, world];
+
+let mut iter = v.iter();
+
+// The iterator contains references to the original data
+assert_eq!(iter.next(), Some(&amp;String::from("Hello")));
+assert_eq!(iter.next(), Some(&amp;String::from("World")));
+assert_eq!(iter.next(), None);
+
+// The vector still exists and contains the original data
+assert_eq!(
+    v, 
+    vec![
+        String::from("Hello"),
+        String::from("World"),
+    ]
+);
+<span class="boring">}</span></code></pre></pre>
+<blockquote>
+<p>ℹ️ The specific struct returned varies per collection because, while they all implement <code>Iterator</code>, the internal data
+for each can be slightly different.</p>
+</blockquote>
+<p>One thing to bear in mind is that if the collection contains references, then <code>.iter()</code> will give you an Iterator that
+produces references to references.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let hello = String::from("Hello");
+let world = String::from("World");
+
+// This time we'll reference the original data
+let v = vec![&amp;hello, &amp;world];
+
+let mut iter = v.iter();
+
+// The iterator contains references to references to the original data
+assert_eq!(iter.next(), Some(&amp;&amp;hello));
+assert_eq!(iter.next(), Some(&amp;&amp;world));
+assert_eq!(iter.next(), None);
+
+// The vector still exists and contains the original references
+assert_eq!(v, vec![&amp;hello, &amp;world]);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="2-mutably-referenced-mut-t"><a class="header" href="#2-mutably-referenced-mut-t">2. Mutably referenced (<code>&amp;mut T</code>)</a></h3>
+<p>Sometimes, you need to edit things while iterating through them. There's actually a couple of ways to take an item from
+an iterator and get new data from it, but in the event that you want to edit data in place, the right way to do this is
+with an iterator of mutable references.</p>
+<p>All Rusts built in collections can give you a mutable iterator (if the underlying collection is mutable) using
+<code>.iter_mut()</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// The source data must be mutable, not just the iterator
+let mut v = vec![1, 2, 3, 4, 5];
+
+for n in v.iter_mut() {
+    // Dereferencing to edit the underlying data
+    *n += 10
+}
+
+// The original Vec, v, has had 10 added to each number
+assert_eq!(v, vec![11, 12, 13, 14, 15]);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="3-owned-data-t"><a class="header" href="#3-owned-data-t">3. Owned data (<code>T</code>)</a></h3>
+<p>Finally, you may want to take ownership of the underlying data. This can be very useful in particular if you want to
+turn one collection type into another collection type, though there are other reasons you may want ownership of the
+underlying data without duplicating it.</p>
+<p>There is a trait called <code>FromIterator&lt;A&gt;</code> that is implemented for types that can consume an iterator and populate
+themselves. This is almost always used with the <code>.collect()</code> iterator method, though you need to be explicit about what
+you're collecting into, either by typing the variable you're collecting into, or by using the turbofish operator that
+allows you to be explicit about the concrete types to fill in generics.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::collections::LinkedList;
+
+let hello = String::from("Hello");
+let world = String::from("World");
+
+// String ownership moves into ll
+let mut ll = LinkedList::new();
+ll.push_back(hello);
+ll.push_back(world);
+
+// The inner type can be elided as Rust can work out that its String 
+let v: Vec&lt;_&gt; = ll
+    .into_iter() // This takes ownership of the contents of the linked list 
+    .collect(); // This collects the data into the vector which now owns the inner data
+
+assert_eq!(
+    v,
+    vec![
+        String::from("Hello"),
+        String::from("World"),
+    ]
+);
+<span class="boring">}</span></code></pre></pre>
+<p>Sometimes you may not want to have an additional variable just to provide type information, that's when the turbofish
+operator comes in handy.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use std::collections::LinkedList;
+</span><span class="boring">
+</span><span class="boring">let hello = String::from("Hello");
+</span><span class="boring">let world = String::from("World");
+</span><span class="boring">
+</span><span class="boring">// String ownership moves into v
+</span><span class="boring">let mut ll = LinkedList::new();
+</span><span class="boring">// Adding the words backwards because we can in a LinkedList
+</span><span class="boring">ll.push_front(world);
+</span><span class="boring">ll.push_front(hello);
+</span><span class="boring">
+</span>assert_eq!(
+    ll.into_iter().collect::&lt;Vec&lt;_&gt;&gt;(),
+    vec![
+        String::from("Hello"),
+        String::from("World"),
+    ]
+);
+<span class="boring">}</span></code></pre></pre>
+<h2 id="copying-and-cloning-items"><a class="header" href="#copying-and-cloning-items">Copying and cloning Items</a></h2>
+<p>Using what we've learned above, what if we want to use owned data, but we need to keep the original collection, so
+<code>.into_iter()</code> is out of the question?</p>
+<p>There are two methods on <code>Iterator</code> for this purpose: <code>.copied()</code> and <code>.cloned()</code>.</p>
+<p><code>.copied()</code> only works on Iterators where the item is <code>Copy</code> will take the iterator and return a new iterator which
+returns each Item copied.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v = vec![1, 2, 3, 4, 5];
+
+let iter: Vec&lt;_&gt; = v.iter().collect();
+let copied: Vec&lt;_&gt; = v.iter().copied().collect();
+
+assert_eq!(iter, vec![&amp;1, &amp;2, &amp;3, &amp;4, &amp;5]);
+assert_eq!(copied, vec![1, 2, 3, 4, 5]);
+<span class="boring">}</span></code></pre></pre>
+<p><code>.cloned()</code> does the same for types that are <code>Clone</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v = vec![String::from("Hello"), String::from("World")];
+
+let iter: Vec&lt;_&gt; = v.iter().collect();
+let cloned: Vec&lt;_&gt; = v.iter().cloned().collect();
+
+assert_eq!(iter, vec![&amp;"Hello", &amp;"World"]);
+assert_eq!(cloned, vec![String::from("Hello"), String::from("World")]);
+<span class="boring">}</span></code></pre></pre>
+<h2 id="other-ways-to-get-iterators"><a class="header" href="#other-ways-to-get-iterators">Other Ways to get Iterators</a></h2>
+<p>Beyond collections there are other things that can be iterated through.</p>
+<p>Ranges are iterators, it's why you often see them used in for loops:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>for n in 0..5 {
+    println!("Number: {n}");
+}
+
+assert_eq!((0..5).collect::&lt;Vec&lt;_&gt;&gt;(), vec![0, 1, 2, 3, 4]);
+<span class="boring">}</span></code></pre></pre>
+<p>As previously highlighted, you can create an infinitely repeating iterator with the <code>repeat(T)</code> function. You can
+repeat any value of any type so long as that type implements the <code>Clone</code> trait.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::iter::repeat;
+
+let mut repeater = repeat("Badger".to_string());
+
+assert_eq!(repeater.next(), Some("Badger".to_string()));
+assert_eq!(repeater.next(), Some("Badger".to_string()));
+assert_eq!(repeater.next(), Some("Badger".to_string()));
+assert_eq!(repeater.next(), Some("Badger".to_string()));
+<span class="boring">// Mushroom Mushroom (no I don't know "what's wrong with me", why?)
+</span><span class="boring">}</span></code></pre></pre>
+<p>This can have benefits over using something like an open range which will eventually overflow and panic</p>
+<pre><pre class="playground"><code class="language-rust should_panic"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// ‼️ This code panics because the iterator overflows u8 ‼️
+let iter = u8::MIN..;
+assert_eq!(iter.count(), 255);
+<span class="boring">}</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// This is fine though
+let iter = u8::MIN..u8::MAX;
+assert_eq!(iter.count(), 255);
+<span class="boring">}</span></code></pre></pre>
+<p>Fun fact, if you want to take an existing finite Iterator and repeat that infinitely, there's a method for that too,
+though the Item type must implement <code>Clone</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut iter = vec![0, 1, 2].into_iter().cycle();
+
+assert_eq!(iter.next(), Some(0));
+assert_eq!(iter.next(), Some(1));
+assert_eq!(iter.next(), Some(2));
+assert_eq!(iter.next(), Some(0)); // &lt;- Repeat
+assert_eq!(iter.next(), Some(1));
+assert_eq!(iter.next(), Some(2));
+assert_eq!(iter.next(), Some(0)); // &lt;- Repeat
+// ...and so on
+<span class="boring">}</span></code></pre></pre>
+<p>Though don't forget, immutable references are <code>Clone</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, PartialEq)]
+struct NotCloneable;
+
+// Value will own our data
+let value = NotCloneable {};
+
+// The vec we base the iterator on will contain a reference
+let mut iter = vec![&amp;value].into_iter().cycle();
+
+assert_eq!(iter.next(), Some(&amp;NotCloneable {}));
+assert_eq!(iter.next(), Some(&amp;NotCloneable {}));
+assert_eq!(iter.next(), Some(&amp;NotCloneable {}));
+<span class="boring">}</span></code></pre></pre>
+<p>You can also create iterators by combining other iterators, but they must be of the same type:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut i1 = vec![0, 1, 2].into_iter();
+let i2 = vec![3, 4, 5].into_iter(); // i2 does not need to be mutable as we're taking ownership
+
+assert_eq!(i1.chain(i2).collect::&lt;Vec&lt;_&gt;&gt;(), vec![0, 1, 2, 3, 4, 5]);
+<span class="boring">}</span></code></pre></pre>
+<p>Many other Types in Rust can also be broken down into Iterators. This Chapter of the book, for example, can be
+represented as one large <code>str</code>, which you can break the data down by <code>.lines()</code>, <code>.chars()</code> or <code>.bytes()</code>. Don't forget
+a <code>char</code> is not the same as a byte (<code>u8</code>) in Rust, and in this Chapter I've used several multibyte characters 😉</p>
+<h2 id="cool-ways-to-use-iterators"><a class="header" href="#cool-ways-to-use-iterators">Cool ways to use Iterators</a></h2>
+<h3 id="mathematics"><a class="header" href="#mathematics">Mathematics</a></h3>
+<p>A common use case for iterators over things like numbers is adding all the items together, or multiplying them together.</p>
+<p>For iterators of items that implement the <code>Sum</code> trait (eg, numbers) <code>.sum()</code> will add all the items in the iterator:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>assert_eq!(
+    vec![1, 2, 3, 4].iter().sum::&lt;i32&gt;(), 
+    10
+);
+<span class="boring">}</span></code></pre></pre>
+<p>For iterators of items that implement the <code>Product</code> trait (eg, again, numbers) <code>.product()</code> will multiply all the items
+in the iterator, eg:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>assert_eq!(
+    vec![1, 2, 3, 4].iter().product::&lt;i32&gt;(), 
+    24
+);
+<span class="boring">}</span></code></pre></pre>
+<p>Its worth noting that some surprising things implement <code>Sum</code> and <code>Product</code>, including blanket implementations for
+<code>Option&lt;T&gt;</code> and <code>Result&lt;T, E&gt;</code> where <code>T</code> already implements the trait.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v: Vec&lt;Option&lt;usize&gt;&gt; = vec![
+    Some(10),
+    Some(20),
+    Some(12),
+];
+
+// Note: the Option needs to be owned, references won't work, so we'll use .into_iter()
+let total: Option&lt;usize&gt; = v.into_iter().sum(); 
+assert_eq!(total, Some(42));
+<span class="boring">}</span></code></pre></pre>
+<p>For iterators of items that implement <code>Ord</code> you can use <code>.min()</code> and <code>.max()</code> to find the largest and smallest values
+respectively:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v = vec!['H', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'];
+
+assert_eq!(v.iter().min(), Some(&amp;'H'));
+assert_eq!(v.iter().max(), Some(&amp;'w'));
+<span class="boring">}</span></code></pre></pre>
+<p>These methods are "consuming" methods, which means they will process every element in the iterator before giving a
+result.</p>
+<p>Another example of a consuming iterator is <code>.count()</code> which merely tells us how many items are in an iterator.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v = vec!['H', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'];
+
+let iter = v.clone().into_iter();
+assert_eq!(iter.count(), v.len()); // iter has same number of items as v is long
+// iter no longer exists
+<span class="boring">}</span></code></pre></pre>
+<p>However, if the iterator implements <code>ExactSizeIterator</code>, which many of the built-in ones do, then you can use
+<code>.len()</code> without consuming the iterator to get the same result:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v = vec!['H', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'];
+
+let mut iter = v.iter();
+assert_eq!(iter.len(), v.len());
+assert_eq!(iter.next(), Some(&amp;'H'));
+<span class="boring">}</span></code></pre></pre>
+<h4 id="-warning"><a class="header" href="#-warning">⚠️ Warning!</a></h4>
+<p>Methods like <code>sum</code> and <code>product</code> do a simple <code>+</code> or <code>*</code> respectively, which means that if the result overflows, the
+<em>best</em> thing that can happen is your program panics. For more robust (but slower) code you may want to implement the
+operation yourself using <code>fold</code> which is an iterator method we'll talk about later.</p>
+<p>Furthermore, methods like <code>sum</code>, <code>product</code>, <code>min</code>, <code>max</code> and anything else that "consumes" an iterator, expect that
+iterator to have an end to give you a final result, but it is possible to create infinite iterators. For example, the
+function <code>repeat("hi")</code> will just continue to produce a reference to the string slice <code>"hi"</code> forever.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::iter::repeat;
+
+let mut banana_phone = repeat("ring"); // Wait, that's not "hi"
+
+assert_eq!(banana_phone.next(), Some("ring"));
+
+// No!
+assert_eq!(banana_phone.next(), Some("ring"));
+assert_eq!(banana_phone.next(), Some("ring"));
+
+// It never ends
+assert_eq!(banana_phone.next(), Some("ring"));
+
+// Calling something like `.max()` on this iterator will cause an infinite loop
+<span class="boring">// Hahahaha, now its in your head 😈
+</span><span class="boring">}</span></code></pre></pre>
+<h3 id="applying-a-process-over-each-item"><a class="header" href="#applying-a-process-over-each-item">Applying a Process over each item</a></h3>
+<p>One of the most common uses for Iterators is process a set of Items one at a time. There are a number of methods on the
+Iterator trait (that themselves return new Iterators) that are really helpful for this.</p>
+<p>You can take one iterator and exclude Items based on the result of a predicate using the <code>.filter(P)</code>. For example, we
+could take a range of numbers, and filter out all odd numbers like this:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Many iterator methods return a new iterator which is great for chaining
+let mut iter = (1..=10).filter(|n| n % 2 == 0);
+
+assert_eq!(iter.next(), Some(2));
+assert_eq!(iter.next(), Some(4));
+assert_eq!(iter.next(), Some(6));
+assert_eq!(iter.next(), Some(8));
+assert_eq!(iter.next(), Some(10));
+assert_eq!(iter.next(), None);
+<span class="boring">}</span></code></pre></pre>
+<p>If we were to look at the length of the iterators before and after this filter you'll see they've changed!</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let full_iter = (1..=10);
+let filtered_iter = full_iter.clone().filter(|n| n % 2 == 0);
+
+// We need to use count as ranges do not implement ExactSizeIterator 
+assert_eq!(full_iter.count(), 10);
+assert_eq!(filtered_iter.count(), 5);
+<span class="boring">}</span></code></pre></pre>
+<p>Another great way to process Iterators one Item at a time is to take that Item and transform it in some way. We can use
+pass a function into the <code>.map()</code> method that receives the item and returns a new value. If that value is of a different
+type, the Iterator you get back will also be of that new type:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut iter = (1..=3) // An Iterator where Item is i32
+    .map(|n| format!("This is item number {n}")); // New Iterator where Item is String
+
+assert_eq!(iter.next(), Some("This is item number 1".to_string()));
+assert_eq!(iter.next(), Some("This is item number 2".to_string()));
+assert_eq!(iter.next(), Some("This is item number 3".to_string()));
+assert_eq!(iter.next(), None);
+<span class="boring">}</span></code></pre></pre>
+<p>Sometimes the process you apply to an item might itself result in an <code>Option</code>, and rather than having an iterator of
+<code>Options</code> you may want to discard <code>None</code>s and unwrap the <code>Ok</code>, this is where <code>.filter_map()</code> is really handy.</p>
+<p>In the example below we use <code>.checked_add</code> which returns an <code>Option</code> with an <code>Ok</code> so long as the result is inbounds. By
+combining this with filter_map, we'll get only the items that were Some, and those items will be unwrapped.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut iter = (1..=u8::MAX)
+    .filter_map(|n| n.checked_add(250u8));
+
+assert_eq!(iter.next(), Some(251)); // 1 + 250
+assert_eq!(iter.next(), Some(252)); // 2 + 250
+assert_eq!(iter.next(), Some(253)); // 3 + 250
+assert_eq!(iter.next(), Some(254)); // 4 + 250
+assert_eq!(iter.next(), Some(255)); // 5 + 250
+assert_eq!(iter.next(), None);
+<span class="boring">}</span></code></pre></pre>
+<p>This not only saves us from having to deal with doubly wrapped options from <code>next</code> (eg <code>Some(Some(255))</code>) but entirely
+removes the items from the iterator. See this example comparing map and filter map:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>assert_eq!((1..=u8::MAX).map(|n| n.checked_add(250u8)).count(), 255);
+assert_eq!((1..=u8::MAX).filter_map(|n| n.checked_add(250u8)).count(), 5);
+<span class="boring">}</span></code></pre></pre>
+<p>Another way to reduce how many items we want to deal with in an iterator is by using <code>.take(n)</code> and <code>.skip(n)</code>.</p>
+<p>We can end an iterator earlier by only taking a certain number of items from it with <code>.take(n)</code> or we can skip over a
+number of items with <code>.skip(n)</code> before resuming the iterator from that point.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v = vec![1, 2, 3, 4, 5, 6];
+
+let iter_take = v.iter().take(3);
+let iter_skip = v.iter().skip(3);
+
+assert_eq!(iter_take.collect::&lt;Vec&lt;_&gt;&gt;(), vec![&amp;1, &amp;2, &amp;3]);
+assert_eq!(iter_skip.collect::&lt;Vec&lt;_&gt;&gt;(), vec![&amp;4, &amp;5, &amp;6]);
+<span class="boring">}</span></code></pre></pre>
+<p>As with most iterators, you can chain them:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">let v = vec![1, 2, 3, 4, 5, 6];
+</span><span class="boring">
+</span>assert_eq!(v.iter().skip(1).take(4).collect::&lt;Vec&lt;_&gt;&gt;(), vec![&amp;2, &amp;3, &amp;4, &amp;5]);
+<span class="boring">}</span></code></pre></pre>
+<p>An Iterator method we used earlier, <code>.enumerate()</code>, allows us to add an index to our Iterator by changing the type of
+the iterator <code>T</code> to a tuple: <code>(usize, T)</code>. This can be really handy in combination with other iterators when the
+position in an iterator is important. For example, lets say we want to filter every other item out of a <code>Vec</code>. We can
+do that by chaining together several of the Iterators we've just learned.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v1 = vec!["This", "sentence", "is", "not", "shorter"];
+
+let v2: Vec&lt;_&gt; = v1.into_iter()
+    .enumerate()
+    .filter(|(i, _)| i % 2 == 0) // Use the index added by enumerate to skip odd items
+    .map(|(_, s)| s) // Turn the iterator (usize, T) back into T
+    .collect();
+
+assert_eq!(v2, vec!["This", "is", "shorter"]);
+<span class="boring">}</span></code></pre></pre>
+<p>Any time you see a <code>filter</code> and a <code>map</code> next to each other, you might be able to abbreviate this. Booleans can
+be turned into <code>Option</code>s with <code>.then_some()</code>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v1 = vec!["This", "sentence", "is", "not", "shorter"];
+
+let v2: Vec&lt;_&gt; = v1.into_iter()
+    .enumerate()
+    .filter_map(|(i, s)| (i % 2 == 0).then_some(s))
+    .collect();
+
+assert_eq!(v2, vec!["This", "is", "shorter"]);
+<span class="boring">}</span></code></pre></pre>
+<p>Finally, similar to <code>.sum()</code>, <code>.product()</code> and <code>.count()</code> you might want to take an iterator and reduce it down to a
+single value. This is where methods like <code>fold</code> and <code>reduce</code> come in. Each of these processes each item one at a time
+returning a singular value that is modified by each item, however where <code>.fold()</code> lets you specify the initial value for
+the returned value, <code>.reduce()</code> uses the first item in the iterator as the initial value and continues processing from
+the next item.</p>
+<p>Earlier we mentioned the risk of overflow in methods like <code>.sum()</code> and <code>.product()</code>. We can use these consuming methods
+to write safer (but slower) versions of those methods:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, PartialEq)]
+struct OverflowError;
+
+let v: Vec&lt;u8&gt; = vec![1, 2, 3, 4, 5, 6];
+
+// the first value in the closure, usually called `acc`, is the accumulated value
+// the second value in the closure, often called `cur`, is the current item
+let good_sum = (1u8..=6)
+    .into_iter()
+    .fold(Ok(0u8), |acc, cur| acc.and_then(|total| total.checked_add(cur).ok_or(OverflowError)));
+
+assert_eq!(good_sum, Ok(21));
+
+let bad_sum = (100u8..=106)
+    .into_iter()
+    .fold(Ok(0u8), |acc, cur| acc.and_then(|total| total.checked_add(cur).ok_or(OverflowError)));
+
+assert_eq!(bad_sum, Err(OverflowError));
+<span class="boring">}</span></code></pre></pre>
+<p>That said, in this kind of case, once our fold function returns a <code>Err</code>, we can't process any more items, we can break
+out of this early with <code>.try_fold()</code> which will stop iterating immediately:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">#[derive(Debug, PartialEq)]
+</span><span class="boring">struct OverflowError;
+</span><span class="boring">
+</span>let bad_sum = (100u8..=106)
+    .into_iter()
+    .try_fold(0u8, |acc, cur| acc.checked_add(cur)) // Consumes iterator, returns Option
+    .ok_or(OverflowError); // Converts the option into our error
+
+assert_eq!(bad_sum, Err(OverflowError));
+<span class="boring">}</span></code></pre></pre>
+<h2 id="more-iterator-traits"><a class="header" href="#more-iterator-traits">More Iterator Traits</a></h2>
+<p>There's a few more traits you may want to be aware of when making your own iterators:</p>
+<p><code>IntoIterator</code> can be implemented on any type that can be turned into an <code>Iterator</code>. One place you may find yourself
+using it is on newtypes.</p>
+<pre><pre class="playground"><code class="language-rust">struct Album {
+    name: String,
+    artist: String,
+}
+
+struct Albums(Vec&lt;Album&gt;);
+
+impl Albums {
+    fn new() -&gt; Self {
+        Self(Vec::new())
+    }
+
+    fn buy(&amp;mut self, album: Album) {
+        self.0.push(album);
+    }
+
+    fn count(&amp;self) -&gt; usize {
+        self.0.len()
+    }
+}
+
+impl IntoIterator for Albums {
+    type Item = Album;
+    type IntoIter = std::vec::IntoIter&lt;Self::Item&gt;;
+
+    fn into_iter(self) -&gt; Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+fn main() {
+    let mut albums = Albums::new();
+
+    albums.buy(Album {
+        name: "Sgt. Pepper's Lonely Hearts Club Band".into(),
+        artist: "The Beatles".into(),
+    });
+
+    albums.buy(Album {
+        name: "Back in Black".into(),
+        artist: "AC/DC".into(),
+    });
+
+    albums.buy(Album {
+        name: "Hotel California".into(),
+        artist: "Eagles".into(),
+    });
+
+    // Get the artist names, the obviously consumes the collection:
+    let artists: Vec&lt;_&gt; = albums
+        .into_iter()
+        .map(|Album { artist, .. }| artist)
+        .collect();
+
+    assert_eq!(
+        artists,
+        vec!["The Beatles".to_string(), "AC/DC".to_string(), "Eagles".to_string()],
+    );
+}</code></pre></pre>
+<p><code>FromIterator</code> allows you to turn an Iterator into another type, usually through the <code>.collect()</code> method on <code>Iterator</code>s</p>
+<pre><pre class="playground"><code class="language-rust">struct Album {
+    name: String,
+    artist: String,
+}
+
+struct Albums(Vec&lt;Album&gt;);
+
+impl Albums {
+    fn new() -&gt; Self {
+        Self(Vec::new())
+    }
+
+    fn buy(&amp;mut self, album: Album) {
+        self.0.push(album);
+    }
+
+    fn count(&amp;self) -&gt; usize {
+        self.0.len()
+    }
+}
+
+use std::iter::FromIterator;
+
+impl FromIterator&lt;Album&gt; for Albums {
+    fn from_iter&lt;I: IntoIterator&lt;Item = Album&gt;&gt;(iter: I) -&gt; Self {
+        let mut albums = Self::new();
+
+        for album in iter {
+            albums.buy(album);
+        }
+
+        albums
+    }
+}
+
+fn main() {
+    let raw_albums = vec![
+        Album {
+            name: "Sgt. Pepper's Lonely Hearts Club Band".into(),
+            artist: "The Beatles".into(),
+        },
+
+        Album {
+            name: "Back in Black".into(),
+            artist: "AC/DC".into(),
+        },
+
+        Album {
+            name: "Hotel California".into(),
+            artist: "Eagles".into(),
+        },
+    ];
+
+    let albums: Albums = raw_albums.into_iter().collect();
+    assert_eq!(albums.count(), 3);
+}</code></pre></pre>
+<p>Finally, the last two traits you should be aware of are <code>DoubleEndedIterator</code> and <code>ExactSizeIterator</code>. The Iterators
+returned from collections are all both of these (to my surprise, even the <code>Iter</code> structs used for <code>LinkedList</code> and
+<code>BinaryHeap</code> are <code>DoubleEndedIterator</code>).</p>
+<p><code>ExactSizeIterator</code> can tell you the size of the iterator <em>without</em> consuming it, using the <code>.len()</code> method (if you need
+to see if the iterator is empty, you should us <code>.is_empty()</code> instead).</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v = vec![1, 2, 3, 4, 5];
+
+let iter = v.into_iter();
+
+assert_eq!(iter.len(), 5); // iter still exists after this
+assert_eq!(iter.count(), 5); // iter is consumed
+<span class="boring">}</span></code></pre></pre>
+<p><code>DoubleEndedIterator</code> allows you to reverse the order of an Iterator with <code>.rev()</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v = vec![1, 2, 3];
+
+let mut iter = v.into_iter().rev();
+
+assert_eq!(iter.next(), Some(3));
+assert_eq!(iter.next(), Some(2));
+assert_eq!(iter.next(), Some(1));
+assert_eq!(iter.next(), None);
+<span class="boring">}</span></code></pre></pre>
+<h2 id="next-chapter"><a class="header" href="#next-chapter">Next Chapter</a></h2>
+<p>We've now covered all of what I'd describe as the core, synchronous language features (at least... I hope). We're going
+move on to Threads in the next chapter, discuss what they are and some of the most important and useful tools to use
+when working with them.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../language-basics/collections.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../language-basics/collections.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
