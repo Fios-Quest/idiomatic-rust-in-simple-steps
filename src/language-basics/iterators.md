@@ -612,8 +612,8 @@ assert_eq!(banana_phone.next(), Some("ring"));
 
 ### Applying a Process over each item
 
-One of the most common uses for Iterators is process a set of Items one at a time. There are a number of methods on the
-Iterator trait (that themselves return new Iterators) that are really helpful for this.
+One of the most common uses for Iterators is to process a set of Items one at a time. There are a number of methods on 
+the Iterator trait (that themselves return new Iterators) that are really helpful for this.
 
 You can take one iterator and exclude Items based on the result of a predicate using the `.filter(P)`. For example, we
 could take a range of numbers, and filter out all odd numbers like this:
