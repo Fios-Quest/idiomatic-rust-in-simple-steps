@@ -835,8 +835,8 @@ assert_eq!(banana_phone.next(), Some("ring"));
 <span class="boring">// Hahahaha, now its in your head 😈
 </span><span class="boring">}</span></code></pre></pre>
 <h3 id="applying-a-process-over-each-item"><a class="header" href="#applying-a-process-over-each-item">Applying a Process over each item</a></h3>
-<p>One of the most common uses for Iterators is process a set of Items one at a time. There are a number of methods on the
-Iterator trait (that themselves return new Iterators) that are really helpful for this.</p>
+<p>One of the most common uses for Iterators is to process a set of Items one at a time. There are a number of methods on
+the Iterator trait (that themselves return new Iterators) that are really helpful for this.</p>
 <p>You can take one iterator and exclude Items based on the result of a predicate using the <code>.filter(P)</code>. For example, we
 could take a range of numbers, and filter out all odd numbers like this:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
