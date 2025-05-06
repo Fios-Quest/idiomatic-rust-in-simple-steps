@@ -384,7 +384,7 @@ Today we learned specifically about the Stack and Heap:
 - The Stack is where variables live, data must be of known size at compile time (Sized), but access is very fast.
 
 - The Heap is where we can store things regardless of whether we know their size at compile time (Sized and Unsized).
-  We can store large amounts of data here but getting access to this memory initially is a tiny be slower.
+  We can store large amounts of data here but getting access to this memory initially is a tiny bit slower.
 
 - You can reference data with `&` if you don't want ownership of the data, but you do want to access it.
 
