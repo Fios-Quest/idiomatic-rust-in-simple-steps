@@ -15,14 +15,14 @@ The Guessing Game
 
 To learn about memory, we'll make a simplified version of the
 [guessing game](https://doc.rust-lang.org/book/ch02-00-guessing-game-tutorial.html) 
-from the official Rust book. Start by opening your terminal and navigating to where-ever your creating you projects like
+from the official Rust book. Start by opening your terminal and navigating to where-ever you're creating your projects like
 in the last chapter, then we'll create a new project with:
 
 ```shell
 cargo new guessing-game
 ```
 
-Open the project in you editor and open the file `src/main.rs`. As before we'll see the same "hello, world" program:
+Open the project in your editor and open the file `src/main.rs`. As before we'll see the same "hello, world" program:
 
 ```rust
 fn main() {
@@ -138,7 +138,7 @@ where we'd have to come to write things out to the terminal too, via a stream ca
 >
 > For example, on Mac and Linux, if you use `cargo run 2> /dev/null` to run your program, you'll see that you lose the
 > messages about your program being compiled because we redirected stderr (stream 2) to the void of `/dev/null`, and
-> Cargo sensibly decided that _it's_ output is not relevant to your programs normal output
+> Cargo sensibly decided that _its_ output is not relevant to your programs normal output
 >
 > On Windows the same can be achieved in cmd using `cargo run 2> nul` (note, only one l in nul), or in powershell with
 > `cargo run 2> $null` (two l's this time and a dollar, no idea why it's different)
@@ -211,7 +211,7 @@ Rust does not allow you to use types like this interchangeably, i.e. data can no
 not compatible. In Rust, we use a kind of container type to get around this called `Option`. Importantly, when a 
 function returns an `Option` type you, the programmer, must check to see if it contains something, and then extract the
 thing if it's there. There are a number of ways to do this and `.expect` is one of the worst ways to do this (we'll talk
-about better ways in the future), as it will attempt to extract the data if its there, or stop the program abruptly with
+about better ways in the future), as it will attempt to extract the data if it's there, or stop the program abruptly with
 the provided error message if it's not.
 
 For the time being we're going to just say we can't deal with it not being there, we don't want to continue running the
@@ -384,7 +384,7 @@ Today we learned specifically about the Stack and Heap:
 - The Stack is where variables live, data must be of known size at compile time (Sized), but access is very fast.
 
 - The Heap is where we can store things regardless of whether we know their size at compile time (Sized and Unsized).
-  We can store large amounts of data here but getting access to this memory initially is a tiny be slower.
+  We can store large amounts of data here but getting access to this memory initially is a tiny bit slower.
 
 - You can reference data with `&` if you don't want ownership of the data, but you do want to access it.
 
