@@ -15,14 +15,14 @@ The Guessing Game
 
 To learn about memory, we'll make a simplified version of the
 [guessing game](https://doc.rust-lang.org/book/ch02-00-guessing-game-tutorial.html) 
-from the official Rust book. Start by opening your terminal and navigating to where-ever your creating you projects like
+from the official Rust book. Start by opening your terminal and navigating to where-ever you're creating your projects like
 in the last chapter, then we'll create a new project with:
 
 ```shell
 cargo new guessing-game
 ```
 
-Open the project in you editor and open the file `src/main.rs`. As before we'll see the same "hello, world" program:
+Open the project in your editor and open the file `src/main.rs`. As before we'll see the same "hello, world" program:
 
 ```rust
 fn main() {
