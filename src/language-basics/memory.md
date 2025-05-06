@@ -211,7 +211,7 @@ Rust does not allow you to use types like this interchangeably, i.e. data can no
 not compatible. In Rust, we use a kind of container type to get around this called `Option`. Importantly, when a 
 function returns an `Option` type you, the programmer, must check to see if it contains something, and then extract the
 thing if it's there. There are a number of ways to do this and `.expect` is one of the worst ways to do this (we'll talk
-about better ways in the future), as it will attempt to extract the data if its there, or stop the program abruptly with
+about better ways in the future), as it will attempt to extract the data if it's there, or stop the program abruptly with
 the provided error message if it's not.
 
 For the time being we're going to just say we can't deal with it not being there, we don't want to continue running the
