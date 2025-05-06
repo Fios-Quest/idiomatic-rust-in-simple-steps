@@ -138,7 +138,7 @@ where we'd have to come to write things out to the terminal too, via a stream ca
 >
 > For example, on Mac and Linux, if you use `cargo run 2> /dev/null` to run your program, you'll see that you lose the
 > messages about your program being compiled because we redirected stderr (stream 2) to the void of `/dev/null`, and
-> Cargo sensibly decided that _it's_ output is not relevant to your programs normal output
+> Cargo sensibly decided that _its_ output is not relevant to your programs normal output
 >
 > On Windows the same can be achieved in cmd using `cargo run 2> nul` (note, only one l in nul), or in powershell with
 > `cargo run 2> $null` (two l's this time and a dollar, no idea why it's different)
