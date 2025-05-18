@@ -19,7 +19,7 @@
     - [Common Traits](./language-basics/common-traits.md)
     - [Collections](./language-basics/collections.md)
     - [Iterators](./language-basics/iterators.md)
-    - [Threads]()
+    - [Threads](./language-basics/threads.md)
     - [Async]()
     - [Macros]()
     - [Unsafe]()
