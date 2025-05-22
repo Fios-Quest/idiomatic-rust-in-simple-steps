@@ -4,9 +4,9 @@ Control Flow
 Programs are typically executed one line at a time (this is called flow), but we can alter what the next line is with
 control flow.
 
-There are two main ways of doing this [branching](#branching) and [looping](#looping).
+There are two main ways of doing this: [branching](#branching) and [looping](#looping).
 
-Before we do that though, lets talk about two of Rusts coolest features, which will come up a lot later, 
+Before we do that though, lets talk about two of Rust's coolest features, which will come up a lot later, 
 [patterns](#patterns) and how [blocks are also expressions](#blocks-are-expressions).
 
 Patterns
@@ -67,7 +67,7 @@ fn main() {
 }
 ```
 
-In the above example we extract the structs named fields straight into variables of the same name as its easy and the
+In the above example we extract the structs named fields straight into variables of the same name as it's easy and the
 names were appropriate. However, it might be better in the context of your program to name them something else. Below
 we've renamed `x` to `width` and `y` to `height`:
 
@@ -160,7 +160,7 @@ if a == b {
 println!("regardless of whether expression was true print this");
 ```
 
-If you want to run some code if the expression is `true`, but some different code if its `false`, then you can extend
+If you want to run some code if the expression is `true`, but some different code if it's `false`, then you can extend
 `if` with `else`. Here we compare if the first number is greater than the second number.
 
 ```rust
@@ -291,8 +291,8 @@ This pattern matching stuff is really handy, right?!
 Well the creators of Rust thought so too, in fact, they made a whole control flow mechanism around it!
 
 `match` is a bit like `if` in that it can branch, and act as an expression. However, `match` can do a lot more than
-`if`, it will match against multiple possibilities, allows match guards for fine grain control of pattern matching, and
-its exhaustive, meaning that a match _must_ deal with every possibility.
+`if`: it will match against multiple possibilities, allows match guards for fine grain control of pattern matching, and
+it's exhaustive, meaning that a match _must_ deal with every possibility.
 
 Lets look at our Vector example again:
 
@@ -443,7 +443,7 @@ Looping
 
 The most basic loop is, well, `loop`.
 
-When you enter a loop, the code inside it will run until its explicitly told to stop. For example:
+When you enter a loop, the code inside it will run until it's explicitly told to stop. For example:
 
 ```rust
 # let mut protect_the_loop: u8 = 0;
@@ -510,7 +510,7 @@ Another useful keyword when looping is `continue`. Imagine you have a series of 
 you can skip over _some_ of those things.
 
 The following example will continuously get images, and run a time-consuming `process_image` function, unless the image
-is an SVG, in which can it will skip it. 
+is an SVG, in which case it will skip it. 
 
 ```rust
 # use std::{
@@ -628,7 +628,7 @@ fn main() {
 
 While `loop` is great for programs that actually do want to try to keep running forever (or perhaps has many exit
 conditions), we often only want to loop over something `while` something is true. The `while` loop takes an expression
-that evaluates to true or false. The expression is checked at the start of each iteration through the loop, if its
+that evaluates to true or false. The expression is checked at the start of each iteration through the loop; if it's
 true, the loop will execute.
 
 ```rust
@@ -701,17 +701,17 @@ println!("All messages processed");
 
 #### Range
 
-Another neat Rust type that works really well here is the Range. We haven't covered Range yet but if you've been peaking
+Another neat Rust type that works really well here is the Range. We haven't covered Range yet but if you've been peeking
 at the code samples throughout the last few chapters, you might have spotted a few!
 
-Range's allow you to specify a "closed" or "half open" range of numbers... kinda, see below.
+Ranges allow you to specify a "closed" or "half open" range of numbers... kinda, see below.
 
-> Actually, Range's allow you to specify a range of anything so long as it implements the traits `PartialEq` and 
-> `PartialOrd`. I've personally never seen this done for anything except numbers and characters, but its worth pointing
+> Actually, Ranges allow you to specify a range of anything so long as it implements the traits `PartialEq` and 
+> `PartialOrd`. I've personally never seen this done for anything except numbers and characters, but it's worth pointing
 > out. We'll talk more about PartialEq and PartialOrd in a later chapter.
 
 We write Ranges in the form `start..end` where `start` is inclusive and `end` is `exclusive`. This means that `2..5`
-includes 2 but not 5. If you want to create a range that includes the final number, prefix that number with `=`, eg
+includes 2 but not 5. If you want to create a range that includes the final number, prefix that number with `=`, e.g.
 `2..=5`:
 
 ```rust
