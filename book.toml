@@ -15,3 +15,9 @@ create-missing = true
 [output]
 
 [output.html]
+
+[output.html.playground]
+copy-js = true
+editable = true
+line-numbers = true
+
