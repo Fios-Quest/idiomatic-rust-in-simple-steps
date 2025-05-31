@@ -322,4 +322,133 @@ fn main() {
 }
 ```
 
+So we can share readable data across multiple threads with immutable references, or share writable data temporarily
+with a single thread, but what if we want to share read/write access to data across multiple threads.
+
+Let's start by thinking why we can't do this with just references. When we're using threads, multiple parts of our
+program can be executing at the same time. Imagine we have two threads that want to change the data behind a reference
+based on what is currently stored there, something simple like each thread wants to multiple the data.
+
+1. Thread 1 reads the value from memory into a register
+2. Thread 2 reads the value from memory into a register
+3. Thread 1 multiplies the data and stores it back in memory
+4. Thread 2 multiplies the data and stores it back in memory
+
+In this situation, we've lost the effect of Thread 1, which _could_ be a bug.
+
+Let's consider a more serious version of this. Imagine the data rather than just being a single value, is an image
+stored in an array like structure, and you're applying multiple processes to the image at the same time. This time if
+one thread overrides another threads work, we have a much more obvious problem.
+
+In order to get around this, we need to prevent two threads accessing the same piece of data at the same time. There
+is a general software abstraction concept called a "mutex" that makes access to the data MUTually EXclusive. Rust
+provides it's mutex through `std::sync::Mutex`.
+
+When you place data inside a Mutex, in order to access it, you need to "lock" the Mutex. If the Mutex is already
+locked, then the thread currently trying to access the data needs to wait for the existing lock to be released.
+
+
+```rust
+use std::thread::scope;
+use std::sync::Mutex;
+
+fn main() {
+    let mut data: Mutex<Vec<String>> = Mutex::new(Vec::with_capacity(10));
+
+    let thread_ids = 0..10;
+
+    scope(|s| {
+        &thread_ids.for_each(|_| {
+            s.spawn(|| {
+                // The guard maintains the lock. When it goes out of scope the
+                // lock is dropped. MutexGuard implements Deref and DerefMut
+                // for the type inside
+                let mut guard = data
+                    .lock()
+                    .expect("another thread with the lock panicked");
+                guard.push("Thread reporting in!".to_string());
+                // guard is dropped after this line
+            });
+        });
+    });
+
+    println!("All scoped threads have completed");
+
+    let guard = data.lock().unwrap();
+    assert_eq!(guard.len(), 10);
+    guard
+        .iter()
+        .for_each(|s| assert_eq!(s, &"Thread reporting in!".to_string()));
+}
+```
+
+However, there's still a slight problem here. We're currently very dependent on using scoped threads because we need
+our references to point back to the owned data, but scoped threads aren't the norm. In fact, most of the times you use
+threads in Rust, they will be abstracted behind some other framework (eg, a web server, a game engine, or data
+processing tools).
+
+The problem of course, is that we don't know when the owned data will go out of scope and no longer be accessible.
+
+We can solve this problem using an Atomic Reference Count. We haven't discussed reference counting yet as its usually
+fairly niche, however, reference counting allows you to share data around an application without needing to clone it
+and side stepping complex reference rules. It works by moving the data you want to share onto the heap, and allowing
+access through a reference count type. When you clone the reference count value, instead of it cloning the data, it
+modifies its internal count of how many clones currently exist. Every time a reference count type goes out of scope
+the count is decreased. Once the count hits zero, there are no further references to the data and so it can be cleaned
+up.
+
+Now, if you've paid attention as to why we need a Mutex for modifying data across threads, you'll see that using a
+normal reference count won't work. If the reference counter is cloned or dropped while also being cloned or dropped
+in another thread, you could end up with an inconsistent number count of references, meaning data gets dropped at the
+wrong time. This is why we need a special reference count type, `std::sync::Arc`, an Atomic Reference Count.
+
+Atomic data types guarantee atmoic changes. Atomic changes are guaranteed to appear to be instentaneous to all external
+observers, meaning that two threads can change the value, but that this change can not overlap. `Arc` is a little
+slower than Rusts built in basic reference counting type `std::rc::Rc`, but prevents corruption across threads.
+
+> Authors note: I don't think I've _ever_ used `Rc`, but I use `Arc` all of the time, so don't worry that we didn't
+> cover it.
+
+So, armed with this knowledge, we can go back to unscoped threads!
+
+```rust
+use std::thread::spawn;
+use std::sync::{Arc, Mutex};
+
+fn main() {
+    let mut data = Arc::new(Mutex::new(Vec::with_capacity(10)));
+
+    let thread_ids = 0..10;
+
+    let handles = thread_ids.map(|_| {
+        // We'll clone the arc and move it into the thread
+        let cloned_arc = data.clone();
+        spawn(move || {
+            // Arc also impls Deref for its containing type
+            let mut guard = cloned_arc
+                .lock()
+                .expect("another thread with the lock panicked");
+            guard.push("Thread reporting in!".to_string());
+        })
+    });
+
+    println!("Waiting for threads to complete");
+
+    handles.for_each(|handle| handle.join().expect("thread panicked"));
+
+    println!("All threads have completed");
+
+    let guard = data.lock().unwrap();
+    assert_eq!(guard.len(), 10);
+    guard
+        .iter()
+        .for_each(|s| assert_eq!(s, &"Thread reporting in!".to_string()));
+}
+```
+
+Next Chapter
+------------
+
+ToDo! What happens in the next chapter will depend on the approach to async, and whether it requires "unsafe" or
+`macro_rules!`.
 
