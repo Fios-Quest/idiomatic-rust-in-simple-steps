@@ -8,7 +8,7 @@ Threads _can_ (big emphasis on "can") help you make faster and more responsive p
 For example:
 - As a web developer, I would like the server framework I'm using to start responding to the next request before it's
   finished responding to the previous request
-- As a game developer, I  would like my game engine to capture player inputs without being blocked by the renderer
+- As a game developer, I would like my game engine to capture player inputs without being blocked by the renderer
 - As a data engineer, I would like to process large sets of data in parallel
 
 We'll step through:
@@ -19,17 +19,17 @@ We'll step through:
 
 We'll also be touching again on our marker traits Send and Sync
 
-what is a thread
-----------------
+What is a thread?
+-----------------
 
-Before we get into the Rust, its worth discussing what a thread is.
+Before we get into the Rust, it's worth discussing what a thread is.
 
-When you run a program, that specific instance of the program is called a "process". The process incorporates not just
+When you run a program, that specific instance of the program is called a Process. The process incorporates not just
 the instructions to be run but is an abstraction around various resources that the program has access to, such as
 memory.
 
-You can run multiple processes which the opperating system will schedule seperately which could allow you to do more
-things at once, however, those process won't (or at least, shouldn't) have access to the same memory. There are ways
+You can run multiple processes which the operating system will schedule separate which could allow you to do more
+things at once, however, those processes won't (or at least, shouldn't) have access to the same memory. There are ways
 to communicate between processes, but they can be slower and more restrictive than if we could share memory.
 
 The part of the process responsible for executing your code is called a thread, and a single process can have multiple
@@ -40,7 +40,7 @@ effectively concurrently.
 Starting a thread
 -----------------
 
-You're program always has at least one thread, even your basic hello-world program runs in a thread.
+Your program always has at least one thread, even your basic hello-world program runs in a thread.
 
 ```rust
 fn main() {
@@ -48,9 +48,9 @@ fn main() {
 }
 ```
 
-What we're interest in today is how we start more threads. This is a process called "spawning".
+What we're interested in today is how we start more threads. This is a process called Spawning.
 
-To spawn a thread, we use `std::thread::spawn`... but, this won't do much on its own. Run the code below, see what's
+To spawn a thread, we use `std::thread::spawn`... but, this will do little on its own. Run the code below, see what's
 missing in the output?
 
 ```rust
@@ -67,8 +67,8 @@ fn main() {
 
 
 Spawning a thread returns a join handler. The join handler is what ties the spawned thread to the thread that spawned
-it. When the join handler is dropped, the thread is orphaned, however, it may still run. In this case, the process ends
-at the end of main so our spawned thread never got a chance to do anything.
+it. When the join handler is dropped, the thread is orphaned. It may still run but, in this case, the process ends
+at the end of main, so our spawned thread never got a chance to do anything.
 
 We pause our main thread can wait for a running thread using the join handler.
 
@@ -131,9 +131,9 @@ fn main() {
 }
 ```
 
-So now we can run threads, lets start looking at how to send data back and forth between them.
+So now we can run threads, let's start looking at how to send data back and forth between them.
 
-We can pass data into a thread before it starts so long as the data is is `Send`. We previously talked about this trait
+We can pass data into a thread before it starts so long as the data is `Send`. We previously talked about this trait
 in the [Traits](./traits.md) chapter, but to recap, data is `Send` so long as it can be safely sent between threads,
 and this trait is auto-implemented for all types that can be `Send` (though it is also possible to opt out of it).
 
@@ -193,8 +193,8 @@ Modern schedulers handle a _lot_ of threads at once, however, so far we can only
 and the parent that started it. What if we want to communicate across multiple threads, or send data to a thread after
 we already started it?
 
-Multi-producer, single-consumer (MPSC) allow us to create channels with `Sender`s that can send messages, and
-`Reciever`s that can recieve them. As per the name, Multi-producer, you can clone `Sender`s each of those clones can
+Multi-producer, single-consumer (MPSC) allows us to create channels with `Sender`s that can send messages, and
+`Reciever`s that can receive them. As per the name, Multi-producer, you can clone `Sender`s each of those clones can
 only send to a single `Reciever`. `Sender` and `Receiver` are `Send` meaning that you can create them in one thread
 and send them to another.
 
@@ -237,7 +237,7 @@ fn main() {
 
 ```
 
-FWIW, there's no built in way to create a channel with multiple receivers (`Receiver` is not `Clone`), however, there's
+FWIW, there's no built-in way to create a channel with multiple receivers (`Receiver` is not `Clone`), however, there's
 nothing stopping you building your own type for that, or there are crates that support it like Crossbeam.
 
 Sharing State
@@ -248,12 +248,12 @@ even able to edit that data. To do this, we need to use types that implement the
 
 Something is `Send` if it can be sent between threads, but doing this moves ownership from one thread to another.
 
-Something is `Sync` if a reference to it can be sent between threads, ie, `T` is `Sync` if `&T` is `Send`.
+Something is `Sync` if a reference to it can be sent between threads, i.e. `T` is `Sync` if `&T` is `Send`.
 
 Most things are `Sync`, but we still have to abide the rules of references in that we can have as many immutable
-references as we like but we can only have one mutable reference. Furthermore, references can not outlive the data they
+references as we like, but we can only have one mutable reference. Furthermore, references cannot outlive the data they
 reference... which is a little harder to confirm with threads. How do you know the thread referencing your data doesn't
-exist for longer than the data it's referencing.
+exist for longer than the data it's referenced?
 
 This is where `std::thread::scope` can help us, by providing scoped threads.
 
@@ -285,7 +285,7 @@ fn main() {
 
     println!("All scoped threads have completed");
 
-    // All scoped threads are joined before the scope function ends so we are
+    // All scoped threads are joined before the scope function ends, so we are
     // safe to modify the original data.
     data.push_str(" still");
 
@@ -294,7 +294,7 @@ fn main() {
 }
 ```
 
-This also works with mutable references but, bare in mind, only one thread can access the mutable reference and it must
+This also works with mutable references but, bear in mind, only one thread can access the mutable reference, and it must
 end before we can access our data again.
 
 
@@ -326,8 +326,8 @@ So we can share readable data across multiple threads with immutable references,
 with a single thread, but what if we want to share read/write access to data across multiple threads.
 
 Let's start by thinking why we can't do this with just references. When we're using threads, multiple parts of our
-program can be executing at the same time. Imagine we have two threads that want to change the data behind a reference
-based on what is currently stored there, something simple like each thread wants to multiple the data.
+program can be executed at the same time. Imagine we have two threads that want to change the data behind a reference
+based on what is currently stored there, something simple like each thread wants to multiply the data.
 
 1. Thread 1 reads the value from memory into a register
 2. Thread 2 reads the value from memory into a register
@@ -337,15 +337,15 @@ based on what is currently stored there, something simple like each thread wants
 In this situation, we've lost the effect of Thread 1, which _could_ be a bug.
 
 Let's consider a more serious version of this. Imagine the data rather than just being a single value, is an image
-stored in an array like structure, and you're applying multiple processes to the image at the same time. This time if
-one thread overrides another threads work, we have a much more obvious problem.
+stored in an array like structure, and you're applying multiple processes to the image at the same time. This time, if
+one thread were to override another's work, we have a much more obvious problem.
 
-In order to get around this, we need to prevent two threads accessing the same piece of data at the same time. There
-is a general software abstraction concept called a "mutex" that makes access to the data MUTually EXclusive. Rust
-provides it's mutex through `std::sync::Mutex`.
+To get around this, we need to prevent two threads accessing the same piece of data at the same time. There is a general
+software abstraction concept called a "mutex" that makes access to the data MUTually EXclusive. Rust provides it's mutex
+through `std::sync::Mutex`.
 
-When you place data inside a Mutex, in order to access it, you need to "lock" the Mutex. If the Mutex is already
-locked, then the thread currently trying to access the data needs to wait for the existing lock to be released.
+Once you place data inside a Mutex, to access it again, you need to "lock" the Mutex. If the Mutex is already locked,
+then the thread currently trying to access the data needs to wait for the existing lock to be released.
 
 
 ```rust
@@ -353,21 +353,21 @@ use std::thread::scope;
 use std::sync::Mutex;
 
 fn main() {
-    let mut data: Mutex<Vec<String>> = Mutex::new(Vec::with_capacity(10));
+    let mut data = Mutex::new(Vec::with_capacity(10));
 
     let thread_ids = 0..10;
 
     scope(|s| {
         &thread_ids.for_each(|_| {
             s.spawn(|| {
-                // The guard maintains the lock. When it goes out of scope the
+                // The guard maintains the lock. When it goes out of scope, the
                 // lock is dropped. MutexGuard implements Deref and DerefMut
                 // for the type inside
                 let mut guard = data
                     .lock()
                     .expect("another thread with the lock panicked");
                 guard.push("Thread reporting in!".to_string());
-                // guard is dropped after this line
+                // The guard is dropped after this line
             });
         });
     });
@@ -383,17 +383,17 @@ fn main() {
 ```
 
 However, there's still a slight problem here. We're currently very dependent on using scoped threads because we need
-our references to point back to the owned data, but scoped threads aren't the norm. In fact, most of the times you use
-threads in Rust, they will be abstracted behind some other framework (eg, a web server, a game engine, or data
+our references to point back to the owned data, but scoped threads aren't the norm. In fact, most of the time you use
+threads in Rust, they will be abstracted behind some other framework (for example, a web server, a game engine, or data
 processing tools).
 
-The problem of course, is that we don't know when the owned data will go out of scope and no longer be accessible.
+The problem, of course, is that we don't know when the owned data will go out of scope and no longer be accessible.
 
-We can solve this problem using an Atomic Reference Count. We haven't discussed reference counting yet as its usually
+We can solve this problem using an Atomic Reference Count. We haven't discussed reference counting yet as it's usually
 fairly niche, however, reference counting allows you to share data around an application without needing to clone it
 and side stepping complex reference rules. It works by moving the data you want to share onto the heap, and allowing
-access through a reference count type. When you clone the reference count value, instead of it cloning the data, it
-modifies its internal count of how many clones currently exist. Every time a reference count type goes out of scope
+access through a reference count type. When you clone the reference count value, instead of the data being cloned, it
+modifies its internal count of how many clones currently exist. Every time a reference count type goes out of scope,
 the count is decreased. Once the count hits zero, there are no further references to the data and so it can be cleaned
 up.
 
@@ -402,12 +402,12 @@ normal reference count won't work. If the reference counter is cloned or dropped
 in another thread, you could end up with an inconsistent number count of references, meaning data gets dropped at the
 wrong time. This is why we need a special reference count type, `std::sync::Arc`, an Atomic Reference Count.
 
-Atomic data types guarantee atmoic changes. Atomic changes are guaranteed to appear to be instentaneous to all external
-observers, meaning that two threads can change the value, but that this change can not overlap. `Arc` is a little
+Atomic data types guarantee atomic changes. Atomic changes are guaranteed to appear to be instantaneous to all external
+observers, meaning that two threads can change the value, but that this change cannot overlap. `Arc` is a little
 slower than Rusts built in basic reference counting type `std::rc::Rc`, but prevents corruption across threads.
 
-> Authors note: I don't think I've _ever_ used `Rc`, but I use `Arc` all of the time, so don't worry that we didn't
-> cover it.
+> Authors note: I don't think I've _ever_ used `Rc`, but I use `Arc` all the time, so don't worry that we didn't
+> cover it in this book. If you need to pass data around wrapped in its own container its there to use
 
 So, armed with this knowledge, we can go back to unscoped threads!
 
