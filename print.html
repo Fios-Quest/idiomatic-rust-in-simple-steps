@@ -1424,8 +1424,8 @@ pattern matching which and expressions.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="control-flow"><a class="header" href="#control-flow">Control Flow</a></h1>
 <p>Programs are typically executed one line at a time (this is called flow), but we can alter what the next line is with
 control flow.</p>
-<p>There are two main ways of doing this <a href="language-basics/control-flow.html#branching">branching</a> and <a href="language-basics/control-flow.html#looping">looping</a>.</p>
-<p>Before we do that though, lets talk about two of Rusts coolest features, which will come up a lot later,
+<p>There are two main ways of doing this: <a href="language-basics/control-flow.html#branching">branching</a> and <a href="language-basics/control-flow.html#looping">looping</a>.</p>
+<p>Before we do that though, lets talk about two of Rust's coolest features, which will come up a lot later,
 <a href="language-basics/control-flow.html#patterns">patterns</a> and how <a href="language-basics/control-flow.html#blocks-are-expressions">blocks are also expressions</a>.</p>
 <h2 id="patterns"><a class="header" href="#patterns">Patterns</a></h2>
 <p>In the last chapter we talked about compound types. Tuples, Structs, and Enums allow the construction of more complex
@@ -1473,7 +1473,7 @@ fn main() {
     
     println!("The point was at x: {x} and y: {y}");
 }</code></pre></pre>
-<p>In the above example we extract the structs named fields straight into variables of the same name as its easy and the
+<p>In the above example we extract the structs named fields straight into variables of the same name as it's easy and the
 names were appropriate. However, it might be better in the context of your program to name them something else. Below
 we've renamed <code>x</code> to <code>width</code> and <code>y</code> to <code>height</code>:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">struct Point {
@@ -1546,7 +1546,7 @@ if a == b {
 }
 println!("regardless of whether expression was true print this");
 <span class="boring">}</span></code></pre></pre>
-<p>If you want to run some code if the expression is <code>true</code>, but some different code if its <code>false</code>, then you can extend
+<p>If you want to run some code if the expression is <code>true</code>, but some different code if it's <code>false</code>, then you can extend
 <code>if</code> with <code>else</code>. Here we compare if the first number is greater than the second number.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -1661,8 +1661,8 @@ from a function or breaking from a loop</p>
 <p>This pattern matching stuff is really handy, right?!</p>
 <p>Well the creators of Rust thought so too, in fact, they made a whole control flow mechanism around it!</p>
 <p><code>match</code> is a bit like <code>if</code> in that it can branch, and act as an expression. However, <code>match</code> can do a lot more than
-<code>if</code>, it will match against multiple possibilities, allows match guards for fine grain control of pattern matching, and
-its exhaustive, meaning that a match <em>must</em> deal with every possibility.</p>
+<code>if</code>: it will match against multiple possibilities, allows match guards for fine grain control of pattern matching, and
+it's exhaustive, meaning that a match <em>must</em> deal with every possibility.</p>
 <p>Lets look at our Vector example again:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">enum Vector {
 </span><span class="boring">    Two(f32, f32),
@@ -1795,7 +1795,7 @@ let magnitude = match v {
 <h2 id="looping"><a class="header" href="#looping">Looping</a></h2>
 <h3 id="loop"><a class="header" href="#loop">Loop</a></h3>
 <p>The most basic loop is, well, <code>loop</code>.</p>
-<p>When you enter a loop, the code inside it will run until its explicitly told to stop. For example:</p>
+<p>When you enter a loop, the code inside it will run until it's explicitly told to stop. For example:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">let mut protect_the_loop: u8 = 0;
@@ -1854,7 +1854,7 @@ println!("The number we found was {some_cool_number}");
 <p>Another useful keyword when looping is <code>continue</code>. Imagine you have a series of things that need to be processed but
 you can skip over <em>some</em> of those things.</p>
 <p>The following example will continuously get images, and run a time-consuming <code>process_image</code> function, unless the image
-is an SVG, in which can it will skip it.</p>
+is an SVG, in which case it will skip it.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">use std::{
 </span><span class="boring">    io::{stdout, Write},
 </span><span class="boring">    thread::sleep,
@@ -1962,7 +1962,7 @@ the program</li>
 <h3 id="while"><a class="header" href="#while">While</a></h3>
 <p>While <code>loop</code> is great for programs that actually do want to try to keep running forever (or perhaps has many exit
 conditions), we often only want to loop over something <code>while</code> something is true. The <code>while</code> loop takes an expression
-that evaluates to true or false. The expression is checked at the start of each iteration through the loop, if its
+that evaluates to true or false. The expression is checked at the start of each iteration through the loop; if it's
 true, the loop will execute.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
 </span>let mut counter = 0;
@@ -2013,16 +2013,16 @@ for message in messages {
 println!("All messages processed");
 <span class="boring">}</span></code></pre></pre>
 <h4 id="range"><a class="header" href="#range">Range</a></h4>
-<p>Another neat Rust type that works really well here is the Range. We haven't covered Range yet but if you've been peaking
+<p>Another neat Rust type that works really well here is the Range. We haven't covered Range yet but if you've been peeking
 at the code samples throughout the last few chapters, you might have spotted a few!</p>
-<p>Range's allow you to specify a "closed" or "half open" range of numbers... kinda, see below.</p>
+<p>Ranges allow you to specify a "closed" or "half open" range of numbers... kinda, see below.</p>
 <blockquote>
-<p>Actually, Range's allow you to specify a range of anything so long as it implements the traits <code>PartialEq</code> and
-<code>PartialOrd</code>. I've personally never seen this done for anything except numbers and characters, but its worth pointing
+<p>Actually, Ranges allow you to specify a range of anything so long as it implements the traits <code>PartialEq</code> and
+<code>PartialOrd</code>. I've personally never seen this done for anything except numbers and characters, but it's worth pointing
 out. We'll talk more about PartialEq and PartialOrd in a later chapter.</p>
 </blockquote>
 <p>We write Ranges in the form <code>start..end</code> where <code>start</code> is inclusive and <code>end</code> is <code>exclusive</code>. This means that <code>2..5</code>
-includes 2 but not 5. If you want to create a range that includes the final number, prefix that number with <code>=</code>, eg
+includes 2 but not 5. If you want to create a range that includes the final number, prefix that number with <code>=</code>, e.g.
 <code>2..=5</code>:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
 </span>let exclusive = 0..5;
