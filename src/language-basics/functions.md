@@ -357,15 +357,15 @@ You'll also note that we used a full fat `String` here, not a string slice refer
 
 ```rust
 # fn main() {
-let a = "hello";   // `a` is a reference to data that exists in the binaries "data"
+let a = "hello";   // `a` is a reference to data that exists in the binary's "data"
 let b = a;         // references are Copy so the reference is copied from a to b
 println!("{b}");   // Prints "hello"
 println!("{a}");   // Also prints "hello"
 # }
 ```
 
-Because `"hello"` exists inside the binaries data you can not "Own" it. Ownership would imply that once its no longer
-used it can be freed, but as its part of the binary, that wouldn't make sense. Instead, we just get a reference to where 
+Because `"hello"` exists inside the binary's data you can not "Own" it. Ownership would imply that once it's no longer
+used it can be freed, but as it's part of the binary, that wouldn't make sense. Instead, we just get a reference to where 
 the value exists in memory. This reference is also immutable, you can't change values in the binary. Immutable 
 references _are_ Copy though.
 
@@ -493,7 +493,7 @@ fn main() {
 > a danger here if using multibyte characters. Try not to split strings like this as it's not guaranteed the result is a
 > valid utf-8 string.
 
-The function split takes a reference to a string, a point to split at, and the returns everything on the left of the
+The function split takes a reference to a string, a point to split at, and then returns everything on the left of the
 split and everything on the right. The cool thing here is that the string isn't duplicated, the values `left` and 
 `right` are references that point to the inside of our input string! 
 
@@ -538,7 +538,7 @@ Remember the stack? Let's tie what we know about ownership to what we know about
 - As functions come to an end they are removed from the top of the stack
 - Owned data that is not returned down the stack is freed
 
-When it comes to references, we need to make sure that a reference to owned data does not out live the owned data.
+When it comes to references, we need to make sure that a reference to owned data does not outlive the owned data.
 
 For example, lets create a string on the heap called `my_string`. We'll then return a reference to that string, but not
 the string itself. This would mean that when the function comes to an end, the variable `my_string` goes out of scope,
@@ -663,7 +663,7 @@ belongs to, it can't go below the person standing highest on the stack.
 Lifetimes can be incredibly powerful, there's no need to fear them. One amazing example is that you can have a string
 that contains some data, for example it could be a serialized format like JSON or YAML, or it could be something like
 an Advent of Code input string. Lifetimes mean that you bring that String into your program, allocating the memory for
-it once, then turn it into a complex data structure. So long as the original String exists, the data structure can need
+it once, then turn it into a complex data structure. So long as the original String exists, the data structure need
 not allocate any further memory, which is incredibly efficient.
 
 ```rust
@@ -702,7 +702,7 @@ Here are some best practices when it comes to working with functions:
 - Create a function whenever a section of code can be described in a few words
 - The function name should describe what that code is doing
 - Functions should only do one thing, avoid big branches inside functions
-- Keep functions short, but not too short. Functions should be set of instructions grouped together, too few, and it may
+- Keep functions short, but not too short. Functions should be a set of instructions grouped together, too few, and it may
   not be worth the function, too many, and it may need to be broken down into more functions
 - Do not take ownership unless you expressly need to own the data
 - _Try_ to avoid mutable parameters
