@@ -85,7 +85,7 @@ We define a module with the `mod` keyword and a name. There are then three ways 
 3. Inside curly brackets, eg `mod my_module { ... }`
 
 If the module exposes anything publicly, you can then reference them with the path to the module and the name of the
-thing you're referencing separate by double colons. Sound familiar? It should, this is how we've been accessing Rust's
+thing you're referencing separated by double colons. Sound familiar? It should, this is how we've been accessing Rust's
 standard library. For example, the `stdin` function is inside the `io` module, which itself is available inside the
 `std` library.
 
@@ -140,12 +140,12 @@ mod tests {
 ```
 
 As long as nothing in the `tests` module is used in your main program it shouldn't appear in your final binary, however,
-this isn't good enough. There's a risk we might make a mistake, but ever without that, the module will still be 
+this isn't good enough. There's a risk we might make a mistake, but even without that, the module will still be 
 processed by the compiler in order to do things like type checking. We only care about this module when we're running
 our tests and Rust provides us a way to tell it that, the 
 [`#[cfg(...)]` attribute](https://doc.rust-lang.org/reference/conditional-compilation.html).
 
-Attributes are one of Rusts many meta programming tools which we'll cover more in the future at increasing difficulty
+Attributes are one of Rust's many meta programming tools which we'll cover more in the future at increasing difficulty
 levels. For now, the `cfg` attribute allows us to tell the Rust Compiler (`rustc`) _when_ we want to compile something.
 There are many, many ways to use conditional compilation, but for tests it's pretty simple, we only want the module
 compiled when we're building tests and `cfg` has a "predicate" to identify this simply called `test`.
@@ -545,7 +545,7 @@ mod tests {
 
 We use the `todo!` macro to state we are intending to come back and fix this code soon. It works even in our function 
 that's supposed to return a boolean because Rust recognises that the todo macro will kill the program, and therefore the
-function can will never return.
+function will never return.
 
 We've also used an underscore on the front of the `_input` parameter just to let Rust know that _we_ know that parameter
 isn't used yet (otherwise it'll warn us about it).
@@ -749,7 +749,7 @@ My personal feelings are that you as an engineer should strive for 100% coverage
 
 As a manager or engineering lead though, test coverage is a terrible metric. Test coverage doesn't tell you if the test
 was any good. If you make arbitrary metrics like this, you're not improving code quality, engineers will write tests 
-that meet that metric, but don't for-fill the reason we want tests in the first place which is to answer: "does this
+that meet that metric, but don't fulfil the reason we want tests in the first place which is to answer: "does this
 code do what we want it to do?".
 
 As an engineer, it's a matter of pride. Get your code right now, and you won't have to deal with it later. As a leader,
