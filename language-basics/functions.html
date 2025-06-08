@@ -427,13 +427,13 @@ println!("{a}");             // Also prints "hello"
 <span class="boring">}</span></code></pre></pre>
 <p>You'll also note that we used a full fat <code>String</code> here, not a string slice reference. Here's what that would look like:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
-</span>let a = "hello";   // `a` is a reference to data that exists in the binaries "data"
+</span>let a = "hello";   // `a` is a reference to data that exists in the binary's "data"
 let b = a;         // references are Copy so the reference is copied from a to b
 println!("{b}");   // Prints "hello"
 println!("{a}");   // Also prints "hello"
 <span class="boring">}</span></code></pre></pre>
-<p>Because <code>"hello"</code> exists inside the binaries data you can not "Own" it. Ownership would imply that once its no longer
-used it can be freed, but as its part of the binary, that wouldn't make sense. Instead, we just get a reference to where
+<p>Because <code>"hello"</code> exists inside the binary's data you can not "Own" it. Ownership would imply that once it's no longer
+used it can be freed, but as it's part of the binary, that wouldn't make sense. Instead, we just get a reference to where
 the value exists in memory. This reference is also immutable, you can't change values in the binary. Immutable
 references <em>are</em> Copy though.</p>
 <p>What does this have to do with functions though?</p>
@@ -534,7 +534,7 @@ and continues until the end of the "input" slice. Also note that these are range
 a danger here if using multibyte characters. Try not to split strings like this as it's not guaranteed the result is a
 valid utf-8 string.</p>
 </blockquote>
-<p>The function split takes a reference to a string, a point to split at, and the returns everything on the left of the
+<p>The function split takes a reference to a string, a point to split at, and then returns everything on the left of the
 split and everything on the right. The cool thing here is that the string isn't duplicated, the values <code>left</code> and
 <code>right</code> are references that point to the inside of our input string!</p>
 <p>How does Rust know that though? Let's confuse it a bit.</p>
@@ -570,7 +570,7 @@ relationship must be understood at compile time.</p>
 <li>As functions come to an end they are removed from the top of the stack</li>
 <li>Owned data that is not returned down the stack is freed</li>
 </ul>
-<p>When it comes to references, we need to make sure that a reference to owned data does not out live the owned data.</p>
+<p>When it comes to references, we need to make sure that a reference to owned data does not outlive the owned data.</p>
 <p>For example, lets create a string on the heap called <code>my_string</code>. We'll then return a reference to that string, but not
 the string itself. This would mean that when the function comes to an end, the variable <code>my_string</code> goes out of scope,
 so the data that it owns on the Heap is freed... what would our reference point at now? Luckily Rust won't let us do
@@ -672,7 +672,7 @@ belongs to, it can't go below the person standing highest on the stack.</p>
 <p>Lifetimes can be incredibly powerful, there's no need to fear them. One amazing example is that you can have a string
 that contains some data, for example it could be a serialized format like JSON or YAML, or it could be something like
 an Advent of Code input string. Lifetimes mean that you bring that String into your program, allocating the memory for
-it once, then turn it into a complex data structure. So long as the original String exists, the data structure can need
+it once, then turn it into a complex data structure. So long as the original String exists, the data structure need
 not allocate any further memory, which is incredibly efficient.</p>
 <pre><pre class="playground"><code class="language-rust">struct User&lt;'a&gt; {
   name: &amp;'a str,
@@ -705,7 +705,7 @@ fur: white"
 <li>Create a function whenever a section of code can be described in a few words</li>
 <li>The function name should describe what that code is doing</li>
 <li>Functions should only do one thing, avoid big branches inside functions</li>
-<li>Keep functions short, but not too short. Functions should be set of instructions grouped together, too few, and it may
+<li>Keep functions short, but not too short. Functions should be a set of instructions grouped together, too few, and it may
 not be worth the function, too many, and it may need to be broken down into more functions</li>
 <li>Do not take ownership unless you expressly need to own the data</li>
 <li><em>Try</em> to avoid mutable parameters</li>
