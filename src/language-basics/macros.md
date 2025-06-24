@@ -1001,8 +1001,9 @@ language:
 | `->`  | decrement value, increment pointer | function/closure return type |
 | `<-`  | decrement pointer, decrement value | unused but reserved          |
 
-Soooo... we need to take care of these special cases, unfortunately. It's not pretty but by simply adding arms for these
-special tokens, everything will start working.
+Soooo... we need to take care of these special cases, unfortunately. Luckily, while `>>` is a right shift token, `> >`
+_is_ two greater than tokens. Tokens can be seperated by whitespace and will still match the `tt` fragment-specifier,
+all we need to do is split the token and pass it back into the macro
 
 ```rust
 #![recursion_limit = "2048"]
@@ -1057,33 +1058,19 @@ macro_rules! brain_fudge_helper {
 
     // Special "token" cases
     ($data:ident; $pointer:ident; $buffer:ident; >> $($token:tt)*) => {
-        $pointer = $pointer.saturating_add(2);
-        while $pointer >= $data.len() {
-            $data.push(0);
-        }
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; > > $($token)*);
     };
     ($data:ident; $pointer:ident; $buffer:ident; << $($token:tt)*) => {
-        $pointer = $pointer.saturating_sub(2);
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; < < $($token)*);
     };
     ($data:ident; $pointer:ident; $buffer:ident; .. $($token:tt)*) => {
-        $buffer.push($data[$pointer]);
-        $buffer.push($data[$pointer]);
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; . . $($token)*);
     };
     ($data:ident; $pointer:ident; $buffer:ident; <- $($token:tt)*) => {
-        $pointer = $pointer.saturating_sub(1);
-        $data[$pointer] = $data[$pointer].wrapping_sub(1);
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; < - $($token)*);
     };
     ($data:ident; $pointer:ident; $buffer:ident; -> $($token:tt)*) => {
-        $data[$pointer] = $data[$pointer].wrapping_sub(1);
-        $pointer = $pointer.saturating_add(1);
-        while $pointer >= $data.len() {
-            $data.push(0);
-        }
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; - > $($token)*);
     };
 }
 
