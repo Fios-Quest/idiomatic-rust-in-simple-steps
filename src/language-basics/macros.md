@@ -658,14 +658,20 @@ We'll create a new helper macro that can handle these tokens by having an arm th
 with a token we want to handle and passes remaining tokens back to itself. We also need a special arm to handle when
 there are no tokens left so we have an endpoint to our recursive calls.
 
+This time, when we create our match arms through, we're going to use a semicolon as a separator. The reason for this is
+that Brain Fudge uses comma's as part of its syntax (even if we're not using it here). This doesn't actually cause a
+problem with matching (even if the first character of your Brain Fudge program is a comma, it still matches based on
+position relative to other commas), but we _can_ use semicolons as separators in our macro, and it will help readers
+of macro invocations feel less confused.
+
 ```rust,no_run
 macro_rules! brain_fudge_helper {
     // This arm matches +, it adds 1 to the value at the current position We'll
     // use wrapping_add to avoid overflows, so in our interpreter, adding 1 to
     // 255 makes 0.
-    ($data:ident, $pointer:ident, $buffer:ident, + $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
         $data[$pointer] = $data[$pointer].wrapping_add(1);
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
     // This arm matches >, it adds 1 to the pointer position. This time we're
     // using saturating_add for the specific reason we want to be consistent
@@ -673,21 +679,21 @@ macro_rules! brain_fudge_helper {
     // We also need to make sure that any time we go outside of the Vec we
     // resize the Vec appropriately and zero the array, we can do this with a
     // quick loop, pushing 0's
-    ($data:ident, $pointer:ident, $buffer:ident, > $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
         $pointer = $pointer.saturating_add(1);
         while $pointer >= $data.len() {
             $data.push(0);
         }
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
     // This arm matches ., it takes the value at the current pointer and writes
     // it to our output buffer
-    ($data:ident, $pointer:ident, $buffer:ident, . $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
         $buffer.push($data[$pointer]);
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
     // This arm matches there being no values left, it does nothing
-    ($data:ident, $pointer:ident, $buffer:ident, ) => {};
+    ($data:ident; $pointer:ident; $buffer:ident; ) => {};
 }
 ```
 
@@ -695,22 +701,22 @@ And update our brain_fudge! macro to call the helper, passing in the program sta
 
 ```rust,compile_fail
 # macro_rules! brain_fudge_helper {
-#     ($data:ident, $pointer:ident, $buffer:ident, + $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
 #         $data[$pointer] = $data[$pointer].wrapping_add(1);
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, > $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
 #         $pointer = $pointer.wrapping_add(1);
 #         while $pointer >= $data.len() {
 #             $data.push(0);
 #         }
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, . $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
 #         $buffer.push($data[$pointer]);
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, ) => {};
+#     ($data:ident; $pointer:ident; $buffer:ident; ) => {};
 # }
 # 
 macro_rules! brain_fudge {
@@ -722,7 +728,7 @@ macro_rules! brain_fudge {
 
             // We update our brain_fudge macro to pass the program state to the
             // helper
-            brain_fudge_helper!(data, pointer, output, $($token)+);
+            brain_fudge_helper!(data; pointer; output; $($token)+);
             
             output.into_iter().map(char::from).collect::<String>()
         }
@@ -785,22 +791,22 @@ The `recursion_limit` attribute applies at the crate level so be careful with th
 
 macro_rules! brain_fudge_helper {
     // ... snip ...
-#     ($data:ident, $pointer:ident, $buffer:ident, + $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
 #         $data[$pointer] = $data[$pointer].wrapping_add(1);
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, > $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
 #         $pointer = $pointer.wrapping_add(1);
 #         while $pointer >= $data.len() {
 #             $data.push(0);
 #         }
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, . $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
 #         $buffer.push($data[$pointer]);
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, ) => {};
+#     ($data:ident; $pointer:ident; $buffer:ident; ) => {};
 }
 
 macro_rules! brain_fudge {
@@ -811,7 +817,7 @@ macro_rules! brain_fudge {
 #             let mut pointer = 0_usize;
 #             let mut output: Vec<u8> = Vec::new();
 #             
-#             brain_fudge_helper!(data, pointer, output, $($token)+);
+#             brain_fudge_helper!(data; pointer; output; $($token)+);
 #             
 #             output.into_iter().map(char::from).collect::<String>()
 #         }
@@ -872,44 +878,44 @@ Lets write up the missing arms and run our test against the original Hello World
 
 macro_rules! brain_fudge_helper {
     // Like + but does a wrapping_sub instead 
-    ($data:ident, $pointer:ident, $buffer:ident, - $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; - $($token:tt)*) => {
         $data[$pointer] = $data[$pointer].wrapping_sub(1);
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
     // Like < but does a saturating_sub instead. This is why saturating is
     // potentially better here as we don't want to wrap and have fill a Vec with
     // something like 18,446,744,073,709,551,615 zeros
-    ($data:ident, $pointer:ident, $buffer:ident, < $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; < $($token:tt)*) => {
         $pointer = $pointer.saturating_sub(1);
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
     // And here's the magic! We match against $loop_statement tokens inside
     // a square bracket pair potentially followed by more tokens. We then loop
     // while the data at the pointer isn't 0, and once it is, move on to the
     // rest of the tokens
-    ($data:ident, $pointer:ident, $buffer:ident, [$($loop_statement:tt)+] $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; [$($loop_statement:tt)+] $($token:tt)*) => {
         while $data[$pointer] != 0 {
-            brain_fudge_helper!($data, $pointer, $buffer, $($loop_statement)+);
+            brain_fudge_helper!($data; $pointer; $buffer; $($loop_statement)+);
         }
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
     // ... Snip previous arms ...
-#     ($data:ident, $pointer:ident, $buffer:ident, + $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
 #         $data[$pointer] = $data[$pointer].wrapping_add(1);
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, > $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
 #         $pointer = $pointer.saturating_add(1);
 #         while $pointer >= $data.len() {
 #             $data.push(0);
 #         }
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, . $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
 #         $buffer.push($data[$pointer]);
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, ) => {};
+#     ($data:ident; $pointer:ident; $buffer:ident; ) => {};
 }
  
 macro_rules! brain_fudge {
@@ -922,7 +928,7 @@ macro_rules! brain_fudge {
 # 
 #             // We update our brain_fudge macro to pass the program state to the
 #             // helper
-#             brain_fudge_helper!(data, pointer, output, $($token)+);
+#             brain_fudge_helper!(data; pointer; output; $($token)+);
 #             
 #             output.into_iter().map(char::from).collect::<String>()
 #         }
@@ -1009,7 +1015,7 @@ macro_rules! brain_fudge {
 #             let mut pointer = 0_usize;
 #             let mut output = Vec::new();
 #             
-#             brain_fudge_helper!(data, pointer, output, $($token)+);
+#             brain_fudge_helper!(data; pointer; output; $($token)+);
 #             
 #             output.into_iter().map(char::from).collect::<String>()
 #         }
@@ -1018,66 +1024,66 @@ macro_rules! brain_fudge {
 
 macro_rules! brain_fudge_helper {
     // ... Snip existing tokens ...
-#     ($data:ident, $pointer:ident, $buffer:ident, + $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
 #         $data[$pointer] = $data[$pointer].wrapping_add(1);
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, - $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; - $($token:tt)*) => {
 #         $data[$pointer] = $data[$pointer].wrapping_sub(1);
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, > $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
 #         $pointer = $pointer.saturating_add(1);
 #         while $pointer >= $data.len() {
 #             $data.push(0);
 #         }
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, < $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; < $($token:tt)*) => {
 #         $pointer = $pointer.saturating_sub(1);
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, . $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
 #         $buffer.push($data[$pointer]);
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, [$($loop_statement:tt)+] $($token:tt)*) => {
+#     ($data:ident; $pointer:ident; $buffer:ident; [$($loop_statement:tt)+] $($token:tt)*) => {
 #         while $data[$pointer] != 0 {
-#             brain_fudge_helper!($data, $pointer, $buffer, $($loop_statement)+);
+#             brain_fudge_helper!($data; $pointer; $buffer; $($loop_statement)+);
 #         }
-#         brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident, $pointer:ident, $buffer:ident, ) => {};
+#     ($data:ident; $pointer:ident; $buffer:ident; ) => {};
 
     // Special "token" cases
-    ($data:ident, $pointer:ident, $buffer:ident, >> $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; >> $($token:tt)*) => {
         $pointer = $pointer.saturating_add(2);
         while $pointer >= $data.len() {
             $data.push(0);
         }
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
-    ($data:ident, $pointer:ident, $buffer:ident, << $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; << $($token:tt)*) => {
         $pointer = $pointer.saturating_sub(2);
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
-    ($data:ident, $pointer:ident, $buffer:ident, .. $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; .. $($token:tt)*) => {
         $buffer.push($data[$pointer]);
         $buffer.push($data[$pointer]);
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
-    ($data:ident, $pointer:ident, $buffer:ident, <- $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; <- $($token:tt)*) => {
         $pointer = $pointer.saturating_sub(1);
         $data[$pointer] = $data[$pointer].wrapping_sub(1);
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
-    ($data:ident, $pointer:ident, $buffer:ident, -> $($token:tt)*) => {
+    ($data:ident; $pointer:ident; $buffer:ident; -> $($token:tt)*) => {
         $data[$pointer] = $data[$pointer].wrapping_sub(1);
         $pointer = $pointer.saturating_add(1);
         while $pointer >= $data.len() {
             $data.push(0);
         }
-        brain_fudge_helper!($data, $pointer, $buffer, $($token)*);
+        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
     };
 }
 
