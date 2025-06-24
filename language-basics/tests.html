@@ -228,7 +228,7 @@ to that module unless explicitly marked as public with the <code>pub</code> keyw
 <li>Inside curly brackets, eg <code>mod my_module { ... }</code></li>
 </ol>
 <p>If the module exposes anything publicly, you can then reference them with the path to the module and the name of the
-thing you're referencing separate by double colons. Sound familiar? It should, this is how we've been accessing Rust's
+thing you're referencing separated by double colons. Sound familiar? It should, this is how we've been accessing Rust's
 standard library. For example, the <code>stdin</code> function is inside the <code>io</code> module, which itself is available inside the
 <code>std</code> library.</p>
 <p>We access that function using <code>std::io::stdin()</code>. We can also use the <code>use</code> keyword to simplify this a bit, for example:</p>
@@ -271,11 +271,11 @@ mod tests {
     // empty for now
 }</code></pre>
 <p>As long as nothing in the <code>tests</code> module is used in your main program it shouldn't appear in your final binary, however,
-this isn't good enough. There's a risk we might make a mistake, but ever without that, the module will still be
+this isn't good enough. There's a risk we might make a mistake, but even without that, the module will still be
 processed by the compiler in order to do things like type checking. We only care about this module when we're running
 our tests and Rust provides us a way to tell it that, the
 <a href="https://doc.rust-lang.org/reference/conditional-compilation.html"><code>#[cfg(...)]</code> attribute</a>.</p>
-<p>Attributes are one of Rusts many meta programming tools which we'll cover more in the future at increasing difficulty
+<p>Attributes are one of Rust's many meta programming tools which we'll cover more in the future at increasing difficulty
 levels. For now, the <code>cfg</code> attribute allows us to tell the Rust Compiler (<code>rustc</code>) <em>when</em> we want to compile something.
 There are many, many ways to use conditional compilation, but for tests it's pretty simple, we only want the module
 compiled when we're building tests and <code>cfg</code> has a "predicate" to identify this simply called <code>test</code>.</p>
@@ -611,7 +611,7 @@ mod tests {
 <p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=64e08f5b84aaf37520679327ae0eb015">Link to tests</a></p>
 <p>We use the <code>todo!</code> macro to state we are intending to come back and fix this code soon. It works even in our function
 that's supposed to return a boolean because Rust recognises that the todo macro will kill the program, and therefore the
-function can will never return.</p>
+function will never return.</p>
 <p>We've also used an underscore on the front of the <code>_input</code> parameter just to let Rust know that <em>we</em> know that parameter
 isn't used yet (otherwise it'll warn us about it).</p>
 <p>Let's think about our implementation. The string slice type doesn't have a reverse method built in to it and even if it
@@ -772,7 +772,7 @@ the tests first, right?</p>
 <p>My personal feelings are that you as an engineer should strive for 100% coverage of your code.</p>
 <p>As a manager or engineering lead though, test coverage is a terrible metric. Test coverage doesn't tell you if the test
 was any good. If you make arbitrary metrics like this, you're not improving code quality, engineers will write tests
-that meet that metric, but don't for-fill the reason we want tests in the first place which is to answer: "does this
+that meet that metric, but don't fulfil the reason we want tests in the first place which is to answer: "does this
 code do what we want it to do?".</p>
 <p>As an engineer, it's a matter of pride. Get your code right now, and you won't have to deal with it later. As a leader,
 make sure your engineers are encouraged to be the best they can. That means giving them the time to write tests first,
