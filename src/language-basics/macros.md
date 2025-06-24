@@ -381,7 +381,10 @@ is not an expression, even though all expressions are also statements.
 // ident:           |ident|
 // literals:                                         |literal|
 // expressions:                   |             expr             |
+//                                                   | expr  |
 // statements:  |                       stmt                       |
+//                                |             stmt             |
+//                                                   | stmt  |
 ```
 
 Usefully DRY
@@ -562,18 +565,18 @@ language is what's known as an "esoteric" language which is, generally, a fully 
 actually want to use. Often they're considered jokes, but Brain Fudge actually lets us write real programs with just
 eight instructions. This makes it (almost, foreshadowing again) ideal for creating a full DSL with little effort.
 
-The language operates on a theoretically infinite array initialised to `0`. You start with a cursor pointing to the
-first item in the array and then process instructions that allow you to modify the array and either output or input
-data.
+The language operates on theoretically infinite array sequential memory initialised to `0`. You start with a pointer
+pointing to the first cell in memory and then process instructions that allow you to move the pointer, modify the data
+at that point in memory and either output or input data at the current pointer location.
 
 This is what the instructions do:
 
-- `>` increments the cursor, moving it to the next item in the array
-- `<` decrements the cursor, moving it to the previous item in the array
-- `+` increments the value at the current position in the array
-- `-` decrements the value at the current position in the array
-- `.` outputs the value at the current position in the array
-- `,` takes one byte of input and stores it in the array (we won't use this in this example though)
+- `>` increments the pointer position, moving it to the next position in memory
+- `<` decrements the pointer position, moving it to the previous position in memory
+- `+` increments the value at the current position in memory
+- `-` decrements the value at the current position in memory
+- `.` outputs the value at the current position in memory
+- `,` takes one byte of input and stores it in memory (we won't use this in this example though)
 - `[` and `]` contain a loop that repeats the contained code. Each time the loop begins the value at the current
   position is checked, and the loop is then skipped if the value is 0.
 
@@ -583,7 +586,8 @@ That sounds easy enough, right... well, here's Hello World in Brain Fudge.
 ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.
 ```
 
-Don't panic! We can break this down rather easily.
+Don't panic! We can break the instructions down rather easily. Trust that this outputs Hello World (with a new line) and
+let's see if we can make it do that.
 
 We're going to use two macros. First let's create a macro that initialises the program.
 
@@ -591,7 +595,7 @@ We're going to use two macros. First let's create a macro that initialises the p
 macro_rules! brain_fudge {
     ($($token:tt)+) => {
         {
-            let mut data = vec![0u8];
+            let mut memory = vec![0u8];
             let mut pointer = 0_usize;
             let mut output: Vec<u8> = Vec::new();
 
@@ -611,26 +615,27 @@ Let's break it down:
   ![Token Tree example](macros/TokenTreeLight.svg)
   As it happens `>`, `<`, `+`, `-`, `.`, `,`, `[` and `]` are all tokens in Rust so this should work well... (even more
   foreshadowing).
-- `data` is going to be our programs' memory. We're using a Vec with a single initialised value of `0` under the
+- `memory` is going to be our programs' memory. We're using a Vec with a single initialised value of `0` under the
   assumption that even the smallest program requires one word of memory. We'll expand the Vec as necessary. Not
-  necessarily the most time effective but it'll be ok.
+  necessarily the most time effective but it'll be ok. For our memory we're using `u8` to represent one word. You can
+  use larger words if you like but different programs might function differently depending on what word size is used and
+  how overflows are handled (more on that later).
 - `pointer` points to the current position in data
-- `output` is where we'll store output data from the program. A better way to handle this might be to pass `Write` trait
-  so that you could in real time output to something like a file, stdout, or even a String buffer, but we'll keep things
-  simple for now.
-- At the end of the macro we take Vec of `u8`s we've stored in output and collect it into a string by naively
+- `output` is where we'll store output data from the program. We're using a Vec<u8> here, but actually any type that has
+  a method `.push(u8)` will work.  
+- At the end of the macro we take the output Vec of `u8`s we've stored in output and collect it into a string by naively
   considering each byte to be a character. Again, this won't be appropriate for every use case which is why utilising
   `Write` might be better but do you _really_ want to use this DSL properly 😅
 
 So now we need to handle the token stream, but before we do that, lets write some tests. We'll keep it simple for now,
 while `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`
-outputs "Hello, world!\n", so does the following, with only 3 instructions:
+outputs "Hello, world!\n", so does the following, with only 3 instructions of the 8 possible:
 
 ```rust,should_panic
 # macro_rules! brain_fudge {
 #     ($($token:tt)+) => {
 #         {
-#             let mut data = vec![0u8];
+#             let mut memory = vec![0u8];
 #             let mut pointer = 0_usize;
 #             let mut output: Vec<u8> = Vec::new();
 # 
@@ -679,45 +684,45 @@ assert_eq!(
 So lets work out how to handle `>`, `+` and `.`
 
 We'll create a new helper macro that can handle these tokens by having an arm that matches a token string that starts
-with a token we want to handle and passes remaining tokens back to itself. We also need a special arm to handle when
+with the token we want to handle and passes remaining tokens back to itself. We also need a special arm to handle when
 there are no tokens left so we have an endpoint to our recursive calls.
 
-This time, when we create our match arms through, we're going to use a semicolon as a separator. The reason for this is
+Unlike before, when we create our match arms, we're going to use a semicolon as a separator. The reason for this is
 that Brain Fudge uses comma's as part of its syntax (even if we're not using it here). This doesn't actually cause a
 problem with matching (even if the first character of your Brain Fudge program is a comma, it still matches based on
-position relative to other commas), but we _can_ use semicolons as separators in our macro, and it will help readers
-of macro invocations feel less confused.
+position relative to the other commas), but we _can_ use semicolons as separators in our macro which aren't part of the
+Brain Fudge language, and it _will_ help readability when we get to the final part of this chapter.
 
 ```rust,no_run
 macro_rules! brain_fudge_helper {
     // This arm matches +, it adds 1 to the value at the current position We'll
     // use wrapping_add to avoid overflows, so in our interpreter, adding 1 to
     // 255 makes 0.
-    ($data:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
-        $data[$pointer] = $data[$pointer].wrapping_add(1);
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+    ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
+        $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
     };
     // This arm matches >, it adds 1 to the pointer position. This time we're
     // using saturating_add for the specific reason we want to be consistent
     // and don't want to wrap a  usize on -, you'll see why later!
     // We also need to make sure that any time we go outside of the Vec we
-    // resize the Vec appropriately and zero the array, we can do this with a
+    // resize the Vec appropriately and zero memory, we can do this with a
     // quick loop, pushing 0's
-    ($data:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
+    ($memory:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
         $pointer = $pointer.saturating_add(1);
-        while $pointer >= $data.len() {
-            $data.push(0);
+        while $pointer >= $memory.len() {
+            $memory.push(0);
         }
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
     };
     // This arm matches ., it takes the value at the current pointer and writes
     // it to our output buffer
-    ($data:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
-        $buffer.push($data[$pointer]);
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+    ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
+        $buffer.push($memory[$pointer]);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
     };
-    // This arm matches there being no values left, it does nothing
-    ($data:ident; $pointer:ident; $buffer:ident; ) => {};
+    // This arm matches there being no Brain Fudge tokens left, it does nothing
+    ($memory:ident; $pointer:ident; $buffer:ident; ) => {};
 }
 ```
 
@@ -725,22 +730,22 @@ And update our brain_fudge! macro to call the helper, passing in the program sta
 
 ```rust,compile_fail
 # macro_rules! brain_fudge_helper {
-#     ($data:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
-#         $data[$pointer] = $data[$pointer].wrapping_add(1);
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#     ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
+#         $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
+#     ($memory:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
 #         $pointer = $pointer.wrapping_add(1);
-#         while $pointer >= $data.len() {
-#             $data.push(0);
+#         while $pointer >= $memory.len() {
+#             $memory.push(0);
 #         }
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
-#         $buffer.push($data[$pointer]);
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#     ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
+#         $buffer.push($memory[$pointer]);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; ) => {};
+#     ($memory:ident; $pointer:ident; $buffer:ident; ) => {};
 # }
 # 
 macro_rules! brain_fudge {
@@ -815,22 +820,22 @@ The `recursion_limit` attribute applies at the crate level so be careful with th
 
 macro_rules! brain_fudge_helper {
     // ... snip ...
-#     ($data:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
-#         $data[$pointer] = $data[$pointer].wrapping_add(1);
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#     ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
+#         $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
+#     ($memory:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
 #         $pointer = $pointer.wrapping_add(1);
-#         while $pointer >= $data.len() {
-#             $data.push(0);
+#         while $pointer >= $memory.len() {
+#             $memory.push(0);
 #         }
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
-#         $buffer.push($data[$pointer]);
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#     ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
+#         $buffer.push($memory[$pointer]);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; ) => {};
+#     ($memory:ident; $pointer:ident; $buffer:ident; ) => {};
 }
 
 macro_rules! brain_fudge {
@@ -902,44 +907,44 @@ Lets write up the missing arms and run our test against the original Hello World
 
 macro_rules! brain_fudge_helper {
     // Like + but does a wrapping_sub instead 
-    ($data:ident; $pointer:ident; $buffer:ident; - $($token:tt)*) => {
-        $data[$pointer] = $data[$pointer].wrapping_sub(1);
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+    ($memory:ident; $pointer:ident; $buffer:ident; - $($token:tt)*) => {
+        $memory[$pointer] = $memory[$pointer].wrapping_sub(1);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
     };
     // Like < but does a saturating_sub instead. This is why saturating is
     // potentially better here as we don't want to wrap and have fill a Vec with
     // something like 18,446,744,073,709,551,615 zeros
-    ($data:ident; $pointer:ident; $buffer:ident; < $($token:tt)*) => {
+    ($memory:ident; $pointer:ident; $buffer:ident; < $($token:tt)*) => {
         $pointer = $pointer.saturating_sub(1);
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
     };
     // And here's the magic! We match against $loop_statement tokens inside
     // a square bracket pair potentially followed by more tokens. We then loop
     // while the data at the pointer isn't 0, and once it is, move on to the
     // rest of the tokens
-    ($data:ident; $pointer:ident; $buffer:ident; [$($loop_statement:tt)+] $($token:tt)*) => {
-        while $data[$pointer] != 0 {
-            brain_fudge_helper!($data; $pointer; $buffer; $($loop_statement)+);
+    ($memory:ident; $pointer:ident; $buffer:ident; [$($loop_statement:tt)+] $($token:tt)*) => {
+        while $memory[$pointer] != 0 {
+            brain_fudge_helper!($memory; $pointer; $buffer; $($loop_statement)+);
         }
-        brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
     };
     // ... Snip previous arms ...
-#     ($data:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
-#         $data[$pointer] = $data[$pointer].wrapping_add(1);
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#     ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
+#         $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
+#     ($memory:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
 #         $pointer = $pointer.saturating_add(1);
-#         while $pointer >= $data.len() {
-#             $data.push(0);
+#         while $pointer >= $memory.len() {
+#             $memory.push(0);
 #         }
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
-#         $buffer.push($data[$pointer]);
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#     ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
+#         $buffer.push($memory[$pointer]);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; ) => {};
+#     ($memory:ident; $pointer:ident; $buffer:ident; ) => {};
 }
  
 macro_rules! brain_fudge {
@@ -1049,52 +1054,52 @@ macro_rules! brain_fudge {
 
 macro_rules! brain_fudge_helper {
     // ... Snip existing tokens ...
-#     ($data:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
-#         $data[$pointer] = $data[$pointer].wrapping_add(1);
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#     ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
+#         $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; - $($token:tt)*) => {
-#         $data[$pointer] = $data[$pointer].wrapping_sub(1);
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#     ($memory:ident; $pointer:ident; $buffer:ident; - $($token:tt)*) => {
+#         $memory[$pointer] = $memory[$pointer].wrapping_sub(1);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
+#     ($memory:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
 #         $pointer = $pointer.saturating_add(1);
-#         while $pointer >= $data.len() {
-#             $data.push(0);
+#         while $pointer >= $memory.len() {
+#             $memory.push(0);
 #         }
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; < $($token:tt)*) => {
+#     ($memory:ident; $pointer:ident; $buffer:ident; < $($token:tt)*) => {
 #         $pointer = $pointer.saturating_sub(1);
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
-#         $buffer.push($data[$pointer]);
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#     ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
+#         $buffer.push($memory[$pointer]);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; [$($loop_statement:tt)+] $($token:tt)*) => {
-#         while $data[$pointer] != 0 {
-#             brain_fudge_helper!($data; $pointer; $buffer; $($loop_statement)+);
+#     ($memory:ident; $pointer:ident; $buffer:ident; [$($loop_statement:tt)+] $($token:tt)*) => {
+#         while $memory[$pointer] != 0 {
+#             brain_fudge_helper!($memory; $pointer; $buffer; $($loop_statement)+);
 #         }
-#         brain_fudge_helper!($data; $pointer; $buffer; $($token)*);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
-#     ($data:ident; $pointer:ident; $buffer:ident; ) => {};
+#     ($memory:ident; $pointer:ident; $buffer:ident; ) => {};
 
     // Special "token" cases
-    ($data:ident; $pointer:ident; $buffer:ident; >> $($token:tt)*) => {
-        brain_fudge_helper!($data; $pointer; $buffer; > > $($token)*);
+    ($memory:ident; $pointer:ident; $buffer:ident; >> $($token:tt)*) => {
+        brain_fudge_helper!($memory; $pointer; $buffer; > > $($token)*);
     };
-    ($data:ident; $pointer:ident; $buffer:ident; << $($token:tt)*) => {
-        brain_fudge_helper!($data; $pointer; $buffer; < < $($token)*);
+    ($memory:ident; $pointer:ident; $buffer:ident; << $($token:tt)*) => {
+        brain_fudge_helper!($memory; $pointer; $buffer; < < $($token)*);
     };
-    ($data:ident; $pointer:ident; $buffer:ident; .. $($token:tt)*) => {
-        brain_fudge_helper!($data; $pointer; $buffer; . . $($token)*);
+    ($memory:ident; $pointer:ident; $buffer:ident; .. $($token:tt)*) => {
+        brain_fudge_helper!($memory; $pointer; $buffer; . . $($token)*);
     };
-    ($data:ident; $pointer:ident; $buffer:ident; <- $($token:tt)*) => {
-        brain_fudge_helper!($data; $pointer; $buffer; < - $($token)*);
+    ($memory:ident; $pointer:ident; $buffer:ident; <- $($token:tt)*) => {
+        brain_fudge_helper!($memory; $pointer; $buffer; < - $($token)*);
     };
-    ($data:ident; $pointer:ident; $buffer:ident; -> $($token:tt)*) => {
-        brain_fudge_helper!($data; $pointer; $buffer; - > $($token)*);
+    ($memory:ident; $pointer:ident; $buffer:ident; -> $($token:tt)*) => {
+        brain_fudge_helper!($memory; $pointer; $buffer; - > $($token)*);
     };
 }
 
