@@ -360,6 +360,30 @@ fn main() {
 
 Being able to quickly compose macros like this can save us a lot of time when repeating the same code over and over.
 
+Fragment-Specifiers
+-------------------
+
+The way Rust macros work is that they view what you write inside them through the eyes of the Abstract Syntax Tree. This
+means that what it sees aren't words or characters but nodes within a structure with semantic meaning. Metavariables 
+then can be typed based on how Rust view the thing you passed it, and a single metavariable could be viewed in a number
+of ways.
+
+For example, the smallest discrete item in an AST is a Token though we normally don't think about individual tokens but
+token trees (`tt`). Parts of a token tree might form an expression (`expr`), basically any token tree that forms a
+value, is an expression. An expression might assign its value to a variable using more tokens, and that variable is both
+a token and an `ident`. The span of tokens that assign the value of the expression to the ident forms a statement that
+is not an expression, even though all expressions are also statements.
+
+```rust
+/* rust */      let  hello    =   String  ::  from (  "Hello"   )  ;
+// token tree:  |tt| | tt|   |tt| | tt | |tt| |tt| |    tt      | |tt|
+//                                                   |  tt   |
+// ident:           |ident|
+// literals:                                         |literal|
+// expressions:                   |             expr             |
+// statements:  |                       stmt                       |
+```
+
 Usefully DRY
 ------------
 
