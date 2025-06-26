@@ -26,22 +26,28 @@ The general layout of `macro_rules!` looks like this:
 ```rust,compile_fail
 // We invoke the `macro_rules!` macro usually at the module level rather than in
 // a function
-macro_rules! <macro name> {
-    // A list of function-like code blocks with
-    // brackets surrounding a list of paramerete
-    ( <parameters> ) => {
-        // curly braces surround the macro body 
+macro_rules! <macro_name> {
+    // A list of function-like code blocks with brackets a match pattern
+    // potentially including "metavariables". Each of these blocks defines a
+    // single rule that is matched based on the pattern and stores matching
+    //  "metavariables" for use in the macro.  Don't worry, we''ll explain all
+    // of this very soon.
+    ( <match_pattern> ) => {
+        // curly braces surround the macro body. This is used to generate code
+        // at the invocation site of the macro.
     };
-    // You can have more function-like blocks but they need to have a different
-    // number of parameters
-    ( <parameters> ) => {
-        // curly braces surround the macro body 
+    // You can have more rules but they need to have a different pattern of
+    // metavariables to match against.
+    ( <match_pattern> ) => {
+        // different rules can do completely different things, and can even
+        // call the macro again recursively
     };
 }
 ```
 
-Your macro can then be invoked as a sort of replacement, but rather than it being a copy-paste, `macro_rules!` works
-on the Abstract Syntax Tree of your program making it much safer and more fully featured.
+When you invoke your macro it works as a sort of replacement, generating new code to exist at that point, but rather
+than it being a copy-paste, `macro_rules!` works on the Abstract Syntax Tree of your program making it much safer and
+more fully featured.
 
 Hello, macro!
 -------------
@@ -59,14 +65,54 @@ fn main() {
 ```
 
 Let's break it down. As we said above, immediately after `macro_rules!` we provide the name of the macro we're creating,
-in this case `hello`. Our first draft won't take any parameters so the brackets don't contain anything. We then have an
-arrow, followed by some curly brackets surrounding what our macro will generate.
+in this case `hello`. Our first draft won't match anything between the brackets, so we leave those empty. We then have
+an arrow, followed by some curly brackets surrounding what our macro will generate.
 
-Our `hello` macro simply creates a string containing `"Hello, world"`. Like with any other code block, because the final
-statement doesn't end with a semicolon, the value of that statement becomes the value of the code block.
+Our `hello` macro simply creates a string containing `"Hello, world"` at the site where the macro is called (in this
+case inside of an `assert_eq!` macro).
 
 This type of macro _could_ be useful if you have a block of code you need to repeat but don't want to put it in a
-function. Let's upgrade our macro with a parameter.
+function, but let's be honest, that's not very likely.
+
+Let's upgrade our macro to match a pattern.
+
+
+```rust,editable
+macro_rules! hello {
+    (this must be present) => { String::from("Hello, world") };
+}
+
+fn main() {
+    assert_eq!(hello!(this must be present), "Hello, world".to_string());
+    // assert_eq!(hello!(this wont compile), "Hello, world".to_string());
+}
+```
+
+What? What?! This is obviously madness, what kind of parameters are we passing to this macro?
+
+The key to understanding the power of macros is that they _don't_ take parameters. The thing in the brackets at the
+start of each rule is a pattern, and that pattern can be _almost_ anything. The contents of the macro's invocation is
+broken up into something called a token tree, which we'll talk about in the next section. Here, `this must be present`
+is considered a token tree made of the tokens: `this`, `must`, `be`, `present`.
+
+We can invoke different rules based on the matched pattern.
+
+```rust,editable
+macro_rules! hello {
+    (world) => { String::from("Hello, world") };
+    (yuki) => { String::from("Hello, yuki") };
+}
+
+fn main() {
+    assert_eq!(hello!(world), "Hello, world".to_string());
+    assert_eq!(hello!(yuki), "Hello, yuki".to_string());
+    // assert_eq!(hello!(this wont compile), "Hello, world".to_string());
+}
+```
+
+We obviously can't write out every possible thing that we might want match on (what if we want to be able to say "hello"
+to lots of different people) so we can capture tokens into metavariables.
+
 
 ```rust
 macro_rules! hello {
@@ -86,23 +132,27 @@ fn main() {
 
 Things got a little bit weird here, right? Lets step through our changes.
 
-First, we added a parameter, but you'll immediately notice this looks nothing like a normal function parameter in Rust.
+First, we added a metavariable, and you'll immediately notice this looks nothing like a normal function parameter in
+Rust. 
 
-In `macro_rules!`, the things that look like parameters are refered to as "metavariables". preceded by a dollar symbol,
-followed by a colon, and what's called a fragment-specifier, but is sometimes refered to as a designator.
+In `macro_rules!`, we can parameterise toekns into "metavariables" which are preceded by a dollar symbol, followed by a
+colon, and what's called a fragment-specifier (sometimes refered to as a designator).
 
-Fragment-specifiers are a bit like types but are specific to how we think about the component parts of a language. We
+Fragment-specifiers are a bit like types but are specific to how we think about how Rust classifies tokens trees. We
 can't specify "str" here, but we can specify that it's a `literal`, which is any raw value, such as a string slice, a
 number, a boolean, etc.
+
+You might wonder what will happen if our macro gets a literal thats not a `str` and the answer is it won't compile and
+the person who passed in the non-`str` will get an error relating the the `.push_str` method on `String`.
 
 There are a number of different fragment-specifiers, some of which overlap with each other, we'll go over more of them
 later in the chapter.
 
 The second change we've made here is that inside of the code block... we've added _another_ block.
 
-The reason for this is that when we _use_ the macro, Rust pretty much does a drop in replacement of the code block at
-the point that you place the macro. If we didn't have the extra brackets, when we use the macro in our code would
-look to Rust as if it were this:
+The reason for this is that when we invoke the macro, Rust pretty much does a drop in replacement of the code block at
+the point that you place the macro. If we didn't have the extra brackets, when we use the macro in our `assert_eq!`, our
+code would look to Rust as if it were this:
 
 ```rust,compile_fail
 # fn main() {
@@ -115,13 +165,13 @@ assert_eq!(
 }
 ```
 
-This doesn't work because `assert_eq!`, which is also a macro, expects its parameters to be expressions (`:expr`).
+This doesn't work because `assert_eq!`, which is also a macro, expects its parameters to be expressions (represented
+by the framgent-specifier `:expr`).
 
-In Rust an expression is any chunk of code that produces a value. So `String::from("Hello, ")` is an expression, but
-`let mut output = String::from("Hello, ");` is not. Blocks of code surrounded by `{ ... }` can also be expressions so
-long as the code returns a value by having a value at the end of the block. When we wrap our macro in curly brackets
-then, and have the output as the final line, our code block becomes a single expression the value of which is the
-`output`.
+In Rust an expression is a token tree that produces a value. So `String::from("Hello, ")` is an expression, but
+`let mut output = String::from("Hello, ");` is not. Blocks of code surrounded by `{ ... }` are expressions though
+because they have a value, even if the value is the unit type `()`. When we wrap our macro in curly brackets then, and
+have the output as the final line, our code block becomes a single expression the value of which is the `output`.
 
 This means that when we add those extra curly brackets to our macro, the generate code now looks like this, which is
 valid!
@@ -143,10 +193,7 @@ valid!
 Expressions in Rust are particularly useful as they have a type and a value, just like variables, allowing you to use
 them inside other expressions.
 
-Let's go deeper. While Rust doesn't support overloading of functions, it does support overloading of macros.
-
-`macro_rules!` can do pattern matching over the metavariables you pass into your macro. This means we can create macros
-that can take wildly different inputs. Let's bring back our original behaviour for an empty `hello!` macro:
+Let's go deeper and add another rule. Let's bring back our original behaviour for an empty `hello!` macro:
 
 ```rust
 macro_rules! hello {
@@ -166,10 +213,8 @@ fn main() {
 }
 ```
 
-Lets make one more improvement that will help us maintain consistency. We can call our macro from inside our macro!
-
-In case we might want to change our greeting later, lets not have `"Hello, "` twice. Instead, from our macro with no
-arguements we'll call our hello macro again, this time with the name filled in.
+This is fine, but we're repeating ourselves a little bit. In case we might want to change our greeting later, lets not
+have `"Hello, "` twice. To maintain consitency we can call our macro from inside our macro!
 
 ```rust
 macro_rules! hello {
@@ -192,17 +237,20 @@ fn main() {
 We're nearly there now, but I think our hello macro is missing one critical feature; what if I want to greet lots of
 people?
 
-We can "repeat" things inside macros by surrounding them with `$(...),` followed by either a `?`, a `+`, or a `*`.
+We can "repeat" patterns inside macros by surrounding them with `$(...)` followed by either a `?`, a `+`, or a `*`.
 Similar to regex rules:
 
 - `?` means the content is repeated zero or one times
 - `+` means one or more times
 - and `*` means zero or more times
 
-Repeats can be used to match metavariables multiple times, and to repeat code generation for each used repeated
-metavariable.
+Specifically with `+` you can add a seperator to the repeat pattern by placing it before the `+`. This token can be
+almost anything except the repeat symbols, or token used for delimiters, eg: `$(...),+` or `$(...);+` or even
+`$(...)~+` are all fine.
 
-I know, this is a bit headachy, but once you see a couple of examples I think it will make sense.
+Repeats can be used to match metavariables multiple times, and to repeat code generation for each used repeated
+metavariable. When the repeat pattern is used in code generation it will repeat for each combination of metavariables
+used within it.
 
 We already have zero and one metavariable dealt with, so we want a branch in our macro that takes two or more inputs:
 
@@ -216,12 +264,12 @@ macro_rules! hello {
             output
         }
     };
-    ($name:literal, $($other:literal),+) => {
+    ($name:literal, $($rest:literal),+) => {
         {
             let mut output = hello!($name);
             $(
                 output.push_str(" and ");
-                output.push_str($other);
+                output.push_str($rest);
             )+;
             output
         }
@@ -238,18 +286,18 @@ fn main() {
 }
 ```
 
-Our new arm looks a bit like the first, but now there's a comma after `$name:literal` and then a repeat pattern.
+Our new rule looks a bit like the previous one, but now there's a comma after `$name:literal` and then a repeat pattern.
 
-The repeat pattern contains a metavariable, `$other:literal`, which will be used to store all metavariables passed to
+The repeat pattern contains a metavariable, `$rest:literal`, which will be used to store all metavariables passed to
 the macro after the first. It uses a `+` to show that there must be at least one additional metavariable, but there may
 be many. There's one more quirk here though, the `,` that would separate the metavariables is outside the repeat
 brackets but before the `+`. With repeats you _can_ specify seperators this way, but it only works for `+`. We'll come
 back to this.
 
 In the body of the macro, we initialise our output in much the same way as we do in the version with no inputs, by
-calling the hello macro with the first metavariable. We then have another repeat pattern that contains the `$other`
+calling the hello macro with the first metavariable. We then have another repeat pattern that contains the `$rest`
 metavariable. Because we have a repeated metavariable inside a repeated block, this block will be repeated for every
-`literal` that `$other` matched to.
+`literal` that `$rest` matched to.
 
 If we were to unwrap the code generated for the final test, it would look something like this:
 
@@ -273,7 +321,7 @@ and we're really only making a quick toy macro to demonstrate the power they pro
 
 You might be wondering if we can use repeats to reduce the number of arms we have. We unfortunately can't do things
 like treat the first or last element of a repeat differently using macro repeats *cough*foreshadowing*cough* but we
-can merge the second and third arms using a `?`.
+can merge the second and third arms using a `*`.
 
 ```rust
 macro_rules! hello {
@@ -309,20 +357,20 @@ do it with _just_ macro repeats, BUT, we can work around that with very low-cost
 macro_rules! hello {
     ($($names:literal),*) => {
         {
-            // We split the names out directly into a slice. This is done at
+            // We split the names out directly into an array. This is done at
             // compile time so doesn't require any heap allocations
             let names = [$($names, )*];
 
-            // We get an iterator over the slice. By precisely specifying the
+            // We get an iterator over the array. By precisely specifying the
             // type of the iterator here we can avoid Rust not knowing what to
-            // do when the iterator is empty.
+            // do if the iterator is empty.
             use std::iter::Peekable;
             use std::slice::Iter;
             let mut names_iter: Peekable<Iter<&str>> = names.iter().peekable();
 
             // We initialise our string as before.
             let mut output = String::from("Hello, ");
-            // If there are no metavariables were passed then the slice will be
+            // If there are no metavariables were passed then the array will be
             // empty so we'll use our default value
             output.push_str(names_iter.next().unwrap_or(&"world"));
 
