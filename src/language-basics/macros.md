@@ -474,9 +474,9 @@ Usefully DRY
 The example we've run through to build up our understanding of how macro's work is very abstract and not very useful,
 so I wanted to go over a quick example of how I've started using Macro's.
 
-In the [Job Tracker](https://github.com/Fios-Quest/job-tracker/) app I've been building with the help of folks in the
-chat of my [streams](https://www.youtube.com/playlist?list=PLW2L8KbM0O7Z2KroHNNBWY1UApqmeiyqe), I've leaned heavily
-into composing my types from Traits to form common behaviour.
+In the [Fio's Job Tracker](https://github.com/Fios-Quest/job-tracker/) app I've been building with the help of folks in
+the chat of my [streams](https://www.youtube.com/playlist?list=PLW2L8KbM0O7Z2KroHNNBWY1UApqmeiyqe), I've leaned heavily
+into composing my types using Traits to form common behaviour.
 
 For example, at time of writing, I allow the user to create `Company`s, `Role`s, and `Flag`s. `Role`s and `Flag`s
 belong to `Company`s so those types implement the following trait:
@@ -527,8 +527,8 @@ That's fine, but we're going to be doing this for every item that implements tha
 implementation of every other trait. Every time we add a new storable item we'll have to add tests for its
 implementation.
 
-The way I got around this was, first I created a trait allowing me to create test instances of the types I want to test,
-then I created macros that use that trait to run the test:
+The way I worked around this was, first I created a trait allowing me to create test instances of the types I want to
+test, then I created macros that use that trait to run the test:
 
 ```rust
 // This trait exists in a central location
@@ -609,11 +609,11 @@ Domain Specific Languages
 Ever wanted to write your own language?
 
 We're going to get a little bit silly here, but Domain Specific Languages (DSLs) can be incredibly useful for
-conceptualising code in meaningful ways. For example, JSX is a DSL for writing React.
+conceptualising code in meaningful ways. For example, JSX is a DSL for writing React in Javascript.
 
 This:
 
-```jsx
+```javascript
 const heading = (
     <h1 className="example">
         Hello, world!
@@ -633,12 +633,12 @@ const heading = React.createElement(
 
 So, I promised silly, lets write our own DSL... a Brain Fudge interpreter.
 
-The programming language Brain Fudge (which is not actually called Brain Fudge) was created by Urban Müller in 1993. The
+The programming language Brain Fudge (which is not in fact called Brain Fudge) was created by Urban Müller in 1993. The
 language is what's known as an "esoteric" language which is, generally, a fully functional language that you would never
 actually want to use. Often they're considered jokes, but Brain Fudge actually lets us write real programs with just
-eight instructions. This makes it (almost, foreshadowing again) ideal for creating a full DSL with little effort.
+eight instructions. This makes it ideal for creating a full DSL with little effort.
 
-The language operates on theoretically infinite array sequential memory initialised to `0`. You start with a pointer
+The language operates on theoretically infinite sequential memory initialised to `0`. You start with a pointer
 pointing to the first cell in memory and then process instructions that allow you to move the pointer, modify the data
 at that point in memory and either output or input data at the current pointer location.
 
@@ -659,8 +659,8 @@ That sounds easy enough, right... well, here's Hello World in Brain Fudge.
 ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.
 ```
 
-Don't panic! We can break the instructions down rather easily. Trust that this outputs Hello World (with a new line) and
-let's see if we can make it do that.
+Don't panic! For now, we'll just trust that this is the Hello World program, we'll implement the instructions and see
+what happens when we run it.
 
 We're going to use two macros. First let's create a macro that initialises the program.
 
@@ -683,17 +683,14 @@ macro_rules! brain_fudge {
 Let's break it down:
 
 - `$($token:tt)+` is the input to our interpreter. We're using the `tt` fragment-specifier which means that our
-  repeating metavariable `$token` represents a token tree. Tokens are any discrete item in a programming language. For
-  example, the Rust code `let hello = String::from("Hello, world!");` can be represented as a token tree like this:
-  ![Token Tree example](macros/TokenTreeLight.svg)
-  As it happens `>`, `<`, `+`, `-`, `.`, `,`, `[` and `]` are all tokens in Rust so this should work well... (even more
-  foreshadowing).
+  repeating metavariable `$token` represents a token tree. As it happens `>`, `<`, `+`, `-`, `.`, `,`, `[` and `]` are
+  all tokens in Rust so this _should_ work well... (**foreshadowing**).
 - `memory` is going to be our programs' memory. We're using a Vec with a single initialised value of `0` under the
-  assumption that even the smallest program requires one word of memory. We'll expand the Vec as necessary. Not
-  necessarily the most time effective but it'll be ok. For our memory we're using `u8` to represent one word. You can
-  use larger words if you like but different programs might function differently depending on what word size is used and
-  how overflows are handled (more on that later).
-- `pointer` points to the current position in data
+  assumption that even the smallest program requires one word of memory. We'll expand the Vec as necessary. Maybe not
+  the most time effective but it'll be ok. For our memory we're using `u8` to represent one word. You can use larger
+  words if you like but different programs might function differently depending on what word size is used and how
+  overflows are handled (more on that later).
+- `pointer` points to the current position in memory (our Vector)
 - `output` is where we'll store output data from the program. We're using a Vec<u8> here, but actually any type that has
   a method `.push(u8)` will work.  
 - At the end of the macro we take the output Vec of `u8`s we've stored in output and collect it into a string by naively
@@ -702,7 +699,7 @@ Let's break it down:
 
 So now we need to handle the token stream, but before we do that, lets write some tests. We'll keep it simple for now,
 while `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`
-outputs "Hello, world!\n", so does the following, with only 3 instructions of the 8 possible:
+outputs "Hello, world!\n", so does the following, with only 3 of the 8 possible instructions:
 
 ```rust,should_panic
 # macro_rules! brain_fudge {
@@ -722,6 +719,8 @@ outputs "Hello, world!\n", so does the following, with only 3 instructions of th
 # fn main() {
 assert_eq!(
     brain_fudge!(
+        // Comments are not part of the AST so will not be processed by macros
+
         // H
         ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
         // e
@@ -756,24 +755,26 @@ assert_eq!(
 
 So lets work out how to handle `>`, `+` and `.`
 
-We'll create a new helper macro that can handle these tokens by having an arm that matches a token string that starts
+We'll create a new helper macro that can handle these tokens by having a rule that matches a token string that starts
 with the token we want to handle and passes remaining tokens back to itself. We also need a special arm to handle when
 there are no tokens left so we have an endpoint to our recursive calls.
 
 Unlike before, when we create our match arms, we're going to use a semicolon as a separator. The reason for this is
-that Brain Fudge uses comma's as part of its syntax (even if we're not using it here). This doesn't actually cause a
+that Brain Fudge uses `,`s as part of its syntax (even if we're not using it here). This doesn't actually cause a
 problem with matching (even if the first character of your Brain Fudge program is a comma, it still matches based on
 position relative to the other commas), but we _can_ use semicolons as separators in our macro which aren't part of the
 Brain Fudge language, and it _will_ help readability when we get to the final part of this chapter.
+
+Each arm will also expect the memory, the pointer, and the output buffer before matching on the specific token:
 
 ```rust,no_run
 macro_rules! brain_fudge_helper {
     // This arm matches +, it adds 1 to the value at the current position We'll
     // use wrapping_add to avoid overflows, so in our interpreter, adding 1 to
     // 255 makes 0.
-    ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
+    ($memory:ident; $pointer:ident; $buffer:ident; + $($tokens:tt)*) => {
         $memory[$pointer] = $memory[$pointer].wrapping_add(1);
-        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($tokens)*);
     };
     // This arm matches >, it adds 1 to the pointer position. This time we're
     // using saturating_add for the specific reason we want to be consistent
@@ -781,18 +782,18 @@ macro_rules! brain_fudge_helper {
     // We also need to make sure that any time we go outside of the Vec we
     // resize the Vec appropriately and zero memory, we can do this with a
     // quick loop, pushing 0's
-    ($memory:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
+    ($memory:ident; $pointer:ident; $buffer:ident; > $($tokens:tt)*) => {
         $pointer = $pointer.saturating_add(1);
         while $pointer >= $memory.len() {
             $memory.push(0);
         }
-        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($tokens)*);
     };
     // This arm matches ., it takes the value at the current pointer and writes
     // it to our output buffer
-    ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
+    ($memory:ident; $pointer:ident; $buffer:ident; . $($tokens:tt)*) => {
         $buffer.push($memory[$pointer]);
-        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($tokens)*);
     };
     // This arm matches there being no Brain Fudge tokens left, it does nothing
     ($memory:ident; $pointer:ident; $buffer:ident; ) => {};
@@ -840,7 +841,7 @@ macro_rules! brain_fudge {
 # fn main() {
 assert_eq!(
     brain_fudge!(
-      // You know what's hidden here 😅
+        // You know what's hidden here 😅
 #         // H
 #         ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
 #         // e
@@ -927,9 +928,9 @@ macro_rules! brain_fudge {
 # }
 # 
 # fn main() {
-    assert_eq!(
-        brain_fudge!(
-      // You know what's hidden here 😅
+assert_eq!(
+    brain_fudge!(
+        // You know what's hidden here 😅
 #         // H
 #         ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
 #         // e
@@ -957,8 +958,8 @@ macro_rules! brain_fudge {
 #         // \n
 #         >++++++++++.
     ),
-        "Hello World!\n"
-    );
+    "Hello World!\n"
+);
 # }
 ```
 
@@ -967,7 +968,6 @@ have. More complex is the loop `[`...`]`. Luckily, we aren't dealing with charac
 
 In Rust, the bracket pairs `()`, `[]`, and `{}` are all considered tokens that wrap other tokens, so Rust will correctly
 handle them in pairs, even when nested. Eg, with the token tree `[+[-]]` Rust will correctly match the first `[` token
-with the final `]` rather than the first `]`
 with the final `]` rather than the first `]`.
 
 This means to make our loop arm work, we can match against any token tree that starts with a `[`, contains more tokens
@@ -979,19 +979,33 @@ Lets write up the missing arms and run our test against the original Hello World
 #![recursion_limit = "2048"]
 
 macro_rules! brain_fudge_helper {
-    // Like + but does a wrapping_sub instead 
+    // ... Snip previous arms ...
+#     // +
+#     ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
+#         $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+#     };
+    // -: Like + but does a wrapping_sub instead 
     ($memory:ident; $pointer:ident; $buffer:ident; - $($token:tt)*) => {
         $memory[$pointer] = $memory[$pointer].wrapping_sub(1);
         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
     };
-    // Like < but does a saturating_sub instead. This is why saturating is
-    // potentially better here as we don't want to wrap and have fill a Vec with
-    // something like 18,446,744,073,709,551,615 zeros
+#     // >
+#     ($memory:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
+#         $pointer = $pointer.saturating_add(1);
+#         while $pointer >= $memory.len() {
+#             $memory.push(0);
+#         }
+#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+#     };
+    // <: Like > but does a saturating_sub instead. This is why saturating is
+    // potentially better here as we don't want to wrap and have to fill a Vec
+    // with around 18,446,744,073,709,551,615 zeros
     ($memory:ident; $pointer:ident; $buffer:ident; < $($token:tt)*) => {
         $pointer = $pointer.saturating_sub(1);
         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
     };
-    // And here's the magic! We match against $loop_statement tokens inside
+    // []: And here's the magic! We match against $loop_statement tokens inside
     // a square bracket pair potentially followed by more tokens. We then loop
     // while the data at the pointer isn't 0, and once it is, move on to the
     // rest of the tokens
@@ -1001,22 +1015,12 @@ macro_rules! brain_fudge_helper {
         }
         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
     };
-    // ... Snip previous arms ...
-#     ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
-#         $memory[$pointer] = $memory[$pointer].wrapping_add(1);
-#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
-#     };
-#     ($memory:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
-#         $pointer = $pointer.saturating_add(1);
-#         while $pointer >= $memory.len() {
-#             $memory.push(0);
-#         }
-#         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
-#     };
+#     // .
 #     ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
 #         $buffer.push($memory[$pointer]);
 #         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
+#     // end of program
 #     ($memory:ident; $pointer:ident; $buffer:ident; ) => {};
 }
  
@@ -1075,7 +1079,7 @@ assert_eq!(
 #         >++++++++++.
 #     ),
 #     "Hello World!\n"
-);
+# );
 # }
 ```
 
@@ -1092,16 +1096,16 @@ The exact error we get is:
 Why is it pointing at `>>`? We have a match on `>`.
 
 Well here's the problem with using tokens for our DSL. Rust considers `>>` to be a single token. Specifically it's a
-"right shift" operator. Tokens in Rust can be multiple characters. Here are our problem tokens and they mean in each
-language:
+"right shift" operator. Tokens in Rust can be multiple characters. Here are our problem tokens and what they mean in
+each language:
 
-| token | Brain Fudge                        | Rust                         |
-|-------|------------------------------------|------------------------------|
-| `..`  | output the current value twice     | range literal                |
-| `>>`  | increment pointer twice            | right shift                  |
-| `<<`  | decrement pointer twice            | left shift                   |
-| `->`  | decrement value, increment pointer | function/closure return type |
-| `<-`  | decrement pointer, decrement value | unused but reserved          |
+| token | Rust                         | Brain Fudge                        |
+|-------|------------------------------|------------------------------------|
+| `..`  | range literal                | output the current value twice     |
+| `>>`  | right shift                  | increment pointer twice            |
+| `<<`  | left shift                   | decrement pointer twice            |
+| `->`  | function/closure return type | decrement value, increment pointer |
+| `<-`  | unused but reserved          | decrement pointer, decrement value |
 
 Soooo... we need to take care of these special cases, unfortunately. Luckily, while `>>` is a right shift token, `> >`
 _is_ two greater than tokens. Tokens can be seperated by whitespace and will still match the `tt` fragment-specifier,
@@ -1127,14 +1131,17 @@ macro_rules! brain_fudge {
 
 macro_rules! brain_fudge_helper {
     // ... Snip existing tokens ...
+#     // +
 #     ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) => {
 #         $memory[$pointer] = $memory[$pointer].wrapping_add(1);
 #         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
+#     // -
 #     ($memory:ident; $pointer:ident; $buffer:ident; - $($token:tt)*) => {
 #         $memory[$pointer] = $memory[$pointer].wrapping_sub(1);
 #         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
+#     // >
 #     ($memory:ident; $pointer:ident; $buffer:ident; > $($token:tt)*) => {
 #         $pointer = $pointer.saturating_add(1);
 #         while $pointer >= $memory.len() {
@@ -1142,20 +1149,24 @@ macro_rules! brain_fudge_helper {
 #         }
 #         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
+#     // <
 #     ($memory:ident; $pointer:ident; $buffer:ident; < $($token:tt)*) => {
 #         $pointer = $pointer.saturating_sub(1);
 #         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
+#     // .
 #     ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) => {
 #         $buffer.push($memory[$pointer]);
 #         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
+#     // []
 #     ($memory:ident; $pointer:ident; $buffer:ident; [$($loop_statement:tt)+] $($token:tt)*) => {
 #         while $memory[$pointer] != 0 {
 #             brain_fudge_helper!($memory; $pointer; $buffer; $($loop_statement)+);
 #         }
 #         brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
 #     };
+#     // end of program
 #     ($memory:ident; $pointer:ident; $buffer:ident; ) => {};
 
     // Special "token" cases
@@ -1218,13 +1229,13 @@ assert_eq!(
 
 And we just created an interpreter for another language inside Rust! That's kind of wild, right?!
 
-Homework
---------
+Challenge
+---------
 
-I've stopped setting homework, but I thought I'd set a little challenge for anyone who wants to do it.
+I stopped setting homework, but I thought I'd set a little challenge for anyone who wants to do it.
 
 Can you edit our `brain_fudge!` macro to work with programs that take input via the `,` token. To do this I recommend
-making the following change to the main macro, assuming types with Read for `$input` and Write for `$output`:
+making the following change to the `brain_fudge!` macro:
 
 ```rust
 macro_rules! brain_fudge {
@@ -1256,14 +1267,17 @@ hidden if you want to reveal it
 # }
 # 
 # macro_rules! brain_fudge_helper {
+#     // +
 #     ($memory:ident; $pointer:ident; $input:ident; $output:ident; + $($token:tt)*) => {
 #         $memory[$pointer] = $memory[$pointer].wrapping_add(1);
 #         brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
 #     };
+#     // -
 #     ($memory:ident; $pointer:ident; $input:ident; $output:ident; - $($token:tt)*) => {
 #         $memory[$pointer] = $memory[$pointer].wrapping_sub(1);
 #         brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
 #     };
+#     // >
 #     ($memory:ident; $pointer:ident; $input:ident; $output:ident; > $($token:tt)*) => {
 #         $pointer = $pointer.saturating_add(1);
 #         while $pointer >= $memory.len() {
@@ -1271,24 +1285,29 @@ hidden if you want to reveal it
 #         }
 #         brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
 #     };
+#     // <
 #     ($memory:ident; $pointer:ident; $input:ident; $output:ident; < $($token:tt)*) => {
 #         $pointer = $pointer.saturating_sub(1);
 #         brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
 #     };
+#     // .
 #     ($memory:ident; $pointer:ident; $input:ident; $output:ident; . $($token:tt)*) => {
 #         $output.push($memory[$pointer]);
 #         brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
 #     };
+#     // ,
 #     ($memory:ident; $pointer:ident; $input:ident; $output:ident; , $($token:tt)*) => {
 #         $memory[$pointer] = $input.next().unwrap_or(0);
 #         brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
 #     };
+#     // []
 #     ($memory:ident; $pointer:ident; $input:ident; $output:ident; [$($loop_statement:tt)+] $($token:tt)*) => {
 #         while $memory[$pointer] != 0 {
 #             brain_fudge_helper!($memory; $pointer; $input; $output; $($loop_statement)+);
 #         }
 #         brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
 #     };
+#     // End of program
 #     ($memory:ident; $pointer:ident; $input:ident; $output:ident; ) => {};
 #     // Special "token" cases
 #     ($memory:ident; $pointer:ident; $input:ident; $output:ident; >> $($token:tt)*) => {
@@ -1309,17 +1328,17 @@ hidden if you want to reveal it
 # }
 # 
 # fn main() {
-    let input_string = String::from("FiosQuest");
-    let mut input = input_string.bytes();
-    let mut output = Vec::new();
-    brain_fudge!(
-      input; 
-      output;
-      ,[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>>+++++[<----->-]<<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>>+++++[<----->-]<<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]>.[-]<,]
-    );
-    let output_string: String = output.into_iter().map(char::from).collect();
-    assert_eq!(&output_string, "SvbfDhrfg");
-    println!("{}", output_string);
+let input_string = String::from("Fios Quest");
+let mut input = input_string.bytes();
+let mut output = Vec::new();
+brain_fudge!(
+    input; 
+    output;
+    ,[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>>+++++[<----->-]<<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>>+++++[<----->-]<<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>+<-[>++++++++++++++<-[>+<-]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]>.[-]<,]
+);
+let output_string: String = output.into_iter().map(char::from).collect();
+assert_eq!(&output_string, "Svbf Dhrfg");
+println!("{}", output_string);
 # }
 ```
 
