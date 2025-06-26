@@ -8711,7 +8711,7 @@ creating new code.</p>
 <ol>
 <li>Generate boilerplate code to mitigate repeating ourselves</li>
 <li>Create pseudo-functions that can take any number of parameters</li>
-<li>Implement another prgramming language within Rust to demonstrate how you can create domain specific languages (DSLs)</li>
+<li>Implement another programming language within Rust to demonstrate how you can create domain specific languages (DSLs)</li>
 </ol>
 <p>There are two types of macro in Rust, <code>macro_rules!</code>, also known as declarative macros, or macros by example, and
 <code>proc macro</code>s. We won't be dealing with <code>proc macro</code>s in this book, but they are what allow you to create custom Derive
@@ -8747,8 +8747,9 @@ macro_rules! &lt;macro_name&gt; {
 <span class="boring">}</span></code></pre></pre>
 <p>When you invoke your macro it works as a sort of replacement, generating new code to exist at that point of invocation.
 But, rather than it being a copy-paste, <code>macro_rules!</code> works on the Abstract Syntax Tree, an intermediate step of the
-compilation process where your code has already been turning into a datascructure that repesents what your program does.
-This makes it much safer and more fully featured that a copy-paste.</p>
+compilation process where your code has already been turning into a datastructures that represents what your program
+does.</p>
+<p>This makes it much safer and more fully featured that a copy-paste.</p>
 <h2 id="hello-macro"><a class="header" href="#hello-macro">Hello, macro!</a></h2>
 <p>We'll start by making a hello world macro that produces a string.</p>
 <pre><pre class="playground"><code class="language-rust">macro_rules! hello {
@@ -8762,7 +8763,7 @@ fn main() {
 in this case <code>hello</code>. Our first draft won't match anything between the brackets, so we leave those empty. We then have
 an arrow, followed by some curly brackets surrounding what our macro will generate.</p>
 <p>Our <code>hello</code> macro simply creates a string containing <code>"Hello, world"</code> at the site where the macro is called (in this
-case inside of an <code>assert_eq!</code> macro).</p>
+case inside an <code>assert_eq!</code> macro).</p>
 <p>This type of macro <em>could</em> be useful if you have a block of code you need to repeat but don't want to put it in a
 function, but let's be honest, that's not very likely.</p>
 <p>Let's upgrade our macro to match a pattern.</p>
@@ -8808,13 +8809,13 @@ fn main() {
 <p>Things got a little bit weird here, right? Lets step through our changes.</p>
 <p>First, we added a metavariable, and you'll immediately notice this looks nothing like a normal function parameter in
 Rust.</p>
-<p>In <code>macro_rules!</code>, we can parameterise toekns into "metavariables" which are preceded by a dollar symbol, followed by a
-colon, and what's called a fragment-specifier (sometimes refered to as a designator).</p>
+<p>In <code>macro_rules!</code>, we can parameterise tokens into "metavariables" which are preceded by a dollar symbol, followed by a
+colon, and what's called a fragment-specifier (sometimes referred to as a designator).</p>
 <p>Fragment-specifiers are a bit like types but are specific to how we think about how Rust classifies tokens trees. We
 can't specify "str" here, but we can specify that it's a <code>literal</code>, which is any raw value, such as a string slice, a
 number, a boolean, etc.</p>
-<p>You might wonder what will happen if our macro gets a literal thats not a <code>str</code> and the answer is it won't compile and
-the person who passed in the non-<code>str</code> will get an error relating the the <code>.push_str</code> method on <code>String</code>.</p>
+<p>You might wonder what will happen if our macro gets a literal that's not a <code>str</code> and the answer is it won't compile and
+the person who passed in the non-<code>str</code> will get an error relating the <code>.push_str</code> method on <code>String</code>.</p>
 <p>There are a number of different fragment-specifiers, some of which overlap with each other, we'll go over more of them
 later in the section.</p>
 <p>The second change we've made here is that inside of the code block... we've added <em>another</em> block.</p>
@@ -8830,7 +8831,7 @@ code would look to Rust as if it were this:</p>
 );
 }</code></pre></pre>
 <p>This doesn't work because <code>assert_eq!</code>, which is also a macro, expects to match expressions (represented by the
-framgent-specifier <code>:expr</code>).</p>
+fragment-specifier <code>:expr</code>).</p>
 <p>In Rust an expression is a code that produces a value. So <code>String::from("Hello, ")</code> is an expression, but
 <code>let mut output = String::from("Hello, ");</code> is not. Blocks of code surrounded by <code>{ ... }</code> are expressions though
 because they have a value, even if the value is the unit type <code>()</code>. When we wrap our macro in curly brackets then, and
@@ -8867,7 +8868,7 @@ fn main() {
     assert_eq!(hello!("Yuki"), "Hello, Yuki".to_string());
 }</code></pre></pre>
 <p>This is fine, but we're repeating ourselves a little bit. In case we might want to change our greeting later, lets not
-have <code>"Hello, "</code> twice. To maintain consitency we can call our macro from inside our macro!</p>
+have <code>"Hello, "</code> twice. To maintain consistency we can call our macro from inside our macro!</p>
 <pre><pre class="playground"><code class="language-rust">macro_rules! hello {
     () =&gt; { hello!("world") };
     ($name:literal) =&gt; { 
@@ -8892,9 +8893,9 @@ Similar to regex rules:</p>
 <li><code>+</code> means one or more times</li>
 <li>and <code>*</code> means zero or more times</li>
 </ul>
-<p>You can add a seperator to the repeat pattern by placing it before the repeat character. This token can be almost
+<p>You can add a separator to the repeat pattern by placing it before the repeat character. This token can be almost
 anything except the repeat symbols, or token used for delimiters, eg: <code>$(...),+</code> or <code>$(...);+</code> or even <code>$(...)~+</code>
-are all fine, but its worth noting things get a <em>litte</em> weird using seperators with <code>*</code>.</p>
+are all fine, but its worth noting things get a <em>little</em> weird using separators with <code>*</code>.</p>
 <p>Repeats can be used to match metavariables multiple times, and to repeat code generation for each used repeated
 metavariable. When the repeat pattern is used in code generation it will repeat for each combination of metavariables
 used within it.</p>
@@ -8932,7 +8933,7 @@ fn main() {
 <p>The repeat pattern contains a metavariable, <code>$rest:literal</code>, which will be used to store all metavariables passed to
 the macro after the first. It uses a <code>+</code> to show that there must be at least one additional metavariable, but there may
 be many. There's one more quirk here though, the <code>,</code> that would separate the metavariables is outside the repeat
-brackets but before the <code>+</code>. With repeats you <em>can</em> specify seperators this way, but it only works for <code>+</code>. We'll come
+brackets but before the <code>+</code>. With repeats, you <em>can</em> specify separators this way, but it only works for <code>+</code>. We'll come
 back to this.</p>
 <p>In the body of the macro, we initialise our output in much the same way as we do in the version with no inputs, by
 calling the hello macro with the first metavariable. We then have another repeat pattern that contains the <code>$rest</code>
@@ -8957,7 +8958,7 @@ metavariable. Because we have a repeated metavariable inside a repeated block, t
 <p>Hopefully you're probably starting to see why writing a quick macro can really cut down on repeated boilerplate code,
 and we're really only making a quick toy macro to demonstrate the power they provide!</p>
 <p>You might be wondering if we can use repeats to reduce the number of arms we have. We unfortunately can't do things
-like treat the first or last element of a repeat differently using macro repeats <em>cough</em>foreshadowing<em>cough</em> but we
+like treat the first or last element of a repeat differently using macro repeats <em>cough</em>foreshadowing<em>cough</em>, but we
 can merge the second and third arms using a <code>*</code>.</p>
 <pre><pre class="playground"><code class="language-rust">macro_rules! hello {
     () =&gt; { hello!("world") };
@@ -8980,7 +8981,7 @@ fn main() {
     assert_eq!(hello!("Yuki", "Daniel", "Indra"), "Hello, Yuki and Daniel and Indra".to_string());
 }</code></pre></pre>
 <p>You'll notice that the <code>,</code> after <code>$name:literal</code> has moved inside the repeat pattern, and the <code>,</code> being used as a
-separator has been dropped. This is because the <code>*</code> repeat pattern doesn't support seperators, but we can simply say
+separator has been dropped. This is because the <code>*</code> repeat pattern doesn't support separators, but we can simply say
 that the repeating pattern starts with a <code>,</code>.</p>
 <p>Ok, so I wasn't quite lying about not being able to treat the first and last differently with macro repeats, we can't
 do it with <em>just</em> macro repeats, BUT, we can work around that with very low-cost language features like slices.</p>
@@ -9008,7 +9009,7 @@ do it with <em>just</em> macro repeats, BUT, we can work around that with very l
             while let Some(next_name) = names_iter.next() {
 
                 // By looking ahead to see if there's more items we can now use
-                // gramatically correct seperators
+                // grammatically correct separators
                 match names_iter.peek() {
                     Some(_) =&gt; output.push_str(", "),
                     None =&gt; output.push_str(" and "),
@@ -9026,7 +9027,7 @@ do it with <em>just</em> macro repeats, BUT, we can work around that with very l
 }
 
 fn main() {
-    // Note, we've update our tests with the new and improved output!
+    // Note, we've updated our tests with the new and improved output!
     assert_eq!(hello!(), "Hello, world!".to_string());
     assert_eq!(hello!("Yuki"), "Hello, Yuki!".to_string());
     assert_eq!(
@@ -9036,7 +9037,7 @@ fn main() {
 }</code></pre></pre>
 <p>Being able to quickly compose macros like this can save us a lot of time when repeating the same code over and over.</p>
 <h2 id="tokens-metavariables-and-fragment-specifiers"><a class="header" href="#tokens-metavariables-and-fragment-specifiers">Tokens, Metavariables and Fragment-Specifiers</a></h2>
-<p>Rust (like most languages) turns your human writen code into tokens. Groups of tokens form a token trees. If tokens are
+<p>Rust (like most languages) turns your human written code into tokens. Groups of tokens form a token trees. If tokens are
 protons and neutrons, then token trees are atoms, and are the smallest thing that we can process in <code>macro_rules!</code>. An
 important differentiation with Token Trees to a simple list of tokens are that delimiters (bracket pairs, eg <code>()</code>, <code>{}</code>
 and <code>[]</code>) are matched up for us.</p>
@@ -9049,7 +9050,7 @@ we can categorise tokens and token trees as more than just literals in <code>mac
 <li><code>tt</code> matches a token tree, which is any single token or valid collection of tokens. Remember when we wrote
 <code>this must be present</code> in our silly example, that's technically a token tree, but so was <code>"yuki"</code> which it not only
 a literal, but also a token tree consisting of a single token. Every other fragment-specifier overlaps with <code>tt</code> since
-they're just subcategorisations of token trees.</li>
+they're just sub-categorisations of token trees.</li>
 <li><code>literal</code> is the specifier we already used to match against a literal value. This matches integers, floats, booleans,
 characters and a whole set of string types (string literals, raw string literals, byte string literals, C string
 literals).</li>
@@ -9057,15 +9058,15 @@ literals).</li>
 expression, but <code>let hello = String::from("Hello");</code> is not).</li>
 <li><code>block</code> is specifically a block expression, this is like the code we were generating in our <code>hello!</code> example which we
 surrounded in <code>{...}</code> to make it a block expression.</li>
-<li><code>stmt</code> short for "statement". This is a line of code or a statement, eg both <code>String::from("Hello")</code> and
+<li><code>stmt</code> short for "statement". This is a line of code or a statement, e.g. both <code>String::from("Hello")</code> and
 <code>let hello = String::from("Hello");</code> are statements.</li>
-<li><code>ident</code> short for "identifier". These are things like variable names, type names, or anything thats not specifically
-a keyword (though you can make an raw identifier using <code>r#</code>, eg <code>true</code> is not an identifier because its a keyword but
-<code>r#true</code> is an identifier). In our eariler <code>this must be present</code>, each of those tokens is also an identifier, they
-don't need to exist in code.</li>
+<li><code>ident</code> short for "identifier". These are things like variable names, type names, or anything that's not specifically
+a keyword (though you can make a raw identifier using <code>r#</code>, e.g. <code>true</code> is not an identifier because it's a keyword
+but <code>r#true</code> is an identifier). In our earlier <code>this must be present</code>, each of those tokens is also an identifier,
+they don't need to exist in code.</li>
 <li><code>path</code> is a type path. This could be an identifier on its own, or a sequence of identifiers seperated by <code>::</code> tokens.
 Like with identifiers, they don't need to exist within the code, they just need to fit the pattern.</li>
-<li><code>ty</code> short for "type". This could be a type or a type description. For example <code>(dyn Clone + Send)</code> is whats called a
+<li><code>ty</code> short for "type". This could be a type or a type description. For example <code>(dyn Clone + Send)</code> is what's called a
 parenthesised type.</li>
 <li><code>item</code> is anything that could belong to a crate, such as functions, modules, static items, use statements, etc.</li>
 <li><code>vis</code> short for "visibility" describes the visibility of something else eg <code>pub</code>, <code>pub(crate)</code>, or <code>pub(super)</code>.</li>
@@ -9073,8 +9074,8 @@ parenthesised type.</li>
 <li><code>meta</code>, this is a weird one, it matches attributes. Could be useful if you want to construct a type and pass in
 attributes to apply to it.</li>
 </ul>
-<p>There's a lot here and I've ignored the backwards compatible fragment specifiers (some specifiers have changed behaviour
-over the years). If you want to see the full list of fragment-specifiers, or more complete descriptions of
+<p>There's a lot here, and I've ignored the backwards compatible fragment specifiers (some specifiers have changed
+behaviour over the years). If you want to see the full list of fragment-specifiers, or more complete descriptions of
 each of them check out the official documentation here:
 https://doc.rust-lang.org/reference/macros-by-example.html#metavariables</p>
 <h2 id="usefully-dry"><a class="header" href="#usefully-dry">Usefully DRY</a></h2>
@@ -9538,7 +9539,7 @@ handle them in pairs, even when nested. Eg, with the token tree <code>[+[-]]</co
 with the final <code>]</code> rather than the first <code>]</code>.</p>
 <p>This means to make our loop arm work, we can match against any token tree that starts with a <code>[</code>, contains more tokens
 which may include more <code>[]</code> pairs, matches its ending <code>]</code> and is followed by yet more tokens! How cool is that!?</p>
-<p>Lets write up the missing arms and run our test against the original Hello World program:</p>
+<p>Let's write up the missing arms and run our test against the original Hello World program:</p>
 <pre><pre class="playground"><code class="language-rust compile_fail">#![recursion_limit = "2048"]
 
 macro_rules! brain_fudge_helper {
@@ -9781,7 +9782,7 @@ macro_rules! brain_fudge_helper {
 <p>And we just created an interpreter for another language inside Rust! That's kind of wild, right?!</p>
 <h2 id="challenge"><a class="header" href="#challenge">Challenge</a></h2>
 <p>I stopped setting homework, but I thought I'd set a little challenge for anyone who wants to do it.</p>
-<p>Can you edit our <code>brain_fudge!</code> macro to work with programs that take input via the <code>,</code> token. To do this I recommend
+<p>Can you edit our <code>brain_fudge!</code> macro to work with programs that take input via the <code>,</code> token? To do this I recommend
 making the following change to the <code>brain_fudge!</code> macro:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -9884,6 +9885,9 @@ let output_string: String = output.into_iter().map(char::from).collect();
 assert_eq!(&amp;output_string, "Svbf Dhrfg");
 println!("{}", output_string);
 <span class="boring">}</span></code></pre></pre>
+<h2 id="next-chapter-6"><a class="header" href="#next-chapter-6">Next Chapter</a></h2>
+<p>Next chapter we're going to take a brief look at unsafe Rust. We'll talk about what makes certain things unsafe and
+cover some best practices to make unsafe as safe as possible!</p>
 
                     </main>
 
