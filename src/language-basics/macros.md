@@ -91,7 +91,7 @@ fn main() {
 }
 ```
 
-What? What?! This is obviously madness, what kind of parameters are we passing to this macro?
+What? What?! This is obviously madness. What kind of parameters are we passing to this macro?
 
 The key to understanding the power of macros is that they _don't_ take parameters. The thing in the brackets at the
 start of each rule is a pattern, and that pattern can be _almost_ anything. The contents of the macro's invocation is
@@ -136,7 +136,7 @@ fn main() {
 Things got a little bit weird here, right? Lets step through our changes.
 
 First, we added a metavariable, and you'll immediately notice this looks nothing like a normal function parameter in
-Rust. 
+Rust.
 
 In `macro_rules!`, we can parameterise toekns into "metavariables" which are preceded by a dollar symbol, followed by a
 colon, and what's called a fragment-specifier (sometimes refered to as a designator).
@@ -149,7 +149,7 @@ You might wonder what will happen if our macro gets a literal thats not a `str` 
 the person who passed in the non-`str` will get an error relating the the `.push_str` method on `String`.
 
 There are a number of different fragment-specifiers, some of which overlap with each other, we'll go over more of them
-later in the chapter.
+later in the section.
 
 The second change we've made here is that inside of the code block... we've added _another_ block.
 
@@ -168,10 +168,10 @@ assert_eq!(
 }
 ```
 
-This doesn't work because `assert_eq!`, which is also a macro, expects its parameters to be expressions (represented
-by the framgent-specifier `:expr`).
+This doesn't work because `assert_eq!`, which is also a macro, expects to match expressions (represented by the
+framgent-specifier `:expr`).
 
-In Rust an expression is a token tree that produces a value. So `String::from("Hello, ")` is an expression, but
+In Rust an expression is a code that produces a value. So `String::from("Hello, ")` is an expression, but
 `let mut output = String::from("Hello, ");` is not. Blocks of code surrounded by `{ ... }` are expressions though
 because they have a value, even if the value is the unit type `()`. When we wrap our macro in curly brackets then, and
 have the output as the final line, our code block becomes a single expression the value of which is the `output`.
@@ -238,7 +238,7 @@ fn main() {
 ```
 
 We're nearly there now, but I think our hello macro is missing one critical feature; what if I want to greet lots of
-people?
+people at the same time?
 
 We can "repeat" patterns inside macros by surrounding them with `$(...)` followed by either a `?`, a `+`, or a `*`.
 Similar to regex rules:
@@ -247,9 +247,9 @@ Similar to regex rules:
 - `+` means one or more times
 - and `*` means zero or more times
 
-Specifically with `+` you can add a seperator to the repeat pattern by placing it before the `+`. This token can be
-almost anything except the repeat symbols, or token used for delimiters, eg: `$(...),+` or `$(...);+` or even
-`$(...)~+` are all fine.
+You can add a seperator to the repeat pattern by placing it before the repeat character. This token can be almost
+anything except the repeat symbols, or token used for delimiters, eg: `$(...),+` or `$(...);+` or even `$(...)~+`
+are all fine, but its worth noting things get a _litte_ weird using seperators with `*`.
 
 Repeats can be used to match metavariables multiple times, and to repeat code generation for each used repeated
 metavariable. When the repeat pattern is used in code generation it will repeat for each combination of metavariables
@@ -411,38 +411,54 @@ fn main() {
 
 Being able to quickly compose macros like this can save us a lot of time when repeating the same code over and over.
 
-Metavariables, Fragment-Specifiers and Tokens
+Tokens, Metavariables and Fragment-Specifiers
 ---------------------------------------------
 
-We can pass more than just literals into `macro_rules!` though. 
+Rust (like most languages) turns your human writen code into tokens. Groups of tokens form a token trees. If tokens are
+protons and neutrons, then token trees are atoms, and are the smallest thing that we can process in `macro_rules!`. An
+important differentiation with Token Trees to a simple list of tokens are that delimiters (bracket pairs, eg `()`, `{}`
+and `[]`) are matched up for us.
 
+For example, the token tree for the Rust statement `let hello = String::from("Hello");` might look like this:
 
-Fragment-Specifiers
--------------------
+![TokenTreeLight.svg](macros/TokenTreeLight.svg)
 
-The way Rust macros work is that they view what you write inside them through the eyes of the Abstract Syntax Tree. This
-means that what it sees aren't words or characters but nodes within a structure with semantic meaning. Metavariables 
-then can be typed based on how Rust view the thing you passed it, and a single metavariable could be viewed in a number
-of ways.
+In the previous `hello!` example, we captured tokens that were literals into metavariables with fragment-specifiers, but
+we can categorise tokens and token trees as more than just literals in `macro_rules!`.
 
-For example, the smallest discrete item in an AST is a Token though we normally don't think about individual tokens but
-token trees (`tt`). Parts of a token tree might form an expression (`expr`), basically any token tree that forms a
-value, is an expression. An expression might assign its value to a variable using more tokens, and that variable is both
-a token and an `ident`. The span of tokens that assign the value of the expression to the ident forms a statement that
-is not an expression, even though all expressions are also statements.
+Here's a quick rundown of some of the most common fragment-specifiers:
 
-```rust
-/* rust */      let  hello    =   String  ::  from (  "Hello"   )  ;
-// token tree:  |tt| | tt|   |tt| | tt | |tt| |tt| |    tt      | |tt|
-//                                                   |  tt   |
-// ident:           |ident|
-// literals:                                         |literal|
-// expressions:                   |             expr             |
-//                                                   | expr  |
-// statements:  |                       stmt                       |
-//                                |             stmt             |
-//                                                   | stmt  |
-```
+- `tt` matches a token tree, which is any single token or valid collection of tokens. Remember when we wrote
+  `this must be present` in our silly example, that's technically a token tree, but so was `"yuki"` which it not only
+  a literal, but also a token tree consisting of a single token. Every other fragment-specifier overlaps with `tt` since
+  they're just subcategorisations of token trees.
+- `literal` is the specifier we already used to match against a literal value. This matches integers, floats, booleans,
+  characters and a whole set of string types (string literals, raw string literals, byte string literals, C string
+  literals).
+- `expr` short for "expression". An expression is any token tree that has a value (eg, `String::from("Hello")` is an
+   expression, but `let hello = String::from("Hello");` is not).
+- `block` is specifically a block expression, this is like the code we were generating in our `hello!` example which we
+  surrounded in `{...}` to make it a block expression.
+- `stmt` short for "statement". This is a line of code or a statement, eg both `String::from("Hello")` and
+  `let hello = String::from("Hello");` are statements.
+- `ident` short for "identifier". These are things like variable names, type names, or anything thats not specifically
+  a keyword (though you can make an raw identifier using `r#`, eg `true` is not an identifier because its a keyword but
+  `r#true` is an identifier). In our eariler `this must be present`, each of those tokens is also an identifier, they
+  don't need to exist in code.
+- `path` is a type path. This could be an identifier on its own, or a sequence of identifiers seperated by `::` tokens.
+  Like with identifiers, they don't need to exist within the code, they just need to fit the pattern.
+- `ty` short for "type". This could be a type or a type description. For example `(dyn Clone + Send)` is whats called a
+  parenthesised type.
+- `item` is anything that could belong to a crate, such as functions, modules, static items, use statements, etc.
+- `vis` short for "visibility" describes the visibility of something else eg `pub`, `pub(crate)`, or `pub(super)`.
+- `lifetime` matches lifetimes such as `'a` or `'static`
+- `meta`, this is a weird one, it matches attributes. Could be useful if you want to construct a type and pass in
+  attributes to apply to it.
+
+There's a lot here and I've ignored the backwards compatible fragment specifiers (some specifiers have changed behaviour
+over the years). If you want to see the full list of fragment-specifiers, or more complete descriptions of
+each of them check out the official documentation here:
+https://doc.rust-lang.org/reference/macros-by-example.html#metavariables
 
 Usefully DRY
 ------------
