@@ -1343,4 +1343,8 @@ assert_eq!(&output_string, "Svbf Dhrfg");
 println!("{}", output_string);
 # }
 ```
+Next Chapter
+------------
 
+Next chapter we're going to take a brief look at unsafe Rust. We'll talk about what makes certain things unsafe and 
+cover some best practices to make unsafe as safe as possible!
