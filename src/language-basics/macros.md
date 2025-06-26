@@ -8,12 +8,12 @@ Over this chapter we'll learn how to do three things with macros:
 
 1. Generate boilerplate code to mitigate repeating ourselves
 2. Create pseudo-functions that can take any number of parameters
-3. Create a very basic domain specific language (DSL)
+3. Implement another prgramming language within Rust to demonstrate how you can create domain specific languages (DSLs)
 
-There are two types of macro in Rust, `macro_rules!` and `proc macro`s. We won't be dealing with `proc macro`s in this
-book, but they are what allow you to create custom Derive macros (like `#[derive(Clone)]`), and custom attributes like
-`#[YourAttriburte]`. They also let you make the same function style macros we'll be making with `macro_rules!` but can
-unlock even more power!
+There are two types of macro in Rust, `macro_rules!`, also known as declarative macros, or macros by example, and
+`proc macro`s. We won't be dealing with `proc macro`s in this book, but they are what allow you to create custom Derive
+macros (like `#[derive(Clone)]`), and custom attributes like `#[YourAttriburte]`. They also let you make the same
+function style macros we'll be making with `macro_rules!` but can unlock even more power!
 
 Anatomy of `macro_rules!`
 -------------------------
@@ -27,10 +27,12 @@ The general layout of `macro_rules!` looks like this:
 // We invoke the `macro_rules!` macro usually at the module level rather than in
 // a function
 macro_rules! <macro_name> {
-    // A list of function-like code blocks with brackets a match pattern
-    // potentially including "metavariables". Each of these blocks defines a
-    // single rule that is matched based on the pattern and stores matching
-    //  "metavariables" for use in the macro.  Don't worry, we''ll explain all
+    // We then list each rule which are made up of function-like code blocks
+    // with brackets containing a match pattern, potentially including
+    // "metavariables".
+    //
+    // Each rule is matched based on the pattern and stores matching
+    // "metavariables" for use in the macro.  Don't worry, we''ll explain all
     // of this very soon.
     ( <match_pattern> ) => {
         // curly braces surround the macro body. This is used to generate code
@@ -45,9 +47,10 @@ macro_rules! <macro_name> {
 }
 ```
 
-When you invoke your macro it works as a sort of replacement, generating new code to exist at that point, but rather
-than it being a copy-paste, `macro_rules!` works on the Abstract Syntax Tree of your program making it much safer and
-more fully featured.
+When you invoke your macro it works as a sort of replacement, generating new code to exist at that point of invocation.
+But, rather than it being a copy-paste, `macro_rules!` works on the Abstract Syntax Tree, an intermediate step of the
+compilation process where your code has already been turning into a datascructure that repesents what your program does.
+This makes it much safer and more fully featured that a copy-paste.
 
 Hello, macro!
 -------------
@@ -407,6 +410,12 @@ fn main() {
 ```
 
 Being able to quickly compose macros like this can save us a lot of time when repeating the same code over and over.
+
+Metavariables, Fragment-Specifiers and Tokens
+---------------------------------------------
+
+We can pass more than just literals into `macro_rules!` though. 
+
 
 Fragment-Specifiers
 -------------------
