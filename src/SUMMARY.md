@@ -20,7 +20,7 @@
     - [Collections](./language-basics/collections.md)
     - [Iterators](./language-basics/iterators.md)
     - [Threads](./language-basics/threads.md)
-    - [Macros]()
+    - [Macros](./language-basics/macros.md)
     - [Unsafe]()
     - [Async]()
 - [Common Patterns]()
