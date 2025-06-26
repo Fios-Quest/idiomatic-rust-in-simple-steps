@@ -8,7 +8,7 @@ Over this chapter we'll learn how to do three things with macros:
 
 1. Generate boilerplate code to mitigate repeating ourselves
 2. Create pseudo-functions that can take any number of parameters
-3. Implement another prgramming language within Rust to demonstrate how you can create domain specific languages (DSLs)
+3. Implement another programming language within Rust to demonstrate how you can create domain specific languages (DSLs)
 
 There are two types of macro in Rust, `macro_rules!`, also known as declarative macros, or macros by example, and
 `proc macro`s. We won't be dealing with `proc macro`s in this book, but they are what allow you to create custom Derive
@@ -49,7 +49,9 @@ macro_rules! <macro_name> {
 
 When you invoke your macro it works as a sort of replacement, generating new code to exist at that point of invocation.
 But, rather than it being a copy-paste, `macro_rules!` works on the Abstract Syntax Tree, an intermediate step of the
-compilation process where your code has already been turning into a datascructure that repesents what your program does.
+compilation process where your code has already been turning into a datastructures that represents what your program 
+does.
+
 This makes it much safer and more fully featured that a copy-paste.
 
 Hello, macro!
@@ -72,7 +74,7 @@ in this case `hello`. Our first draft won't match anything between the brackets,
 an arrow, followed by some curly brackets surrounding what our macro will generate.
 
 Our `hello` macro simply creates a string containing `"Hello, world"` at the site where the macro is called (in this
-case inside of an `assert_eq!` macro).
+case inside an `assert_eq!` macro).
 
 This type of macro _could_ be useful if you have a block of code you need to repeat but don't want to put it in a
 function, but let's be honest, that's not very likely.
@@ -138,15 +140,15 @@ Things got a little bit weird here, right? Lets step through our changes.
 First, we added a metavariable, and you'll immediately notice this looks nothing like a normal function parameter in
 Rust.
 
-In `macro_rules!`, we can parameterise toekns into "metavariables" which are preceded by a dollar symbol, followed by a
-colon, and what's called a fragment-specifier (sometimes refered to as a designator).
+In `macro_rules!`, we can parameterise tokens into "metavariables" which are preceded by a dollar symbol, followed by a
+colon, and what's called a fragment-specifier (sometimes referred to as a designator).
 
 Fragment-specifiers are a bit like types but are specific to how we think about how Rust classifies tokens trees. We
 can't specify "str" here, but we can specify that it's a `literal`, which is any raw value, such as a string slice, a
 number, a boolean, etc.
 
-You might wonder what will happen if our macro gets a literal thats not a `str` and the answer is it won't compile and
-the person who passed in the non-`str` will get an error relating the the `.push_str` method on `String`.
+You might wonder what will happen if our macro gets a literal that's not a `str` and the answer is it won't compile and
+the person who passed in the non-`str` will get an error relating the `.push_str` method on `String`.
 
 There are a number of different fragment-specifiers, some of which overlap with each other, we'll go over more of them
 later in the section.
@@ -169,7 +171,7 @@ assert_eq!(
 ```
 
 This doesn't work because `assert_eq!`, which is also a macro, expects to match expressions (represented by the
-framgent-specifier `:expr`).
+fragment-specifier `:expr`).
 
 In Rust an expression is a code that produces a value. So `String::from("Hello, ")` is an expression, but
 `let mut output = String::from("Hello, ");` is not. Blocks of code surrounded by `{ ... }` are expressions though
@@ -217,7 +219,7 @@ fn main() {
 ```
 
 This is fine, but we're repeating ourselves a little bit. In case we might want to change our greeting later, lets not
-have `"Hello, "` twice. To maintain consitency we can call our macro from inside our macro!
+have `"Hello, "` twice. To maintain consistency we can call our macro from inside our macro!
 
 ```rust
 macro_rules! hello {
@@ -247,9 +249,9 @@ Similar to regex rules:
 - `+` means one or more times
 - and `*` means zero or more times
 
-You can add a seperator to the repeat pattern by placing it before the repeat character. This token can be almost
+You can add a separator to the repeat pattern by placing it before the repeat character. This token can be almost
 anything except the repeat symbols, or token used for delimiters, eg: `$(...),+` or `$(...);+` or even `$(...)~+`
-are all fine, but its worth noting things get a _litte_ weird using seperators with `*`.
+are all fine, but its worth noting things get a _little_ weird using separators with `*`.
 
 Repeats can be used to match metavariables multiple times, and to repeat code generation for each used repeated
 metavariable. When the repeat pattern is used in code generation it will repeat for each combination of metavariables
@@ -294,7 +296,7 @@ Our new rule looks a bit like the previous one, but now there's a comma after `$
 The repeat pattern contains a metavariable, `$rest:literal`, which will be used to store all metavariables passed to
 the macro after the first. It uses a `+` to show that there must be at least one additional metavariable, but there may
 be many. There's one more quirk here though, the `,` that would separate the metavariables is outside the repeat
-brackets but before the `+`. With repeats you _can_ specify seperators this way, but it only works for `+`. We'll come
+brackets but before the `+`. With repeats, you _can_ specify separators this way, but it only works for `+`. We'll come
 back to this.
 
 In the body of the macro, we initialise our output in much the same way as we do in the version with no inputs, by
@@ -323,7 +325,7 @@ Hopefully you're probably starting to see why writing a quick macro can really c
 and we're really only making a quick toy macro to demonstrate the power they provide!
 
 You might be wondering if we can use repeats to reduce the number of arms we have. We unfortunately can't do things
-like treat the first or last element of a repeat differently using macro repeats *cough*foreshadowing*cough* but we
+like treat the first or last element of a repeat differently using macro repeats *cough*foreshadowing*cough*, but we
 can merge the second and third arms using a `*`.
 
 ```rust
@@ -350,7 +352,7 @@ fn main() {
 ```
 
 You'll notice that the `,` after `$name:literal` has moved inside the repeat pattern, and the `,` being used as a
-separator has been dropped. This is because the `*` repeat pattern doesn't support seperators, but we can simply say
+separator has been dropped. This is because the `*` repeat pattern doesn't support separators, but we can simply say
 that the repeating pattern starts with a `,`.
 
 Ok, so I wasn't quite lying about not being able to treat the first and last differently with macro repeats, we can't
@@ -381,7 +383,7 @@ macro_rules! hello {
             while let Some(next_name) = names_iter.next() {
 
                 // By looking ahead to see if there's more items we can now use
-                // gramatically correct seperators
+                // grammatically correct separators
                 match names_iter.peek() {
                     Some(_) => output.push_str(", "),
                     None => output.push_str(" and "),
@@ -399,7 +401,7 @@ macro_rules! hello {
 }
 
 fn main() {
-    // Note, we've update our tests with the new and improved output!
+    // Note, we've updated our tests with the new and improved output!
     assert_eq!(hello!(), "Hello, world!".to_string());
     assert_eq!(hello!("Yuki"), "Hello, Yuki!".to_string());
     assert_eq!(
@@ -414,7 +416,7 @@ Being able to quickly compose macros like this can save us a lot of time when re
 Tokens, Metavariables and Fragment-Specifiers
 ---------------------------------------------
 
-Rust (like most languages) turns your human writen code into tokens. Groups of tokens form a token trees. If tokens are
+Rust (like most languages) turns your human written code into tokens. Groups of tokens form a token trees. If tokens are
 protons and neutrons, then token trees are atoms, and are the smallest thing that we can process in `macro_rules!`. An
 important differentiation with Token Trees to a simple list of tokens are that delimiters (bracket pairs, eg `()`, `{}`
 and `[]`) are matched up for us.
@@ -431,7 +433,7 @@ Here's a quick rundown of some of the most common fragment-specifiers:
 - `tt` matches a token tree, which is any single token or valid collection of tokens. Remember when we wrote
   `this must be present` in our silly example, that's technically a token tree, but so was `"yuki"` which it not only
   a literal, but also a token tree consisting of a single token. Every other fragment-specifier overlaps with `tt` since
-  they're just subcategorisations of token trees.
+  they're just sub-categorisations of token trees.
 - `literal` is the specifier we already used to match against a literal value. This matches integers, floats, booleans,
   characters and a whole set of string types (string literals, raw string literals, byte string literals, C string
   literals).
@@ -439,15 +441,15 @@ Here's a quick rundown of some of the most common fragment-specifiers:
    expression, but `let hello = String::from("Hello");` is not).
 - `block` is specifically a block expression, this is like the code we were generating in our `hello!` example which we
   surrounded in `{...}` to make it a block expression.
-- `stmt` short for "statement". This is a line of code or a statement, eg both `String::from("Hello")` and
+- `stmt` short for "statement". This is a line of code or a statement, e.g. both `String::from("Hello")` and
   `let hello = String::from("Hello");` are statements.
-- `ident` short for "identifier". These are things like variable names, type names, or anything thats not specifically
-  a keyword (though you can make an raw identifier using `r#`, eg `true` is not an identifier because its a keyword but
-  `r#true` is an identifier). In our eariler `this must be present`, each of those tokens is also an identifier, they
-  don't need to exist in code.
+- `ident` short for "identifier". These are things like variable names, type names, or anything that's not specifically
+  a keyword (though you can make a raw identifier using `r#`, e.g. `true` is not an identifier because it's a keyword
+  but `r#true` is an identifier). In our earlier `this must be present`, each of those tokens is also an identifier,
+  they don't need to exist in code.
 - `path` is a type path. This could be an identifier on its own, or a sequence of identifiers seperated by `::` tokens.
   Like with identifiers, they don't need to exist within the code, they just need to fit the pattern.
-- `ty` short for "type". This could be a type or a type description. For example `(dyn Clone + Send)` is whats called a
+- `ty` short for "type". This could be a type or a type description. For example `(dyn Clone + Send)` is what's called a
   parenthesised type.
 - `item` is anything that could belong to a crate, such as functions, modules, static items, use statements, etc.
 - `vis` short for "visibility" describes the visibility of something else eg `pub`, `pub(crate)`, or `pub(super)`.
@@ -455,8 +457,8 @@ Here's a quick rundown of some of the most common fragment-specifiers:
 - `meta`, this is a weird one, it matches attributes. Could be useful if you want to construct a type and pass in
   attributes to apply to it.
 
-There's a lot here and I've ignored the backwards compatible fragment specifiers (some specifiers have changed behaviour
-over the years). If you want to see the full list of fragment-specifiers, or more complete descriptions of
+There's a lot here, and I've ignored the backwards compatible fragment specifiers (some specifiers have changed
+behaviour over the years). If you want to see the full list of fragment-specifiers, or more complete descriptions of
 each of them check out the official documentation here:
 https://doc.rust-lang.org/reference/macros-by-example.html#metavariables
 
@@ -973,7 +975,7 @@ with the final `]` rather than the first `]`.
 This means to make our loop arm work, we can match against any token tree that starts with a `[`, contains more tokens
 which may include more `[]` pairs, matches its ending `]` and is followed by yet more tokens! How cool is that!?
 
-Lets write up the missing arms and run our test against the original Hello World program:
+Let's write up the missing arms and run our test against the original Hello World program:
 
 ```rust,compile_fail
 #![recursion_limit = "2048"]
@@ -1234,7 +1236,7 @@ Challenge
 
 I stopped setting homework, but I thought I'd set a little challenge for anyone who wants to do it.
 
-Can you edit our `brain_fudge!` macro to work with programs that take input via the `,` token. To do this I recommend
+Can you edit our `brain_fudge!` macro to work with programs that take input via the `,` token? To do this I recommend
 making the following change to the `brain_fudge!` macro:
 
 ```rust
