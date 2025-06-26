@@ -1,0 +1,1402 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Macros - Idiomatic Rust in Simple Steps</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Learn idiomatic Rust in simple steps even if you have no former knowledge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Idiomatic Rust in Simple Steps</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="macros"><a class="header" href="#macros">Macros</a></h1>
+<p>Macro's let us do meta programming in Rust. This allows us to treat our code as data, manipulating it, expanding it, and
+creating new code.</p>
+<p>Over this chapter we'll learn how to do three things with macros:</p>
+<ol>
+<li>Generate boilerplate code to mitigate repeating ourselves</li>
+<li>Create pseudo-functions that can take any number of parameters</li>
+<li>Implement another prgramming language within Rust to demonstrate how you can create domain specific languages (DSLs)</li>
+</ol>
+<p>There are two types of macro in Rust, <code>macro_rules!</code>, also known as declarative macros, or macros by example, and
+<code>proc macro</code>s. We won't be dealing with <code>proc macro</code>s in this book, but they are what allow you to create custom Derive
+macros (like <code>#[derive(Clone)]</code>), and custom attributes like <code>#[YourAttriburte]</code>. They also let you make the same
+function style macros we'll be making with <code>macro_rules!</code> but can unlock even more power!</p>
+<h2 id="anatomy-of-macro_rules"><a class="header" href="#anatomy-of-macro_rules">Anatomy of <code>macro_rules!</code></a></h2>
+<p><code>macro_rules!</code> is, itself, a macro, providing its own DSL that allows you to create more macros. This lets things get
+very powerful and, honestly, very weird. Let's take it slow.</p>
+<p>The general layout of <code>macro_rules!</code> looks like this:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// We invoke the `macro_rules!` macro usually at the module level rather than in
+// a function
+macro_rules! &lt;macro_name&gt; {
+    // We then list each rule which are made up of function-like code blocks
+    // with brackets containing a match pattern, potentially including
+    // "metavariables".
+    //
+    // Each rule is matched based on the pattern and stores matching
+    // "metavariables" for use in the macro.  Don't worry, we''ll explain all
+    // of this very soon.
+    ( &lt;match_pattern&gt; ) =&gt; {
+        // curly braces surround the macro body. This is used to generate code
+        // at the invocation site of the macro.
+    };
+    // You can have more rules but they need to have a different pattern of
+    // metavariables to match against.
+    ( &lt;match_pattern&gt; ) =&gt; {
+        // different rules can do completely different things, and can even
+        // call the macro again recursively
+    };
+}
+<span class="boring">}</span></code></pre></pre>
+<p>When you invoke your macro it works as a sort of replacement, generating new code to exist at that point of invocation.
+But, rather than it being a copy-paste, <code>macro_rules!</code> works on the Abstract Syntax Tree, an intermediate step of the
+compilation process where your code has already been turning into a datascructure that repesents what your program does.
+This makes it much safer and more fully featured that a copy-paste.</p>
+<h2 id="hello-macro"><a class="header" href="#hello-macro">Hello, macro!</a></h2>
+<p>We'll start by making a hello world macro that produces a string.</p>
+<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+    () =&gt; { String::from("Hello, world") };
+}
+
+fn main() {
+    assert_eq!(hello!(), "Hello, world".to_string());
+}</code></pre></pre>
+<p>Let's break it down. As we said above, immediately after <code>macro_rules!</code> we provide the name of the macro we're creating,
+in this case <code>hello</code>. Our first draft won't match anything between the brackets, so we leave those empty. We then have
+an arrow, followed by some curly brackets surrounding what our macro will generate.</p>
+<p>Our <code>hello</code> macro simply creates a string containing <code>"Hello, world"</code> at the site where the macro is called (in this
+case inside of an <code>assert_eq!</code> macro).</p>
+<p>This type of macro <em>could</em> be useful if you have a block of code you need to repeat but don't want to put it in a
+function, but let's be honest, that's not very likely.</p>
+<p>Let's upgrade our macro to match a pattern.</p>
+<pre><pre class="playground"><code class="language-rust editable">macro_rules! hello {
+    (this must be present) =&gt; { String::from("Hello, world") };
+}
+
+fn main() {
+    assert_eq!(hello!(this must be present), "Hello, world".to_string());
+    // assert_eq!(hello!(this wont compile), "Hello, world".to_string());
+}</code></pre></pre>
+<p>What? What?! This is obviously madness. What kind of parameters are we passing to this macro?</p>
+<p>The key to understanding the power of macros is that they <em>don't</em> take parameters. The thing in the brackets at the
+start of each rule is a pattern, and that pattern can be <em>almost</em> anything. The contents of the macro's invocation is
+broken up into something called a token tree, which we'll talk about in the next section. Here, <code>this must be present</code>
+is considered a token tree made of the tokens: <code>this</code>, <code>must</code>, <code>be</code>, <code>present</code>.</p>
+<p>We can invoke different rules based on the matched pattern.</p>
+<pre><pre class="playground"><code class="language-rust editable">macro_rules! hello {
+    (world) =&gt; { String::from("Hello, world") };
+    (yuki) =&gt; { String::from("Hello, yuki") };
+}
+
+fn main() {
+    assert_eq!(hello!(world), "Hello, world".to_string());
+    assert_eq!(hello!(yuki), "Hello, yuki".to_string());
+    // assert_eq!(hello!(this wont compile), "Hello, world".to_string());
+}</code></pre></pre>
+<p>We obviously can't write out every possible thing that we might want match on (what if we want to be able to say "hello"
+to lots of different people) so we can capture tokens into metavariables.</p>
+<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+    ($name:literal) =&gt; { 
+        { 
+            let mut output = String::from("Hello, ");
+            output.push_str($name);
+            output
+        }
+    };
+}
+
+fn main() {
+    assert_eq!(hello!("Yuki"), "Hello, Yuki".to_string());
+}</code></pre></pre>
+<p>Things got a little bit weird here, right? Lets step through our changes.</p>
+<p>First, we added a metavariable, and you'll immediately notice this looks nothing like a normal function parameter in
+Rust.</p>
+<p>In <code>macro_rules!</code>, we can parameterise toekns into "metavariables" which are preceded by a dollar symbol, followed by a
+colon, and what's called a fragment-specifier (sometimes refered to as a designator).</p>
+<p>Fragment-specifiers are a bit like types but are specific to how we think about how Rust classifies tokens trees. We
+can't specify "str" here, but we can specify that it's a <code>literal</code>, which is any raw value, such as a string slice, a
+number, a boolean, etc.</p>
+<p>You might wonder what will happen if our macro gets a literal thats not a <code>str</code> and the answer is it won't compile and
+the person who passed in the non-<code>str</code> will get an error relating the the <code>.push_str</code> method on <code>String</code>.</p>
+<p>There are a number of different fragment-specifiers, some of which overlap with each other, we'll go over more of them
+later in the section.</p>
+<p>The second change we've made here is that inside of the code block... we've added <em>another</em> block.</p>
+<p>The reason for this is that when we invoke the macro, Rust pretty much does a drop in replacement of the code block at
+the point that you place the macro. If we didn't have the extra brackets, when we use the macro in our <code>assert_eq!</code>, our
+code would look to Rust as if it were this:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn main() {
+</span>assert_eq!(
+    let mut output = String::from("Hello, ");
+    output.push_str("Yuki");
+    output,
+    "Hello, Yuki".to_string()
+);
+}</code></pre></pre>
+<p>This doesn't work because <code>assert_eq!</code>, which is also a macro, expects to match expressions (represented by the
+framgent-specifier <code>:expr</code>).</p>
+<p>In Rust an expression is a code that produces a value. So <code>String::from("Hello, ")</code> is an expression, but
+<code>let mut output = String::from("Hello, ");</code> is not. Blocks of code surrounded by <code>{ ... }</code> are expressions though
+because they have a value, even if the value is the unit type <code>()</code>. When we wrap our macro in curly brackets then, and
+have the output as the final line, our code block becomes a single expression the value of which is the <code>output</code>.</p>
+<p>This means that when we add those extra curly brackets to our macro, the generate code now looks like this, which is
+valid!</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>    assert_eq!(
+        {
+            let mut output = String::from("Hello, ");
+            output.push_str("Yuki");
+            output
+        },
+        "Hello, Yuki".to_string()
+    );
+<span class="boring">    
+</span>}</code></pre></pre>
+<p>Expressions in Rust are particularly useful as they have a type and a value, just like variables, allowing you to use
+them inside other expressions.</p>
+<p>Let's go deeper and add another rule. Let's bring back our original behaviour for an empty <code>hello!</code> macro:</p>
+<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+    () =&gt; { String::from("Hello, world") };
+    ($name:literal) =&gt; { 
+        { 
+            let mut output = String::from("Hello, ");
+            output.push_str($name);
+            output
+        }
+    };
+}
+
+fn main() {
+    assert_eq!(hello!(), "Hello, world".to_string());
+    assert_eq!(hello!("Yuki"), "Hello, Yuki".to_string());
+}</code></pre></pre>
+<p>This is fine, but we're repeating ourselves a little bit. In case we might want to change our greeting later, lets not
+have <code>"Hello, "</code> twice. To maintain consitency we can call our macro from inside our macro!</p>
+<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+    () =&gt; { hello!("world") };
+    ($name:literal) =&gt; { 
+        { 
+            let mut output = String::from("Hello, ");
+            output.push_str($name);
+            output
+        }
+    };
+}
+
+fn main() {
+    assert_eq!(hello!(), "Hello, world".to_string());
+    assert_eq!(hello!("Yuki"), "Hello, Yuki".to_string());
+}</code></pre></pre>
+<p>We're nearly there now, but I think our hello macro is missing one critical feature; what if I want to greet lots of
+people at the same time?</p>
+<p>We can "repeat" patterns inside macros by surrounding them with <code>$(...)</code> followed by either a <code>?</code>, a <code>+</code>, or a <code>*</code>.
+Similar to regex rules:</p>
+<ul>
+<li><code>?</code> means the content is repeated zero or one times</li>
+<li><code>+</code> means one or more times</li>
+<li>and <code>*</code> means zero or more times</li>
+</ul>
+<p>You can add a seperator to the repeat pattern by placing it before the repeat character. This token can be almost
+anything except the repeat symbols, or token used for delimiters, eg: <code>$(...),+</code> or <code>$(...);+</code> or even <code>$(...)~+</code>
+are all fine, but its worth noting things get a <em>litte</em> weird using seperators with <code>*</code>.</p>
+<p>Repeats can be used to match metavariables multiple times, and to repeat code generation for each used repeated
+metavariable. When the repeat pattern is used in code generation it will repeat for each combination of metavariables
+used within it.</p>
+<p>We already have zero and one metavariable dealt with, so we want a branch in our macro that takes two or more inputs:</p>
+<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+    () =&gt; { hello!("world") };
+    ($name:literal) =&gt; { 
+        { 
+            let mut output = String::from("Hello, ");
+            output.push_str($name);
+            output
+        }
+    };
+    ($name:literal, $($rest:literal),+) =&gt; {
+        {
+            let mut output = hello!($name);
+            $(
+                output.push_str(" and ");
+                output.push_str($rest);
+            )+;
+            output
+        }
+    }
+}
+
+fn main() {
+    assert_eq!(hello!(), "Hello, world".to_string());
+    assert_eq!(hello!("Yuki"), "Hello, Yuki".to_string());
+    assert_eq!(
+        hello!("Yuki", "Daniel", "Indra"),
+        "Hello, Yuki and Daniel and Indra".to_string()
+    );
+}</code></pre></pre>
+<p>Our new rule looks a bit like the previous one, but now there's a comma after <code>$name:literal</code> and then a repeat pattern.</p>
+<p>The repeat pattern contains a metavariable, <code>$rest:literal</code>, which will be used to store all metavariables passed to
+the macro after the first. It uses a <code>+</code> to show that there must be at least one additional metavariable, but there may
+be many. There's one more quirk here though, the <code>,</code> that would separate the metavariables is outside the repeat
+brackets but before the <code>+</code>. With repeats you <em>can</em> specify seperators this way, but it only works for <code>+</code>. We'll come
+back to this.</p>
+<p>In the body of the macro, we initialise our output in much the same way as we do in the version with no inputs, by
+calling the hello macro with the first metavariable. We then have another repeat pattern that contains the <code>$rest</code>
+metavariable. Because we have a repeated metavariable inside a repeated block, this block will be repeated for every
+<code>literal</code> that <code>$rest</code> matched to.</p>
+<p>If we were to unwrap the code generated for the final test, it would look something like this:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>    assert_eq!(
+    {
+        let mut output = String::from("Hello, ");
+        output.push_str("Yuki");
+        output.push_str(" and ");
+        output.push_str("Daniel");
+        output.push_str(" and ");
+        output.push_str("Indra");
+        output
+    },
+    "Hello, Yuki and Daniel and Indra".to_string()
+);
+<span class="boring">}</span></code></pre></pre>
+<p>Hopefully you're probably starting to see why writing a quick macro can really cut down on repeated boilerplate code,
+and we're really only making a quick toy macro to demonstrate the power they provide!</p>
+<p>You might be wondering if we can use repeats to reduce the number of arms we have. We unfortunately can't do things
+like treat the first or last element of a repeat differently using macro repeats <em>cough</em>foreshadowing<em>cough</em> but we
+can merge the second and third arms using a <code>*</code>.</p>
+<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+    () =&gt; { hello!("world") };
+    ($name:literal $(, $other:literal)*) =&gt; {
+        {
+            let mut output = String::from("Hello, ");
+            output.push_str($name);
+            $(
+                output.push_str(" and ");
+                output.push_str($other);
+            )*;
+            output
+        }
+    }
+}
+
+fn main() {
+    assert_eq!(hello!(), "Hello, world".to_string());
+    assert_eq!(hello!("Yuki"), "Hello, Yuki".to_string());
+    assert_eq!(hello!("Yuki", "Daniel", "Indra"), "Hello, Yuki and Daniel and Indra".to_string());
+}</code></pre></pre>
+<p>You'll notice that the <code>,</code> after <code>$name:literal</code> has moved inside the repeat pattern, and the <code>,</code> being used as a
+separator has been dropped. This is because the <code>*</code> repeat pattern doesn't support seperators, but we can simply say
+that the repeating pattern starts with a <code>,</code>.</p>
+<p>Ok, so I wasn't quite lying about not being able to treat the first and last differently with macro repeats, we can't
+do it with <em>just</em> macro repeats, BUT, we can work around that with very low-cost language features like slices.</p>
+<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+    ($($names:literal),*) =&gt; {
+        {
+            // We split the names out directly into an array. This is done at
+            // compile time so doesn't require any heap allocations
+            let names = [$($names, )*];
+
+            // We get an iterator over the array. By precisely specifying the
+            // type of the iterator here we can avoid Rust not knowing what to
+            // do if the iterator is empty.
+            use std::iter::Peekable;
+            use std::slice::Iter;
+            let mut names_iter: Peekable&lt;Iter&lt;&amp;str&gt;&gt; = names.iter().peekable();
+
+            // We initialise our string as before.
+            let mut output = String::from("Hello, ");
+            // If there are no metavariables were passed then the array will be
+            // empty so we'll use our default value
+            output.push_str(names_iter.next().unwrap_or(&amp;"world"));
+
+            // We'll loop until no more items are in the iterator
+            while let Some(next_name) = names_iter.next() {
+
+                // By looking ahead to see if there's more items we can now use
+                // gramatically correct seperators
+                match names_iter.peek() {
+                    Some(_) =&gt; output.push_str(", "),
+                    None =&gt; output.push_str(" and "),
+                }
+
+                output.push_str(next_name);
+
+            };
+
+            // Finally we'll add an exclamation mark for funsies!
+            output.push_str("!");
+            output
+        }
+    }
+}
+
+fn main() {
+    // Note, we've update our tests with the new and improved output!
+    assert_eq!(hello!(), "Hello, world!".to_string());
+    assert_eq!(hello!("Yuki"), "Hello, Yuki!".to_string());
+    assert_eq!(
+        hello!("Yuki", "Daniel", "Indra"),
+        "Hello, Yuki, Daniel and Indra!".to_string()
+    );
+}</code></pre></pre>
+<p>Being able to quickly compose macros like this can save us a lot of time when repeating the same code over and over.</p>
+<h2 id="tokens-metavariables-and-fragment-specifiers"><a class="header" href="#tokens-metavariables-and-fragment-specifiers">Tokens, Metavariables and Fragment-Specifiers</a></h2>
+<p>Rust (like most languages) turns your human writen code into tokens. Groups of tokens form a token trees. If tokens are
+protons and neutrons, then token trees are atoms, and are the smallest thing that we can process in <code>macro_rules!</code>. An
+important differentiation with Token Trees to a simple list of tokens are that delimiters (bracket pairs, eg <code>()</code>, <code>{}</code>
+and <code>[]</code>) are matched up for us.</p>
+<p>For example, the token tree for the Rust statement <code>let hello = String::from("Hello");</code> might look like this:</p>
+<p><img src="macros/TokenTreeLight.svg" alt="TokenTreeLight.svg" /></p>
+<p>In the previous <code>hello!</code> example, we captured tokens that were literals into metavariables with fragment-specifiers, but
+we can categorise tokens and token trees as more than just literals in <code>macro_rules!</code>.</p>
+<p>Here's a quick rundown of some of the most common fragment-specifiers:</p>
+<ul>
+<li><code>tt</code> matches a token tree, which is any single token or valid collection of tokens. Remember when we wrote
+<code>this must be present</code> in our silly example, that's technically a token tree, but so was <code>"yuki"</code> which it not only
+a literal, but also a token tree consisting of a single token. Every other fragment-specifier overlaps with <code>tt</code> since
+they're just subcategorisations of token trees.</li>
+<li><code>literal</code> is the specifier we already used to match against a literal value. This matches integers, floats, booleans,
+characters and a whole set of string types (string literals, raw string literals, byte string literals, C string
+literals).</li>
+<li><code>expr</code> short for "expression". An expression is any token tree that has a value (eg, <code>String::from("Hello")</code> is an
+expression, but <code>let hello = String::from("Hello");</code> is not).</li>
+<li><code>block</code> is specifically a block expression, this is like the code we were generating in our <code>hello!</code> example which we
+surrounded in <code>{...}</code> to make it a block expression.</li>
+<li><code>stmt</code> short for "statement". This is a line of code or a statement, eg both <code>String::from("Hello")</code> and
+<code>let hello = String::from("Hello");</code> are statements.</li>
+<li><code>ident</code> short for "identifier". These are things like variable names, type names, or anything thats not specifically
+a keyword (though you can make an raw identifier using <code>r#</code>, eg <code>true</code> is not an identifier because its a keyword but
+<code>r#true</code> is an identifier). In our eariler <code>this must be present</code>, each of those tokens is also an identifier, they
+don't need to exist in code.</li>
+<li><code>path</code> is a type path. This could be an identifier on its own, or a sequence of identifiers seperated by <code>::</code> tokens.
+Like with identifiers, they don't need to exist within the code, they just need to fit the pattern.</li>
+<li><code>ty</code> short for "type". This could be a type or a type description. For example <code>(dyn Clone + Send)</code> is whats called a
+parenthesised type.</li>
+<li><code>item</code> is anything that could belong to a crate, such as functions, modules, static items, use statements, etc.</li>
+<li><code>vis</code> short for "visibility" describes the visibility of something else eg <code>pub</code>, <code>pub(crate)</code>, or <code>pub(super)</code>.</li>
+<li><code>lifetime</code> matches lifetimes such as <code>'a</code> or <code>'static</code></li>
+<li><code>meta</code>, this is a weird one, it matches attributes. Could be useful if you want to construct a type and pass in
+attributes to apply to it.</li>
+</ul>
+<p>There's a lot here and I've ignored the backwards compatible fragment specifiers (some specifiers have changed behaviour
+over the years). If you want to see the full list of fragment-specifiers, or more complete descriptions of
+each of them check out the official documentation here:
+https://doc.rust-lang.org/reference/macros-by-example.html#metavariables</p>
+<h2 id="usefully-dry"><a class="header" href="#usefully-dry">Usefully DRY</a></h2>
+<blockquote>
+<p>ℹ️ I've slightly altered the code in this section to not rely on third party crates, such as
+<a href="https://crates.io/crates/uuid">Uuid</a> and <a href="https://crates.io/crates/paste">paste</a>. If you're comfortable with crates
+then bellow is a permalink straight to the <code>storage</code> crate of the Job Application repository where you'll find the
+real examples. For example, if you look in the <code>storable</code> module, you'll find test macros defined in the <code>property</code>
+module which are consumed in the <code>object</code> module.</p>
+<p><a href="https://github.com/Fios-Quest/job-tracker/tree/c1eba63311ff954de0d80cdd9f55984051c620ef/storage/src/storable">https://github.com/Fios-Quest/job-tracker/tree/c1eba63311ff954de0d80cdd9f55984051c620ef/storage/src/</a></p>
+</blockquote>
+<p>The example we've run through to build up our understanding of how macro's work is very abstract and not very useful,
+so I wanted to go over a quick example of how I've started using Macro's.</p>
+<p>In the <a href="https://github.com/Fios-Quest/job-tracker/">Fio's Job Tracker</a> app I've been building with the help of folks in
+the chat of my <a href="https://www.youtube.com/playlist?list=PLW2L8KbM0O7Z2KroHNNBWY1UApqmeiyqe">streams</a>, I've leaned heavily
+into composing my types using Traits to form common behaviour.</p>
+<p>For example, at time of writing, I allow the user to create <code>Company</code>s, <code>Role</code>s, and <code>Flag</code>s. <code>Role</code>s and <code>Flag</code>s
+belong to <code>Company</code>s so those types implement the following trait:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait HasCompany {
+    fn get_company_id(&amp;self) -&gt; u128;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>The trait itself does not provide any code, so each item that implements this code must decide on its behaviour. I'm
+a big believer in unit tests so lets look at how that works with a test using <code>Role</code> as an example.:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub trait HasCompany {
+</span><span class="boring">    fn get_company_id(&amp;self) -&gt; u128;
+</span><span class="boring">    
+</span>}
+<span class="boring">
+</span>#[derive(Clone, Debug)]
+pub struct Role {
+    pub id: u128,
+    pub company_id: u128,
+    pub name: String,
+}
+
+impl HasCompany for Role {
+    fn get_company_id(&amp;self) -&gt; u128 {
+        self.company_id
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_role_get_company_by_id() {
+        let role = Role {
+            id: 1234,
+            company_id: 5678,
+            name: "Test company".into(),
+        };
+        assert_eq!(role.get_company_id(), 5678);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>That's fine, but we're going to be doing this for every item that implements that trait, as well as for every
+implementation of every other trait. Every time we add a new storable item we'll have to add tests for its
+implementation.</p>
+<p>The way I worked around this was, first I created a trait allowing me to create test instances of the types I want to
+test, then I created macros that use that trait to run the test:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// This trait exists in a central location
+pub trait TestHelper: Sized {
+    // Aside: I'm _actually_ using anyhow for Result which is more flexible
+    fn new_test() -&gt; Result&lt;Self, String&gt;;
+}
+
+// Each test macro sits alongside the trait it creates tests for
+macro_rules! test_has_company_id {
+    ($test_name:ident, $storable:ident) =&gt; {
+        #[test]
+        fn $test_name() {
+            let storable = $storable::new_test()
+                .expect("Could not create storable");
+            assert!(storable.get_company_id() &gt; 0);
+        }
+    };
+}
+<span class="boring">}</span></code></pre></pre>
+<p>By implementing the trait for each type that I want to test, I can add tests trivially like this:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">pub trait TestHelper: Sized {
+</span><span class="boring">    fn new_test() -&gt; Result&lt;Self, String&gt;;
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">macro_rules! test_has_company_id {
+</span><span class="boring">    ($test_name:ident, $storable:ident) =&gt; {
+</span><span class="boring">        #[test]
+</span><span class="boring">        fn $test_name() {
+</span><span class="boring">            let storable = $storable::new_test().expect("Could not create storable");
+</span><span class="boring">            assert!(storable.get_company_id() &gt; 0);
+</span><span class="boring">        }
+</span><span class="boring">    };
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">pub trait HasCompany {
+</span><span class="boring">    fn get_company_id(&amp;self) -&gt; u128;
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">#[derive(Clone, Debug)]
+</span><span class="boring">pub struct Role {
+</span><span class="boring">    pub id: u128,
+</span><span class="boring">    pub company_id: u128,
+</span><span class="boring">    pub name: String,
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">impl HasCompany for Role {
+</span><span class="boring">    fn get_company_id(&amp;self) -&gt; u128 {
+</span><span class="boring">        self.company_id
+</span><span class="boring">    }
+</span><span class="boring">}
+</span><span class="boring">
+</span>impl TestHelper for Role {
+    fn new_test() -&gt; Result&lt;Role, String&gt; {
+        Ok(Role {
+            id: 1234,
+            company_id: 5678,
+            name: "Test company".into(),
+        })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    test_has_company_id!(test_role_get_company_by_id, Role);
+}
+<span class="boring">}</span></code></pre></pre>
+<p>While this is a <em>very</em> simple example, there are more complex examples in the Job Tracker like the ones that manage the
+act of storing and recalling these storable objects.</p>
+<h2 id="domain-specific-languages"><a class="header" href="#domain-specific-languages">Domain Specific Languages</a></h2>
+<p>Ever wanted to write your own language?</p>
+<p>We're going to get a little bit silly here, but Domain Specific Languages (DSLs) can be incredibly useful for
+conceptualising code in meaningful ways. For example, JSX is a DSL for writing React in Javascript.</p>
+<p>This:</p>
+<pre><code class="language-javascript">const heading = (
+    &lt;h1 className="example"&gt;
+        Hello, world!
+    &lt;/h1&gt;
+);
+</code></pre>
+<p>Is undeniably easier to understand for web developers who are outputting HTML than writing:</p>
+<pre><code class="language-javascript">const heading = React.createElement(
+    'h1',
+    {className: 'example'},
+    'Hello, world!'
+);
+</code></pre>
+<p>So, I promised silly, lets write our own DSL... a Brain Fudge interpreter.</p>
+<p>The programming language Brain Fudge (which is not in fact called Brain Fudge) was created by Urban Müller in 1993. The
+language is what's known as an "esoteric" language which is, generally, a fully functional language that you would never
+actually want to use. Often they're considered jokes, but Brain Fudge actually lets us write real programs with just
+eight instructions. This makes it ideal for creating a full DSL with little effort.</p>
+<p>The language operates on theoretically infinite sequential memory initialised to <code>0</code>. You start with a pointer
+pointing to the first cell in memory and then process instructions that allow you to move the pointer, modify the data
+at that point in memory and either output or input data at the current pointer location.</p>
+<p>This is what the instructions do:</p>
+<ul>
+<li><code>&gt;</code> increments the pointer position, moving it to the next position in memory</li>
+<li><code>&lt;</code> decrements the pointer position, moving it to the previous position in memory</li>
+<li><code>+</code> increments the value at the current position in memory</li>
+<li><code>-</code> decrements the value at the current position in memory</li>
+<li><code>.</code> outputs the value at the current position in memory</li>
+<li><code>,</code> takes one byte of input and stores it in memory (we won't use this in this example though)</li>
+<li><code>[</code> and <code>]</code> contain a loop that repeats the contained code. Each time the loop begins the value at the current
+position is checked, and the loop is then skipped if the value is 0.</li>
+</ul>
+<p>That sounds easy enough, right... well, here's Hello World in Brain Fudge.</p>
+<pre><code class="language-text">++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.
+</code></pre>
+<p>Don't panic! For now, we'll just trust that this is the Hello World program, we'll implement the instructions and see
+what happens when we run it.</p>
+<p>We're going to use two macros. First let's create a macro that initialises the program.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>macro_rules! brain_fudge {
+    ($($token:tt)+) =&gt; {
+        {
+            let mut memory = vec![0u8];
+            let mut pointer = 0_usize;
+            let mut output: Vec&lt;u8&gt; = Vec::new();
+
+            // todo: breaking up the token tree
+
+            output.into_iter().map(char::from).collect::&lt;String&gt;()
+        }
+    };
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Let's break it down:</p>
+<ul>
+<li><code>$($token:tt)+</code> is the input to our interpreter. We're using the <code>tt</code> fragment-specifier which means that our
+repeating metavariable <code>$token</code> represents a token tree. As it happens <code>&gt;</code>, <code>&lt;</code>, <code>+</code>, <code>-</code>, <code>.</code>, <code>,</code>, <code>[</code> and <code>]</code> are
+all tokens in Rust so this <em>should</em> work well... (<strong>foreshadowing</strong>).</li>
+<li><code>memory</code> is going to be our programs' memory. We're using a Vec with a single initialised value of <code>0</code> under the
+assumption that even the smallest program requires one word of memory. We'll expand the Vec as necessary. Maybe not
+the most time effective but it'll be ok. For our memory we're using <code>u8</code> to represent one word. You can use larger
+words if you like but different programs might function differently depending on what word size is used and how
+overflows are handled (more on that later).</li>
+<li><code>pointer</code> points to the current position in memory (our Vector)</li>
+<li><code>output</code> is where we'll store output data from the program. We're using a Vec<u8> here, but actually any type that has
+a method <code>.push(u8)</code> will work.</li>
+<li>At the end of the macro we take the output Vec of <code>u8</code>s we've stored in output and collect it into a string by naively
+considering each byte to be a character. Again, this won't be appropriate for every use case which is why utilising
+<code>Write</code> might be better but do you <em>really</em> want to use this DSL properly 😅</li>
+</ul>
+<p>So now we need to handle the token stream, but before we do that, lets write some tests. We'll keep it simple for now,
+while <code>++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.</code>
+outputs "Hello, world!\n", so does the following, with only 3 of the 8 possible instructions:</p>
+<pre><pre class="playground"><code class="language-rust should_panic"><span class="boring">macro_rules! brain_fudge {
+</span><span class="boring">    ($($token:tt)+) =&gt; {
+</span><span class="boring">        {
+</span><span class="boring">            let mut memory = vec![0u8];
+</span><span class="boring">            let mut pointer = 0_usize;
+</span><span class="boring">            let mut output: Vec&lt;u8&gt; = Vec::new();
+</span><span class="boring">
+</span><span class="boring">            // todo: breaking up the token tree
+</span><span class="boring">
+</span><span class="boring">            output.into_iter().map(char::from).collect::&lt;String&gt;()
+</span><span class="boring">        }
+</span><span class="boring">    };
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>assert_eq!(
+    brain_fudge!(
+        // Comments are not part of the AST so will not be processed by macros
+
+        // H
+        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+        // e
+        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+        // l
+        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+        // l
+        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+        // o
+        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+        //
+        &gt;++++++++++++++++++++++++++++++++.
+        // W
+        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+        // o
+        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+        // r
+        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+        // l
+        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+        // d
+        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+        // !
+        &gt;+++++++++++++++++++++++++++++++++.
+        // \n
+        &gt;++++++++++.
+    ),
+    "Hello World!\n"
+);
+<span class="boring">}</span></code></pre></pre>
+<p>So lets work out how to handle <code>&gt;</code>, <code>+</code> and <code>.</code></p>
+<p>We'll create a new helper macro that can handle these tokens by having a rule that matches a token string that starts
+with the token we want to handle and passes remaining tokens back to itself. We also need a special arm to handle when
+there are no tokens left so we have an endpoint to our recursive calls.</p>
+<p>Unlike before, when we create our match arms, we're going to use a semicolon as a separator. The reason for this is
+that Brain Fudge uses <code>,</code>s as part of its syntax (even if we're not using it here). This doesn't actually cause a
+problem with matching (even if the first character of your Brain Fudge program is a comma, it still matches based on
+position relative to the other commas), but we <em>can</em> use semicolons as separators in our macro which aren't part of the
+Brain Fudge language, and it <em>will</em> help readability when we get to the final part of this chapter.</p>
+<p>Each arm will also expect the memory, the pointer, and the output buffer before matching on the specific token:</p>
+<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>macro_rules! brain_fudge_helper {
+    // This arm matches +, it adds 1 to the value at the current position We'll
+    // use wrapping_add to avoid overflows, so in our interpreter, adding 1 to
+    // 255 makes 0.
+    ($memory:ident; $pointer:ident; $buffer:ident; + $($tokens:tt)*) =&gt; {
+        $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($tokens)*);
+    };
+    // This arm matches &gt;, it adds 1 to the pointer position. This time we're
+    // using saturating_add for the specific reason we want to be consistent
+    // and don't want to wrap a  usize on -, you'll see why later!
+    // We also need to make sure that any time we go outside of the Vec we
+    // resize the Vec appropriately and zero memory, we can do this with a
+    // quick loop, pushing 0's
+    ($memory:ident; $pointer:ident; $buffer:ident; &gt; $($tokens:tt)*) =&gt; {
+        $pointer = $pointer.saturating_add(1);
+        while $pointer &gt;= $memory.len() {
+            $memory.push(0);
+        }
+        brain_fudge_helper!($memory; $pointer; $buffer; $($tokens)*);
+    };
+    // This arm matches ., it takes the value at the current pointer and writes
+    // it to our output buffer
+    ($memory:ident; $pointer:ident; $buffer:ident; . $($tokens:tt)*) =&gt; {
+        $buffer.push($memory[$pointer]);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($tokens)*);
+    };
+    // This arm matches there being no Brain Fudge tokens left, it does nothing
+    ($memory:ident; $pointer:ident; $buffer:ident; ) =&gt; {};
+}
+<span class="boring">}</span></code></pre></pre>
+<p>And update our brain_fudge! macro to call the helper, passing in the program state.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">macro_rules! brain_fudge_helper {
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) =&gt; {
+</span><span class="boring">        $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; &gt; $($token:tt)*) =&gt; {
+</span><span class="boring">        $pointer = $pointer.wrapping_add(1);
+</span><span class="boring">        while $pointer &gt;= $memory.len() {
+</span><span class="boring">            $memory.push(0);
+</span><span class="boring">        }
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) =&gt; {
+</span><span class="boring">        $buffer.push($memory[$pointer]);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; ) =&gt; {};
+</span><span class="boring">}
+</span><span class="boring">
+</span>macro_rules! brain_fudge {
+    ($($token:tt)+) =&gt; {
+        {
+            let mut data = vec![0u8];
+            let mut pointer = 0_usize;
+            let mut output: Vec&lt;u8&gt; = Vec::new();
+
+            // We update our brain_fudge macro to pass the program state to the
+            // helper
+            brain_fudge_helper!(data; pointer; output; $($token)+);
+            
+            output.into_iter().map(char::from).collect::&lt;String&gt;()
+        }
+    };
+}
+
+<span class="boring">fn main() {
+</span>assert_eq!(
+    brain_fudge!(
+        // You know what's hidden here 😅
+<span class="boring">        // H
+</span><span class="boring">        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // e
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // o
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        //
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // W
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // o
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // r
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // d
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // !
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // \n
+</span><span class="boring">        &gt;++++++++++.
+</span>    ),
+    "Hello World!\n"
+);
+<span class="boring">}</span></code></pre></pre>
+<p>Aaaand, it errors.</p>
+<pre><code class="language-text">error: recursion limit reached while expanding `brain_fudge_helper!`
+</code></pre>
+<p>Rust keeps track of how many times we recurse (call a function/macro from the same function/macro), and by default, the
+maximum amount of times we can do this is 128. Our macro, using our silly Hello World example, recurses 1120 times!</p>
+<p>So, we <em>could</em> avoid recursing by looping through the tokens instead, and that will work for our Hello World... but it
+won't work for loops when we come to do that so for now, we're going to play a dangerous game and manually tell Rust
+it's fine for it to recurse 2048 times.</p>
+<p>The <code>recursion_limit</code> attribute applies at the crate level so be careful with this one!</p>
+<pre><pre class="playground"><code class="language-rust">#![recursion_limit = "2048"]
+
+macro_rules! brain_fudge_helper {
+    // ... snip ...
+<span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) =&gt; {
+</span><span class="boring">        $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; &gt; $($token:tt)*) =&gt; {
+</span><span class="boring">        $pointer = $pointer.wrapping_add(1);
+</span><span class="boring">        while $pointer &gt;= $memory.len() {
+</span><span class="boring">            $memory.push(0);
+</span><span class="boring">        }
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) =&gt; {
+</span><span class="boring">        $buffer.push($memory[$pointer]);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; ) =&gt; {};
+</span>}
+
+macro_rules! brain_fudge {
+    // ... snip ...
+<span class="boring">    ($($token:tt)+) =&gt; {
+</span><span class="boring">        {
+</span><span class="boring">            let mut data = vec![0u8];
+</span><span class="boring">            let mut pointer = 0_usize;
+</span><span class="boring">            let mut output: Vec&lt;u8&gt; = Vec::new();
+</span><span class="boring">            
+</span><span class="boring">            brain_fudge_helper!(data; pointer; output; $($token)+);
+</span><span class="boring">            
+</span><span class="boring">            output.into_iter().map(char::from).collect::&lt;String&gt;()
+</span><span class="boring">        }
+</span><span class="boring">    };
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>assert_eq!(
+    brain_fudge!(
+        // You know what's hidden here 😅
+<span class="boring">        // H
+</span><span class="boring">        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // e
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // o
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        //
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // W
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // o
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // r
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // d
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // !
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // \n
+</span><span class="boring">        &gt;++++++++++.
+</span>    ),
+    "Hello World!\n"
+);
+<span class="boring">}</span></code></pre></pre>
+<p>Huzzah! We've made a good start. Dealing with <code>&gt;</code> and <code>-</code> will be easy enough, they're the opposite of what we already
+have. More complex is the loop <code>[</code>...<code>]</code>. Luckily, we aren't dealing with characters, we're dealing with token trees!</p>
+<p>In Rust, the bracket pairs <code>()</code>, <code>[]</code>, and <code>{}</code> are all considered tokens that wrap other tokens, so Rust will correctly
+handle them in pairs, even when nested. Eg, with the token tree <code>[+[-]]</code> Rust will correctly match the first <code>[</code> token
+with the final <code>]</code> rather than the first <code>]</code>.</p>
+<p>This means to make our loop arm work, we can match against any token tree that starts with a <code>[</code>, contains more tokens
+which may include more <code>[]</code> pairs, matches its ending <code>]</code> and is followed by yet more tokens! How cool is that!?</p>
+<p>Lets write up the missing arms and run our test against the original Hello World program:</p>
+<pre><pre class="playground"><code class="language-rust compile_fail">#![recursion_limit = "2048"]
+
+macro_rules! brain_fudge_helper {
+    // ... Snip previous arms ...
+<span class="boring">    // +
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) =&gt; {
+</span><span class="boring">        $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span>    // -: Like + but does a wrapping_sub instead 
+    ($memory:ident; $pointer:ident; $buffer:ident; - $($token:tt)*) =&gt; {
+        $memory[$pointer] = $memory[$pointer].wrapping_sub(1);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+    };
+<span class="boring">    // &gt;
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; &gt; $($token:tt)*) =&gt; {
+</span><span class="boring">        $pointer = $pointer.saturating_add(1);
+</span><span class="boring">        while $pointer &gt;= $memory.len() {
+</span><span class="boring">            $memory.push(0);
+</span><span class="boring">        }
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span>    // &lt;: Like &gt; but does a saturating_sub instead. This is why saturating is
+    // potentially better here as we don't want to wrap and have to fill a Vec
+    // with around 18,446,744,073,709,551,615 zeros
+    ($memory:ident; $pointer:ident; $buffer:ident; &lt; $($token:tt)*) =&gt; {
+        $pointer = $pointer.saturating_sub(1);
+        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+    };
+    // []: And here's the magic! We match against $loop_statement tokens inside
+    // a square bracket pair potentially followed by more tokens. We then loop
+    // while the data at the pointer isn't 0, and once it is, move on to the
+    // rest of the tokens
+    ($memory:ident; $pointer:ident; $buffer:ident; [$($loop_statement:tt)+] $($token:tt)*) =&gt; {
+        while $memory[$pointer] != 0 {
+            brain_fudge_helper!($memory; $pointer; $buffer; $($loop_statement)+);
+        }
+        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+    };
+<span class="boring">    // .
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) =&gt; {
+</span><span class="boring">        $buffer.push($memory[$pointer]);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // end of program
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; ) =&gt; {};
+</span>}
+ 
+macro_rules! brain_fudge {
+    // ... Snip ...
+<span class="boring">    ($($token:tt)+) =&gt; {
+</span><span class="boring">        {
+</span><span class="boring">            let mut data = vec![0u8];
+</span><span class="boring">            let mut pointer = 0_usize;
+</span><span class="boring">            let mut output: Vec&lt;u8&gt; = Vec::new();
+</span><span class="boring">
+</span><span class="boring">            // We update our brain_fudge macro to pass the program state to the
+</span><span class="boring">            // helper
+</span><span class="boring">            brain_fudge_helper!(data; pointer; output; $($token)+);
+</span><span class="boring">            
+</span><span class="boring">            output.into_iter().map(char::from).collect::&lt;String&gt;()
+</span><span class="boring">        }
+</span><span class="boring">    };
+</span>}
+
+<span class="boring">fn main() {
+</span>assert_eq!(
+    brain_fudge!(
+        ++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.
+    ),
+    "Hello World!\n"
+);
+<span class="boring">// keeping the old test to make sure we don't have a regression
+</span><span class="boring">assert_eq!(
+</span><span class="boring">    brain_fudge!(
+</span><span class="boring">        // H
+</span><span class="boring">        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // e
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // o
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        //
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // W
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // o
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // r
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // d
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // !
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // \n
+</span><span class="boring">        &gt;++++++++++.
+</span><span class="boring">    ),
+</span><span class="boring">    "Hello World!\n"
+</span><span class="boring">);
+</span><span class="boring">}</span></code></pre></pre>
+<p>And when we run this... it doesn't work again 🤦🏻‍♂️</p>
+<p>The exact error we get is:</p>
+<pre><code class="language-text">67 |         ++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.
+   |                                                          ^^ no rules expected this token in macro call
+   |
+</code></pre>
+<p>Why is it pointing at <code>&gt;&gt;</code>? We have a match on <code>&gt;</code>.</p>
+<p>Well here's the problem with using tokens for our DSL. Rust considers <code>&gt;&gt;</code> to be a single token. Specifically it's a
+"right shift" operator. Tokens in Rust can be multiple characters. Here are our problem tokens and what they mean in
+each language:</p>
+<div class="table-wrapper"><table><thead><tr><th>token</th><th>Rust</th><th>Brain Fudge</th></tr></thead><tbody>
+<tr><td><code>..</code></td><td>range literal</td><td>output the current value twice</td></tr>
+<tr><td><code>&gt;&gt;</code></td><td>right shift</td><td>increment pointer twice</td></tr>
+<tr><td><code>&lt;&lt;</code></td><td>left shift</td><td>decrement pointer twice</td></tr>
+<tr><td><code>-&gt;</code></td><td>function/closure return type</td><td>decrement value, increment pointer</td></tr>
+<tr><td><code>&lt;-</code></td><td>unused but reserved</td><td>decrement pointer, decrement value</td></tr>
+</tbody></table>
+</div>
+<p>Soooo... we need to take care of these special cases, unfortunately. Luckily, while <code>&gt;&gt;</code> is a right shift token, <code>&gt; &gt;</code>
+<em>is</em> two greater than tokens. Tokens can be seperated by whitespace and will still match the <code>tt</code> fragment-specifier,
+all we need to do is split the token and pass it back into the macro</p>
+<pre><pre class="playground"><code class="language-rust">#![recursion_limit = "2048"]
+
+macro_rules! brain_fudge {
+    // snip
+<span class="boring">    ($($token:tt)+) =&gt; {
+</span><span class="boring">        {
+</span><span class="boring">            let mut data = vec![0u8];
+</span><span class="boring">            let mut pointer = 0_usize;
+</span><span class="boring">            let mut output = Vec::new();
+</span><span class="boring">            
+</span><span class="boring">            brain_fudge_helper!(data; pointer; output; $($token)+);
+</span><span class="boring">            
+</span><span class="boring">            output.into_iter().map(char::from).collect::&lt;String&gt;()
+</span><span class="boring">        }
+</span><span class="boring">    };
+</span>}
+
+macro_rules! brain_fudge_helper {
+    // ... Snip existing tokens ...
+<span class="boring">    // +
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) =&gt; {
+</span><span class="boring">        $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // -
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; - $($token:tt)*) =&gt; {
+</span><span class="boring">        $memory[$pointer] = $memory[$pointer].wrapping_sub(1);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // &gt;
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; &gt; $($token:tt)*) =&gt; {
+</span><span class="boring">        $pointer = $pointer.saturating_add(1);
+</span><span class="boring">        while $pointer &gt;= $memory.len() {
+</span><span class="boring">            $memory.push(0);
+</span><span class="boring">        }
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // &lt;
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; &lt; $($token:tt)*) =&gt; {
+</span><span class="boring">        $pointer = $pointer.saturating_sub(1);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // .
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; . $($token:tt)*) =&gt; {
+</span><span class="boring">        $buffer.push($memory[$pointer]);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // []
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; [$($loop_statement:tt)+] $($token:tt)*) =&gt; {
+</span><span class="boring">        while $memory[$pointer] != 0 {
+</span><span class="boring">            brain_fudge_helper!($memory; $pointer; $buffer; $($loop_statement)+);
+</span><span class="boring">        }
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // end of program
+</span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; ) =&gt; {};
+</span>
+    // Special "token" cases
+    ($memory:ident; $pointer:ident; $buffer:ident; &gt;&gt; $($token:tt)*) =&gt; {
+        brain_fudge_helper!($memory; $pointer; $buffer; &gt; &gt; $($token)*);
+    };
+    ($memory:ident; $pointer:ident; $buffer:ident; &lt;&lt; $($token:tt)*) =&gt; {
+        brain_fudge_helper!($memory; $pointer; $buffer; &lt; &lt; $($token)*);
+    };
+    ($memory:ident; $pointer:ident; $buffer:ident; .. $($token:tt)*) =&gt; {
+        brain_fudge_helper!($memory; $pointer; $buffer; . . $($token)*);
+    };
+    ($memory:ident; $pointer:ident; $buffer:ident; &lt;- $($token:tt)*) =&gt; {
+        brain_fudge_helper!($memory; $pointer; $buffer; &lt; - $($token)*);
+    };
+    ($memory:ident; $pointer:ident; $buffer:ident; -&gt; $($token:tt)*) =&gt; {
+        brain_fudge_helper!($memory; $pointer; $buffer; - &gt; $($token)*);
+    };
+}
+
+<span class="boring">fn main() {
+</span>assert_eq!(
+    brain_fudge!(++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.),
+    "Hello World!\n"
+);
+<span class="boring">// keeping the old test to make sure we don't have a regression
+</span><span class="boring">assert_eq!(
+</span><span class="boring">    brain_fudge!(
+</span><span class="boring">        // H
+</span><span class="boring">        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // e
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // o
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        //
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // W
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // o
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // r
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // l
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // d
+</span><span class="boring">        &gt;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // !
+</span><span class="boring">        &gt;+++++++++++++++++++++++++++++++++.
+</span><span class="boring">        // \n
+</span><span class="boring">        &gt;++++++++++.
+</span><span class="boring">    ),
+</span><span class="boring">    "Hello World!\n"
+</span><span class="boring">);
+</span><span class="boring">}</span></code></pre></pre>
+<p>And we just created an interpreter for another language inside Rust! That's kind of wild, right?!</p>
+<h2 id="challenge"><a class="header" href="#challenge">Challenge</a></h2>
+<p>I stopped setting homework, but I thought I'd set a little challenge for anyone who wants to do it.</p>
+<p>Can you edit our <code>brain_fudge!</code> macro to work with programs that take input via the <code>,</code> token. To do this I recommend
+making the following change to the <code>brain_fudge!</code> macro:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>macro_rules! brain_fudge {
+     ($input:ident, $output:ident, $($token:tt)+) =&gt; {
+        {
+          // That's all you get!
+        }
+     };
+}
+<span class="boring">}</span></code></pre></pre>
+<p>If you need help, the code below shows the test for a ROT13 Brain Fudge program and has the answer to the homework
+hidden if you want to reveal it</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![recursion_limit = "2048"]
+</span><span class="boring">
+</span><span class="boring">macro_rules! brain_fudge {
+</span><span class="boring">    ($input:ident; $output:ident; $($token:tt)+) =&gt; {
+</span><span class="boring">        {
+</span><span class="boring">            use std::io::{Read, Write};
+</span><span class="boring">            
+</span><span class="boring">            let mut memory = vec![0u8];
+</span><span class="boring">            let mut pointer = 0_usize;
+</span><span class="boring">
+</span><span class="boring">            brain_fudge_helper!(memory; pointer; $input; $output; $($token)+);
+</span><span class="boring">        }
+</span><span class="boring">    };
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">macro_rules! brain_fudge_helper {
+</span><span class="boring">    // +
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; + $($token:tt)*) =&gt; {
+</span><span class="boring">        $memory[$pointer] = $memory[$pointer].wrapping_add(1);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // -
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; - $($token:tt)*) =&gt; {
+</span><span class="boring">        $memory[$pointer] = $memory[$pointer].wrapping_sub(1);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // &gt;
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; &gt; $($token:tt)*) =&gt; {
+</span><span class="boring">        $pointer = $pointer.saturating_add(1);
+</span><span class="boring">        while $pointer &gt;= $memory.len() {
+</span><span class="boring">            $memory.push(0);
+</span><span class="boring">        }
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // &lt;
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; &lt; $($token:tt)*) =&gt; {
+</span><span class="boring">        $pointer = $pointer.saturating_sub(1);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // .
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; . $($token:tt)*) =&gt; {
+</span><span class="boring">        $output.push($memory[$pointer]);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // ,
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; , $($token:tt)*) =&gt; {
+</span><span class="boring">        $memory[$pointer] = $input.next().unwrap_or(0);
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // []
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; [$($loop_statement:tt)+] $($token:tt)*) =&gt; {
+</span><span class="boring">        while $memory[$pointer] != 0 {
+</span><span class="boring">            brain_fudge_helper!($memory; $pointer; $input; $output; $($loop_statement)+);
+</span><span class="boring">        }
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    // End of program
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; ) =&gt; {};
+</span><span class="boring">    // Special "token" cases
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; &gt;&gt; $($token:tt)*) =&gt; {
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; &gt; &gt; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; &lt;&lt; $($token:tt)*) =&gt; {
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; &lt; &lt; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; .. $($token:tt)*) =&gt; {
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; . . $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; &lt;- $($token:tt)*) =&gt; {
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; &lt; - $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">    ($memory:ident; $pointer:ident; $input:ident; $output:ident; -&gt; $($token:tt)*) =&gt; {
+</span><span class="boring">        brain_fudge_helper!($memory; $pointer; $input; $output; - &gt; $($token)*);
+</span><span class="boring">    };
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>let input_string = String::from("Fios Quest");
+let mut input = input_string.bytes();
+let mut output = Vec::new();
+brain_fudge!(
+    input; 
+    output;
+    ,[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;++++++++++++++&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;&gt;+++++[&lt;-----&gt;-]&lt;&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;++++++++++++++&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;++++++++++++++&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;&gt;+++++[&lt;-----&gt;-]&lt;&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;+&lt;-[&gt;++++++++++++++&lt;-[&gt;+&lt;-]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]&gt;.[-]&lt;,]
+);
+let output_string: String = output.into_iter().map(char::from).collect();
+assert_eq!(&amp;output_string, "Svbf Dhrfg");
+println!("{}", output_string);
+<span class="boring">}</span></code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../language-basics/threads.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../language-basics/threads.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
