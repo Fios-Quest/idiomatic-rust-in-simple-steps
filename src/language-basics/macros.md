@@ -38,7 +38,7 @@ macro_rules! <macro_name> {
         // curly braces surround the macro body. This is used to generate code
         // at the invocation site of the macro.
     };
-    // You can have more rules but they need to have a different pattern of
+    // You can have more rules but, they need to have a different pattern of
     // metavariables to match against.
     ( <match_pattern> ) => {
         // different rules can do completely different things, and can even
@@ -148,16 +148,16 @@ can't specify "str" here, but we can specify that it's a `literal`, which is any
 number, a boolean, etc.
 
 You might wonder what will happen if our macro gets a literal that's not a `str` and the answer is it won't compile and
-the person who passed in the non-`str` will get an error relating the `.push_str` method on `String`.
+the person who passed in the non-`str` will get an error relating to the `.push_str` method on `String`.
 
 There are a number of different fragment-specifiers, some of which overlap with each other, we'll go over more of them
 later in the section.
 
 The second change we've made here is that inside of the code block... we've added _another_ block.
 
-The reason for this is that when we invoke the macro, Rust pretty much does a drop in replacement of the code block at
-the point that you place the macro. If we didn't have the extra brackets, when we use the macro in our `assert_eq!`, our
-code would look to Rust as if it were this:
+The reason for this is that when we invoke the macro, Rust generates code at the point that you place the macro. If we
+didn't have the extra brackets, when we use the macro in our `assert_eq!`, our code would look to Rust as if it were
+this:
 
 ```rust,compile_fail
 # fn main() {
@@ -173,7 +173,7 @@ assert_eq!(
 This doesn't work because `assert_eq!`, which is also a macro, expects to match expressions (represented by the
 fragment-specifier `:expr`).
 
-In Rust an expression is a code that produces a value. So `String::from("Hello, ")` is an expression, but
+In Rust an expression is a segment code that produces a value. So `String::from("Hello, ")` is an expression, but
 `let mut output = String::from("Hello, ");` is not. Blocks of code surrounded by `{ ... }` are expressions though
 because they have a value, even if the value is the unit type `()`. When we wrap our macro in curly brackets then, and
 have the output as the final line, our code block becomes a single expression the value of which is the `output`.
@@ -257,7 +257,7 @@ Repeats can be used to match metavariables multiple times, and to repeat code ge
 metavariable. When the repeat pattern is used in code generation it will repeat for each combination of metavariables
 used within it.
 
-We already have zero and one metavariable dealt with, so we want a branch in our macro that takes two or more inputs:
+We already have zero and one metavariable dealt with, so we want a rule in our macro that takes two or more inputs:
 
 ```rust
 macro_rules! hello {
@@ -295,9 +295,7 @@ Our new rule looks a bit like the previous one, but now there's a comma after `$
 
 The repeat pattern contains a metavariable, `$rest:literal`, which will be used to store all metavariables passed to
 the macro after the first. It uses a `+` to show that there must be at least one additional metavariable, but there may
-be many. There's one more quirk here though, the `,` that would separate the metavariables is outside the repeat
-brackets but before the `+`. With repeats, you _can_ specify separators this way, but it only works for `+`. We'll come
-back to this.
+be many.
 
 In the body of the macro, we initialise our output in much the same way as we do in the version with no inputs, by
 calling the hello macro with the first metavariable. We then have another repeat pattern that contains the `$rest`
@@ -324,20 +322,20 @@ If we were to unwrap the code generated for the final test, it would look someth
 Hopefully you're probably starting to see why writing a quick macro can really cut down on repeated boilerplate code,
 and we're really only making a quick toy macro to demonstrate the power they provide!
 
-You might be wondering if we can use repeats to reduce the number of arms we have. We unfortunately can't do things
+You might be wondering if we can use repeats to reduce the number of rules we have. We unfortunately can't do things
 like treat the first or last element of a repeat differently using macro repeats *cough*foreshadowing*cough*, but we
 can merge the second and third arms using a `*`.
 
 ```rust
 macro_rules! hello {
     () => { hello!("world") };
-    ($name:literal $(, $other:literal)*) => {
+    ($name:literal $(, $rest:literal)*) => {
         {
             let mut output = String::from("Hello, ");
             output.push_str($name);
             $(
                 output.push_str(" and ");
-                output.push_str($other);
+                output.push_str($rest);
             )*;
             output
         }
@@ -352,8 +350,11 @@ fn main() {
 ```
 
 You'll notice that the `,` after `$name:literal` has moved inside the repeat pattern, and the `,` being used as a
-separator has been dropped. This is because the `*` repeat pattern doesn't support separators, but we can simply say
-that the repeating pattern starts with a `,`.
+separator has been dropped. This is because if we were to try to match `($name:literal, $($rest:literal)*)` then
+we'd _have_ to use the comma after the first literal so `hello!("Yuki")` would _have_ to be `hello!("Yuki", )` to work.
+
+Instead, we've moved the comma token to the beginning of the repeat pattern which can contain things that aren't
+metavariables too.
 
 Ok, so I wasn't quite lying about not being able to treat the first and last differently with macro repeats, we can't
 do it with _just_ macro repeats, BUT, we can work around that with very low-cost language features like slices.
