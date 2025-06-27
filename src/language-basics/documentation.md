@@ -29,7 +29,7 @@ use functionality from, libraries. This is particularly helpful when sharing and
 more about how we share code with each other when we cover the Rust ecosystem, but even as we're just learning the 
 language, we can leverage the power of libraries for things like code reuse within the same project.
 
-Let's try it out. First, lets make a normal program, remember you can do this with something like:
+Let's try it out. First, let's make a normal program, remember you can do this with something like:
 `cargo new iriss-documentation`
 
 In `main.rs`, we'll make a single function and our main program will just check it works.
@@ -44,7 +44,7 @@ fn main() {
 }
 ```
 
-Next, lets migrate the add function to a library. Create a new file called `lib.rs`. In the same way that `main.rs` is
+Next, let's migrate the add function to a library. Create a new file called `lib.rs`. In the same way that `main.rs` is
 the entry to our binary, `lib.rs` is the entry point to our library. Our library acts like any other module and the
 module is named the same thing as our project (though swap hyphens `-` for underscores `_`). Anything public in `lib.rs`
 will be available to anyone using the library.
@@ -82,15 +82,15 @@ fn main() {
 If we run our program right now, you can see that it still works but... we're not really taking advantage of the library
 though, what's the difference between this and what we had before?
 
-The main way you're likely to share code is through Rusts package management system called Crates. Were you to publish
+The main way you're likely to share code is through Rust's package management system called Crates. Were you to publish
 this project right now (please don't though, _this_ project is obviously pretty useless 😅), then theoretically other
 people could use your `add()` function. But, we aren't going to cover Crates at all in the language basics portion of
 this book.
 
-That doesn't mean this technique isn't useful though. To show how it can be useful, lets make another change to our
+That doesn't mean this technique isn't useful though. To show how it can be useful, let's make another change to our
 project.
 
-Now that we've got our `lib.rs`, lets move `main.rs` to `bin/main.rs`. The program still runs if you use `cargo run` but
+Now that we've got our `lib.rs`, let's move `main.rs` to `bin/main.rs`. The program still runs if you use `cargo run` but
 if you look closely there is a difference.
 
 Before:
@@ -118,7 +118,7 @@ tell cargo which binary you want it to focus on. For example: `cargo run --bin i
 rustdoc
 -------
 
-The Rust toolset includes a program called `rustdoc` which we can run through Cargo using `cargo doc`. It's builds and
+The Rust toolset includes a program called `rustdoc` which we can run through Cargo using `cargo doc`. It builds and
 combines the documentation, not only from your code, but from any libraries and crates you're using.
 
 Let's jump in and try it out with our code, if you run `cargo doc --open` it will build the documentation and then open
@@ -314,7 +314,7 @@ Well, the leading cause of bad documentation, and the reason why people so often
 is that it needs to be maintained. One of the worst things we can do in documentation is tell someone they can achieve
 an outcome in a particular way, then change the code so that particular way no longer works as expected.
 
-Writing our documentation as test ensures that our documentation is correct, and keeping our documentation right next
+Writing our documentation as a test ensures that our documentation is correct, and keeping our documentation right next
 to the thing being documented makes it trivial to update. Rust guarantees that if you said the code works in a 
 particular way, so long as you also wrote an example with assertions, then the documentation is correct!
 
@@ -363,7 +363,7 @@ implementation.
    be the unit type `()`).
 
 > Please note an earlier version of this book had 4 requirements, the second one has been removed. See the 
-> [homework section of this chapters video](https://www.youtube.com/watch?v=MLTy-UmLCnk?t=856) to see how it can be
+> [homework section of this chapter's video](https://www.youtube.com/watch?v=MLTy-UmLCnk?t=856) to see how it can be
 > solved, and why I chose to remove it.
 
 We want to start with the test, but we can't create the test without the function existing, so the easiest way to
@@ -399,7 +399,7 @@ mod tests {
 }
 ```
 
-Now that we have a failing test, lets fix the code. I'm going to use our split_around_many function but if you used the
+Now that we have a failing test, let's fix the code. I'm going to use our split_around_many function but if you used the
 built-in split function instead, well done, bonus points to you! It's actually more efficient that way, and you can in
 fact reduce the memory allocations down to just one.
 
@@ -445,9 +445,9 @@ fn reverse_sentence(input: &str) -> Result<String, ()> {
 
 Now the test passes.
 
-Next lets look at trimming the string.
+Next let's look at trimming the string.
 
-In the requirements I did say "any whitespace" so lets test with a space on one end and a tab on the other.
+In the requirements I did say "any whitespace" so let's test with a space on one end and a tab on the other.
 
 ```rust,noplayground
 # fn split_around_many_recurse<'a>(input: &'a str, sub_string: &str, collection: &mut Vec<&'a str>) {
@@ -493,7 +493,7 @@ mod tests {
 }
 ```
 
-Again, this test won't pass when we run it, so lets implement the feature.
+Again, this test won't pass when we run it, so let's implement the feature.
 
 String slices have a [method called `.trim()`](https://doc.rust-lang.org/std/primitive.str.html#method.trim), which will
 return a string slice that points to the characters inside the original string slice without surrounding whitespace. 
@@ -605,7 +605,7 @@ mod tests {
 }
 ```
 
-To implementing this feature, we can check the words iterator after the split, but before the reverse, for any full
+To implement this feature, we can check the words iterator after the split, but before the reverse, for any full
 stops that occur before the final word. To do this we'll iterate over the vector, taking all but the last element, and
 if any word ends with a `.` we can assume it's a sentence break.
 
@@ -709,7 +709,7 @@ pub fn split_around_many<'a>(input: &'a str, sub_string: &str) -> Vec<&'a str> {
 }
 ```
 
-You can make a library directly with no executable with `cargo new --lib <name>` where <name> is whatever you want to
+You can make a library directly with no executable with `cargo new --lib <name>` where `<name>` is whatever you want to
 call it, this saves you moving things around too much.
 
 Write documentation for the functions that explains how they work with code samples and assertions. Note that the
