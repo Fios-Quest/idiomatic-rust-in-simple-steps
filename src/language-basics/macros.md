@@ -442,15 +442,15 @@ Here's a quick rundown of some of the most common fragment-specifiers:
 - `tt` matches a token tree, which is any single token or valid group of tokens wrapped in delimiters. Remember when we
   wrote `this must be present` in our silly example, that's technically a token tree, but so was `"yuki"` which it not
   only a literal, but also a token tree consisting of a single token.
-- `literal` is the specifier we already used to match against a literal value. This matches integers, floats, booleans,
-  characters and a whole set of string types (string literals, raw string literals, byte string literals, C string
-  literals).
-- `expr` short for "expression". An expression is any token tree that has a value (eg, `String::from("Hello")` is an
-   expression, but `let hello = String::from("Hello");` is not).
-- `block` is specifically a block expression, this is like the code we were generating in our `hello!` example which we
-  surrounded in `{...}` to make it a block expression.
-- `stmt` short for "statement". This is a line of code or a statement, e.g. both `String::from("Hello")` and
-  `let hello = String::from("Hello");` are statements.
+- `literal` is the specifier we used earlier to match against a literal value. This matches integers, floats, booleans,
+  characters, a whole set of string types (string literals, raw string literals, byte string literals, C string
+  literals) and more.
+- `expr` short for "expression". An expression is any series of token trees that has a value (eg, 
+  `String::from("Hello")` is an expression, but `let hello = String::from("Hello");` is not). Blocks are also 
+  expressions as they have a value.
+- `block` is specifically a block expression
+- `stmt` short for "statement". This could be thought of as a line of code, though it could be split across multiple
+  lines, usually ending in a semicolon. Statements usually either set a value to something, or call a function. 
 - `ident` short for "identifier". These are things like variable names, type names, or anything that's not specifically
   a keyword (though you can make a raw identifier using `r#`, e.g. `true` is not an identifier because it's a keyword
   but `r#true` is an identifier). In our earlier `this must be present`, each of those tokens is also an identifier,
@@ -458,11 +458,11 @@ Here's a quick rundown of some of the most common fragment-specifiers:
 - `path` is a type path. This could be an identifier on its own, or a sequence of identifiers seperated by `::` tokens.
   Like with identifiers, they don't need to exist within the code, they just need to fit the pattern.
 - `ty` short for "type". This could be a type or a type description. For example `(dyn Clone + Send)` is what's called a
-  parenthesised type.
+  parenthesised type, but it is a type nonetheless.
 - `item` is anything that could belong to a crate, such as functions, modules, static items, use statements, etc.
-- `vis` short for "visibility" describes the visibility of something else eg `pub`, `pub(crate)`, or `pub(super)`.
+- `vis` short for "visibility" describes the visibility of something else eg `pub`, `pub(crate)`, `pub(super)`, etc.
 - `lifetime` matches lifetimes such as `'a` or `'static`
-- `meta`, this is a weird one, it matches attributes. Could be useful if you want to construct a type and pass in
+- `meta`, this is a weird one, it matches attributes. It could be useful if you want to construct a type and pass in
   attributes to apply to it.
 
 There's a lot here, and I've ignored the backwards compatible fragment specifiers (some specifiers have changed
