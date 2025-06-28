@@ -394,7 +394,7 @@ macro_rules! hello {
 
             };
 
-            // Finally we'll add an exclamation mark for funsies!
+            // Finally, we'll add an exclamation mark for funsies!
             output.push_str("!");
             output
         }
@@ -417,24 +417,31 @@ Being able to quickly compose macros like this can save us a lot of time when re
 Tokens, Metavariables and Fragment-Specifiers
 ---------------------------------------------
 
-Rust (like most languages) turns your human written code into tokens. Groups of tokens form a token trees. If tokens are
-protons and neutrons, then token trees are atoms, and are the smallest thing that we can process in `macro_rules!`. An
-important differentiation with Token Trees to a simple list of tokens are that delimiters (bracket pairs, eg `()`, `{}`
-and `[]`) are matched up for us.
+Rust (like most languages) turns your human written code into tokens. Tokens are like the atoms of a programming
+language, the smallest meaningfully divisible parts. 
 
-For example, the token tree for the Rust statement `let hello = String::from("Hello");` might look like this:
+For example, the statement `let hello = String::from("Hello");` can be broken into the following tokens:
 
-![TokenTreeLight.svg](macros/TokenTreeLight.svg)
+![Tokens](macros/TokenTreeLight.svg)
 
-In the previous `hello!` example, we captured tokens that were literals into metavariables with fragment-specifiers, but
-we can categorise tokens and token trees as more than just literals in `macro_rules!`.
+When working with `macro_rules!` though, Rust actually won't allow us to work with tokens directly. Instead, the
+smallest part we get are token trees. A token tree can be any individual token _except_ delimiter tokens (parentheses 
+`()`, square brackets `[]`, and curly brackets `{}`), or a group of token trees wrapped in delimiter tokens. That
+statement broken into token tree looks similar but isn't _quite_ the same:
+
+![Token Trees](macros/TokenTree.svg)
+
+We'll see later in the chapter as to how this subtle difference can be extremely useful.
+
+`macro_rules!` also allows us to match against categorisations of token trees, or groups of token trees. When we wrote
+the `hello!` macro, we captured tokens that were specifically literals into metavariables with fragment-specifiers, but
+we can categorise tokens tree and groups of token trees in other ways too.
 
 Here's a quick rundown of some of the most common fragment-specifiers:
 
-- `tt` matches a token tree, which is any single token or valid collection of tokens. Remember when we wrote
-  `this must be present` in our silly example, that's technically a token tree, but so was `"yuki"` which it not only
-  a literal, but also a token tree consisting of a single token. Every other fragment-specifier overlaps with `tt` since
-  they're just sub-categorisations of token trees.
+- `tt` matches a token tree, which is any single token or valid group of tokens wrapped in delimiters. Remember when we
+  wrote `this must be present` in our silly example, that's technically a token tree, but so was `"yuki"` which it not
+  only a literal, but also a token tree consisting of a single token.
 - `literal` is the specifier we already used to match against a literal value. This matches integers, floats, booleans,
   characters and a whole set of string types (string literals, raw string literals, byte string literals, C string
   literals).
