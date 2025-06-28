@@ -186,7 +186,7 @@ documentation, not just trivial, but also fun!</p>
 use functionality from, libraries. This is particularly helpful when sharing and reusing code. We'll be talking much
 more about how we share code with each other when we cover the Rust ecosystem, but even as we're just learning the
 language, we can leverage the power of libraries for things like code reuse within the same project.</p>
-<p>Let's try it out. First, lets make a normal program, remember you can do this with something like:
+<p>Let's try it out. First, let's make a normal program, remember you can do this with something like:
 <code>cargo new iriss-documentation</code></p>
 <p>In <code>main.rs</code>, we'll make a single function and our main program will just check it works.</p>
 <pre><pre class="playground"><code class="language-rust">fn add(a: usize, b: usize) -&gt; usize {
@@ -196,7 +196,7 @@ language, we can leverage the power of libraries for things like code reuse with
 fn main() {
     assert_eq!(add(40, 2), 42);
 }</code></pre></pre>
-<p>Next, lets migrate the add function to a library. Create a new file called <code>lib.rs</code>. In the same way that <code>main.rs</code> is
+<p>Next, let's migrate the add function to a library. Create a new file called <code>lib.rs</code>. In the same way that <code>main.rs</code> is
 the entry to our binary, <code>lib.rs</code> is the entry point to our library. Our library acts like any other module and the
 module is named the same thing as our project (though swap hyphens <code>-</code> for underscores <code>_</code>). Anything public in <code>lib.rs</code>
 will be available to anyone using the library.</p>
@@ -225,13 +225,13 @@ fn main() {
 </blockquote>
 <p>If we run our program right now, you can see that it still works but... we're not really taking advantage of the library
 though, what's the difference between this and what we had before?</p>
-<p>The main way you're likely to share code is through Rusts package management system called Crates. Were you to publish
+<p>The main way you're likely to share code is through Rust's package management system called Crates. Were you to publish
 this project right now (please don't though, <em>this</em> project is obviously pretty useless 😅), then theoretically other
 people could use your <code>add()</code> function. But, we aren't going to cover Crates at all in the language basics portion of
 this book.</p>
-<p>That doesn't mean this technique isn't useful though. To show how it can be useful, lets make another change to our
+<p>That doesn't mean this technique isn't useful though. To show how it can be useful, let's make another change to our
 project.</p>
-<p>Now that we've got our <code>lib.rs</code>, lets move <code>main.rs</code> to <code>bin/main.rs</code>. The program still runs if you use <code>cargo run</code> but
+<p>Now that we've got our <code>lib.rs</code>, let's move <code>main.rs</code> to <code>bin/main.rs</code>. The program still runs if you use <code>cargo run</code> but
 if you look closely there is a difference.</p>
 <p>Before:</p>
 <p><img src="documentation/bin-before.png" alt="Before we moved to bin" /></p>
@@ -248,7 +248,7 @@ library we've created!</p>
 <p>Feel free to try this out, but bear in mind that once you have more than one file in that directory, you will have to
 tell cargo which binary you want it to focus on. For example: <code>cargo run --bin iriss-documentation</code></p>
 <h2 id="rustdoc"><a class="header" href="#rustdoc">rustdoc</a></h2>
-<p>The Rust toolset includes a program called <code>rustdoc</code> which we can run through Cargo using <code>cargo doc</code>. It's builds and
+<p>The Rust toolset includes a program called <code>rustdoc</code> which we can run through Cargo using <code>cargo doc</code>. It builds and
 combines the documentation, not only from your code, but from any libraries and crates you're using.</p>
 <p>Let's jump in and try it out with our code, if you run <code>cargo doc --open</code> it will build the documentation and then open
 it in your browser. As you can see, without us doing anything rustdoc has figured out about our add function.</p>
@@ -391,7 +391,7 @@ start of the code block.</p>
 <p>Well, the leading cause of bad documentation, and the reason why people so often don't bother writing it to start with
 is that it needs to be maintained. One of the worst things we can do in documentation is tell someone they can achieve
 an outcome in a particular way, then change the code so that particular way no longer works as expected.</p>
-<p>Writing our documentation as test ensures that our documentation is correct, and keeping our documentation right next
+<p>Writing our documentation as a test ensures that our documentation is correct, and keeping our documentation right next
 to the thing being documented makes it trivial to update. Rust guarantees that if you said the code works in a
 particular way, so long as you also wrote an example with assertions, then the documentation is correct!</p>
 <h2 id="sharing-documentation"><a class="header" href="#sharing-documentation">Sharing Documentation</a></h2>
@@ -427,7 +427,7 @@ be the unit type <code>()</code>).</li>
 </ol>
 <blockquote>
 <p>Please note an earlier version of this book had 4 requirements, the second one has been removed. See the
-<a href="https://www.youtube.com/watch?v=MLTy-UmLCnk?t=856">homework section of this chapters video</a> to see how it can be
+<a href="https://www.youtube.com/watch?v=MLTy-UmLCnk?t=856">homework section of this chapter's video</a> to see how it can be
 solved, and why I chose to remove it.</p>
 </blockquote>
 <p>We want to start with the test, but we can't create the test without the function existing, so the easiest way to
@@ -454,7 +454,7 @@ mod tests {
         assert_eq!(output, Ok("input test my is this".to_string()));
     }
 }</code></pre>
-<p>Now that we have a failing test, lets fix the code. I'm going to use our split_around_many function but if you used the
+<p>Now that we have a failing test, let's fix the code. I'm going to use our split_around_many function but if you used the
 built-in split function instead, well done, bonus points to you! It's actually more efficient that way, and you can in
 fact reduce the memory allocations down to just one.</p>
 <p>I decided to stick with our existing functions for simplicity. We can split the string around spaces to get a vector of
@@ -494,8 +494,8 @@ strings with spaces to create our output string.</p>
 </span><span class="boring">    }
 </span><span class="boring">}</span></code></pre>
 <p>Now the test passes.</p>
-<p>Next lets look at trimming the string.</p>
-<p>In the requirements I did say "any whitespace" so lets test with a space on one end and a tab on the other.</p>
+<p>Next let's look at trimming the string.</p>
+<p>In the requirements I did say "any whitespace" so let's test with a space on one end and a tab on the other.</p>
 <pre><code class="language-rust noplayground"><span class="boring">fn split_around_many_recurse&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str, collection: &amp;mut Vec&lt;&amp;'a str&gt;) {
 </span><span class="boring">    if let Some(found_at) = input.find(sub_string) {
 </span><span class="boring">        let end_pos = found_at + sub_string.len();
@@ -537,7 +537,7 @@ mod tests {
         assert_eq!(output, Ok("whitespace weird has string this".to_string()));
     }
 }</code></pre>
-<p>Again, this test won't pass when we run it, so lets implement the feature.</p>
+<p>Again, this test won't pass when we run it, so let's implement the feature.</p>
 <p>String slices have a <a href="https://doc.rust-lang.org/std/primitive.str.html#method.trim">method called <code>.trim()</code></a>, which will
 return a string slice that points to the characters inside the original string slice without surrounding whitespace.
 This is really cool because it means we didn't need to allocate any more memory. We can also shadow the <code>input</code>
@@ -640,7 +640,7 @@ mod tests {
         assert_eq!(output, Err(()));
     }
 }</code></pre>
-<p>To implementing this feature, we can check the words iterator after the split, but before the reverse, for any full
+<p>To implement this feature, we can check the words iterator after the split, but before the reverse, for any full
 stops that occur before the final word. To do this we'll iterate over the vector, taking all but the last element, and
 if any word ends with a <code>.</code> we can assume it's a sentence break.</p>
 <pre><code class="language-rust noplayground"><span class="boring">fn split_around_many_recurse&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str, collection: &amp;mut Vec&lt;&amp;'a str&gt;) {
@@ -735,7 +735,7 @@ pub fn split_around&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; (&
 </span><span class="boring">    split_around_many_recurse(input, sub_string, &amp;mut output);
 </span><span class="boring">    output
 </span>}</code></pre>
-<p>You can make a library directly with no executable with <code>cargo new --lib &lt;name&gt;</code> where <name> is whatever you want to
+<p>You can make a library directly with no executable with <code>cargo new --lib &lt;name&gt;</code> where <code>&lt;name&gt;</code> is whatever you want to
 call it, this saves you moving things around too much.</p>
 <p>Write documentation for the functions that explains how they work with code samples and assertions. Note that the
 <code>split_around_many_recurse</code> function probably shouldn't be public, so you won't see it in your library documentation.</p>
