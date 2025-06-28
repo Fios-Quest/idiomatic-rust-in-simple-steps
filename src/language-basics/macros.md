@@ -425,9 +425,9 @@ For example, the statement `let hello = String::from("Hello");` can be broken in
 ![Tokens](macros/TokenTreeLight.svg)
 
 When working with `macro_rules!` though, Rust actually won't allow us to work with tokens directly. Instead, the
-smallest part we get are token trees. A token tree can be any individual token _except_ delimiter tokens (parentheses 
-`()`, square brackets `[]`, and curly brackets `{}`), or a group of token trees wrapped in delimiter tokens. That
-statement broken into token tree looks similar but isn't _quite_ the same:
+smallest part we get are token trees. A token tree can be either any individual token _except_ delimiter tokens 
+(parentheses `()`, square brackets `[]`, and curly brackets `{}`), or a group of token trees wrapped in delimiter
+tokens. That statement broken into token trees looks similar but isn't _quite_ the same:
 
 ![Token Trees](macros/TokenTree.svg)
 
