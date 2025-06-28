@@ -38,7 +38,7 @@ macro_rules! <macro_name> {
         // curly braces surround the macro body. This is used to generate code
         // at the invocation site of the macro.
     };
-    // You can have more rules but they need to have a different pattern of
+    // You can have more rules but, they need to have a different pattern of
     // metavariables to match against.
     ( <match_pattern> ) => {
         // different rules can do completely different things, and can even
@@ -148,16 +148,16 @@ can't specify "str" here, but we can specify that it's a `literal`, which is any
 number, a boolean, etc.
 
 You might wonder what will happen if our macro gets a literal that's not a `str` and the answer is it won't compile and
-the person who passed in the non-`str` will get an error relating the `.push_str` method on `String`.
+the person who passed in the non-`str` will get an error relating to the `.push_str` method on `String`.
 
 There are a number of different fragment-specifiers, some of which overlap with each other, we'll go over more of them
 later in the section.
 
 The second change we've made here is that inside of the code block... we've added _another_ block.
 
-The reason for this is that when we invoke the macro, Rust pretty much does a drop in replacement of the code block at
-the point that you place the macro. If we didn't have the extra brackets, when we use the macro in our `assert_eq!`, our
-code would look to Rust as if it were this:
+The reason for this is that when we invoke the macro, Rust generates code at the point that you place the macro. If we
+didn't have the extra brackets, when we use the macro in our `assert_eq!`, our code would look to Rust as if it were
+this:
 
 ```rust,compile_fail
 # fn main() {
@@ -173,7 +173,7 @@ assert_eq!(
 This doesn't work because `assert_eq!`, which is also a macro, expects to match expressions (represented by the
 fragment-specifier `:expr`).
 
-In Rust an expression is a code that produces a value. So `String::from("Hello, ")` is an expression, but
+In Rust an expression is a segment code that produces a value. So `String::from("Hello, ")` is an expression, but
 `let mut output = String::from("Hello, ");` is not. Blocks of code surrounded by `{ ... }` are expressions though
 because they have a value, even if the value is the unit type `()`. When we wrap our macro in curly brackets then, and
 have the output as the final line, our code block becomes a single expression the value of which is the `output`.
@@ -257,7 +257,7 @@ Repeats can be used to match metavariables multiple times, and to repeat code ge
 metavariable. When the repeat pattern is used in code generation it will repeat for each combination of metavariables
 used within it.
 
-We already have zero and one metavariable dealt with, so we want a branch in our macro that takes two or more inputs:
+We already have zero and one metavariable dealt with, so we want a rule in our macro that takes two or more inputs:
 
 ```rust
 macro_rules! hello {
@@ -295,9 +295,7 @@ Our new rule looks a bit like the previous one, but now there's a comma after `$
 
 The repeat pattern contains a metavariable, `$rest:literal`, which will be used to store all metavariables passed to
 the macro after the first. It uses a `+` to show that there must be at least one additional metavariable, but there may
-be many. There's one more quirk here though, the `,` that would separate the metavariables is outside the repeat
-brackets but before the `+`. With repeats, you _can_ specify separators this way, but it only works for `+`. We'll come
-back to this.
+be many.
 
 In the body of the macro, we initialise our output in much the same way as we do in the version with no inputs, by
 calling the hello macro with the first metavariable. We then have another repeat pattern that contains the `$rest`
@@ -324,20 +322,20 @@ If we were to unwrap the code generated for the final test, it would look someth
 Hopefully you're probably starting to see why writing a quick macro can really cut down on repeated boilerplate code,
 and we're really only making a quick toy macro to demonstrate the power they provide!
 
-You might be wondering if we can use repeats to reduce the number of arms we have. We unfortunately can't do things
+You might be wondering if we can use repeats to reduce the number of rules we have. We unfortunately can't do things
 like treat the first or last element of a repeat differently using macro repeats *cough*foreshadowing*cough*, but we
 can merge the second and third arms using a `*`.
 
 ```rust
 macro_rules! hello {
     () => { hello!("world") };
-    ($name:literal $(, $other:literal)*) => {
+    ($name:literal $(, $rest:literal)*) => {
         {
             let mut output = String::from("Hello, ");
             output.push_str($name);
             $(
                 output.push_str(" and ");
-                output.push_str($other);
+                output.push_str($rest);
             )*;
             output
         }
@@ -352,8 +350,11 @@ fn main() {
 ```
 
 You'll notice that the `,` after `$name:literal` has moved inside the repeat pattern, and the `,` being used as a
-separator has been dropped. This is because the `*` repeat pattern doesn't support separators, but we can simply say
-that the repeating pattern starts with a `,`.
+separator has been dropped. This is because if we were to try to match `($name:literal, $($rest:literal)*)` then
+we'd _have_ to use the comma after the first literal so `hello!("Yuki")` would _have_ to be `hello!("Yuki", )` to work.
+
+Instead, we've moved the comma token to the beginning of the repeat pattern which can contain things that aren't
+metavariables too.
 
 Ok, so I wasn't quite lying about not being able to treat the first and last differently with macro repeats, we can't
 do it with _just_ macro repeats, BUT, we can work around that with very low-cost language features like slices.
@@ -393,7 +394,7 @@ macro_rules! hello {
 
             };
 
-            // Finally we'll add an exclamation mark for funsies!
+            // Finally, we'll add an exclamation mark for funsies!
             output.push_str("!");
             output
         }
@@ -416,33 +417,40 @@ Being able to quickly compose macros like this can save us a lot of time when re
 Tokens, Metavariables and Fragment-Specifiers
 ---------------------------------------------
 
-Rust (like most languages) turns your human written code into tokens. Groups of tokens form a token trees. If tokens are
-protons and neutrons, then token trees are atoms, and are the smallest thing that we can process in `macro_rules!`. An
-important differentiation with Token Trees to a simple list of tokens are that delimiters (bracket pairs, eg `()`, `{}`
-and `[]`) are matched up for us.
+Rust (like most languages) turns your human written code into tokens. Tokens are like the atoms of a programming
+language, the smallest meaningfully divisible parts. 
 
-For example, the token tree for the Rust statement `let hello = String::from("Hello");` might look like this:
+For example, the statement `let hello = String::from("Hello");` can be broken into the following tokens:
 
-![TokenTreeLight.svg](macros/TokenTreeLight.svg)
+![Tokens](macros/TokenTreeLight.svg)
 
-In the previous `hello!` example, we captured tokens that were literals into metavariables with fragment-specifiers, but
-we can categorise tokens and token trees as more than just literals in `macro_rules!`.
+When working with `macro_rules!` though, Rust actually won't allow us to work with tokens directly. Instead, the
+smallest part we get are token trees. A token tree can be either any individual token _except_ delimiter tokens 
+(parentheses `()`, square brackets `[]`, and curly brackets `{}`), or a group of token trees wrapped in delimiter
+tokens. That statement broken into token trees looks similar but isn't _quite_ the same:
+
+![Token Trees](macros/TokenTree.svg)
+
+We'll see later in the chapter as to how this subtle difference can be extremely useful.
+
+`macro_rules!` also allows us to match against categorisations of token trees, or groups of token trees. When we wrote
+the `hello!` macro, we captured tokens that were specifically literals into metavariables with fragment-specifiers, but
+we can categorise tokens tree and groups of token trees in other ways too.
 
 Here's a quick rundown of some of the most common fragment-specifiers:
 
-- `tt` matches a token tree, which is any single token or valid collection of tokens. Remember when we wrote
-  `this must be present` in our silly example, that's technically a token tree, but so was `"yuki"` which it not only
-  a literal, but also a token tree consisting of a single token. Every other fragment-specifier overlaps with `tt` since
-  they're just sub-categorisations of token trees.
-- `literal` is the specifier we already used to match against a literal value. This matches integers, floats, booleans,
-  characters and a whole set of string types (string literals, raw string literals, byte string literals, C string
-  literals).
-- `expr` short for "expression". An expression is any token tree that has a value (eg, `String::from("Hello")` is an
-   expression, but `let hello = String::from("Hello");` is not).
-- `block` is specifically a block expression, this is like the code we were generating in our `hello!` example which we
-  surrounded in `{...}` to make it a block expression.
-- `stmt` short for "statement". This is a line of code or a statement, e.g. both `String::from("Hello")` and
-  `let hello = String::from("Hello");` are statements.
+- `tt` matches a token tree, which is any single token or valid group of tokens wrapped in delimiters. Remember when we
+  wrote `this must be present` in our silly example, that's technically a token tree, but so was `"yuki"` which it not
+  only a literal, but also a token tree consisting of a single token.
+- `literal` is the specifier we used earlier to match against a literal value. This matches integers, floats, booleans,
+  characters, a whole set of string types (string literals, raw string literals, byte string literals, C string
+  literals) and more.
+- `expr` short for "expression". An expression is any series of token trees that has a value (eg, 
+  `String::from("Hello")` is an expression, but `let hello = String::from("Hello");` is not). Blocks are also 
+  expressions as they have a value.
+- `block` is specifically a block expression
+- `stmt` short for "statement". This could be thought of as a line of code, though it could be split across multiple
+  lines, usually ending in a semicolon. Statements usually either set a value to something, or call a function. 
 - `ident` short for "identifier". These are things like variable names, type names, or anything that's not specifically
   a keyword (though you can make a raw identifier using `r#`, e.g. `true` is not an identifier because it's a keyword
   but `r#true` is an identifier). In our earlier `this must be present`, each of those tokens is also an identifier,
@@ -450,11 +458,11 @@ Here's a quick rundown of some of the most common fragment-specifiers:
 - `path` is a type path. This could be an identifier on its own, or a sequence of identifiers seperated by `::` tokens.
   Like with identifiers, they don't need to exist within the code, they just need to fit the pattern.
 - `ty` short for "type". This could be a type or a type description. For example `(dyn Clone + Send)` is what's called a
-  parenthesised type.
+  parenthesised type, but it is a type nonetheless.
 - `item` is anything that could belong to a crate, such as functions, modules, static items, use statements, etc.
-- `vis` short for "visibility" describes the visibility of something else eg `pub`, `pub(crate)`, or `pub(super)`.
+- `vis` short for "visibility" describes the visibility of something else eg `pub`, `pub(crate)`, `pub(super)`, etc.
 - `lifetime` matches lifetimes such as `'a` or `'static`
-- `meta`, this is a weird one, it matches attributes. Could be useful if you want to construct a type and pass in
+- `meta`, this is a weird one, it matches attributes. It could be useful if you want to construct a type and pass in
   attributes to apply to it.
 
 There's a lot here, and I've ignored the backwards compatible fragment specifiers (some specifiers have changed
