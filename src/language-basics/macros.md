@@ -1,14 +1,14 @@
 Macros
 ======
 
-Macro's let us do meta programming in Rust. This allows us to treat our code as data, manipulating it, expanding it, and
+Macro's let us do metaprogramming in Rust. This allows us to treat our code as data, manipulating it, expanding it, and
 creating new code.
 
 Over this chapter we'll learn how to do three things with macros:
 
 1. Generate boilerplate code to mitigate repeating ourselves
 2. Create pseudo-functions that can take any number of parameters
-3. Implement another programming language within Rust to demonstrate how you can create domain specific languages (DSLs)
+3. Implement another programming language within Rust to demonstrate how you can create domain-specific languages (DSLs)
 
 There are two types of macro in Rust, `macro_rules!`, also known as declarative macros, or macros by example, and
 `proc macro`s. We won't be dealing with `proc macro`s in this book, but they are what allow you to create custom Derive
@@ -47,12 +47,12 @@ macro_rules! <macro_name> {
 }
 ```
 
-When you invoke your macro it works as a sort of replacement, generating new code to exist at that point of invocation.
+When you invoke your macro, it works as a sort of replacement, generating new code to exist at that point of invocation.
 But, rather than it being a copy-paste, `macro_rules!` works on the Abstract Syntax Tree, an intermediate step of the
-compilation process where your code has already been turning into a datastructures that represents what your program 
+compilation process where your code has already been turning into datastructures that represents what your program 
 does.
 
-This makes it much safer and more fully featured that a copy-paste.
+This makes it much safer and more fully featured than a copy-paste.
 
 Hello, macro!
 -------------
@@ -96,7 +96,7 @@ fn main() {
 What? What?! This is obviously madness. What kind of parameters are we passing to this macro?
 
 The key to understanding the power of macros is that they _don't_ take parameters. The thing in the brackets at the
-start of each rule is a pattern, and that pattern can be _almost_ anything. The contents of the macro's invocation is
+start of each rule is a pattern, and that pattern can be _almost_ anything. The content of the macro's invocation is
 broken up into something called a token tree, which we'll talk about in the next section. Here, `this must be present`
 is considered a token tree made of the tokens: `this`, `must`, `be`, `present`.
 
@@ -115,8 +115,8 @@ fn main() {
 }
 ```
 
-We obviously can't write out every possible thing that we might want match on (what if we want to be able to say "hello"
-to lots of different people) so we can capture tokens into metavariables.
+We obviously can't write out every possible thing that we might want to match on (what if we want to be able to say 
+"hello" to lots of different people), so we can capture tokens into metavariables.
 
 
 ```rust
@@ -135,7 +135,7 @@ fn main() {
 }
 ```
 
-Things got a little bit weird here, right? Lets step through our changes.
+Things got a little bit weird here, right? Let's step through our changes.
 
 First, we added a metavariable, and you'll immediately notice this looks nothing like a normal function parameter in
 Rust.
@@ -143,17 +143,17 @@ Rust.
 In `macro_rules!`, we can parameterise tokens into "metavariables" which are preceded by a dollar symbol, followed by a
 colon, and what's called a fragment-specifier (sometimes referred to as a designator).
 
-Fragment-specifiers are a bit like types but are specific to how we think about how Rust classifies tokens trees. We
+Fragment-specifiers are a bit like types but are specific to how we think about how Rust classifies token trees. We
 can't specify "str" here, but we can specify that it's a `literal`, which is any raw value, such as a string slice, a
 number, a boolean, etc.
 
 You might wonder what will happen if our macro gets a literal that's not a `str` and the answer is it won't compile and
 the person who passed in the non-`str` will get an error relating to the `.push_str` method on `String`.
 
-There are a number of different fragment-specifiers, some of which overlap with each other, we'll go over more of them
+There are a number of different fragment-specifiers, some of which overlap with each other. We'll go over more of them
 later in the section.
 
-The second change we've made here is that inside of the code block... we've added _another_ block.
+The second change we've made here is that inside the code block... we've added _another_ block.
 
 The reason for this is that when we invoke the macro, Rust generates code at the point that you place the macro. If we
 didn't have the extra brackets, when we use the macro in our `assert_eq!`, our code would look to Rust as if it were
@@ -167,13 +167,13 @@ assert_eq!(
     output,
     "Hello, Yuki".to_string()
 );
-}
+# }
 ```
 
 This doesn't work because `assert_eq!`, which is also a macro, expects to match expressions (represented by the
 fragment-specifier `:expr`).
 
-In Rust an expression is a segment code that produces a value. So `String::from("Hello, ")` is an expression, but
+In Rust an expression is a segment of code that produces a value. So `String::from("Hello, ")` is an expression, but
 `let mut output = String::from("Hello, ");` is not. Blocks of code surrounded by `{ ... }` are expressions though
 because they have a value, even if the value is the unit type `()`. When we wrap our macro in curly brackets then, and
 have the output as the final line, our code block becomes a single expression the value of which is the `output`.
@@ -219,7 +219,7 @@ fn main() {
 ```
 
 This is fine, but we're repeating ourselves a little bit. In case we might want to change our greeting later, lets not
-have `"Hello, "` twice. To maintain consistency we can call our macro from inside our macro!
+have `"Hello, "` twice. To maintain consistency, we can call our macro from inside our macro!
 
 ```rust
 macro_rules! hello {
@@ -250,11 +250,11 @@ Similar to regex rules:
 - and `*` means zero or more times
 
 You can add a separator to the repeat pattern by placing it before the repeat character. This token can be almost
-anything except the repeat symbols, or token used for delimiters, eg: `$(...),+` or `$(...);+` or even `$(...)~+`
+anything except the repeat symbols, or token used for delimiters, e.g.: `$(...),+` or `$(...);+` or even `$(...)~+`
 are all fine, but its worth noting things get a _little_ weird using separators with `*`.
 
-Repeats can be used to match metavariables multiple times, and to repeat code generation for each used repeated
-metavariable. When the repeat pattern is used in code generation it will repeat for each combination of metavariables
+Repeats can be used to match metavariables multiple times and to repeat code generation for each used repeated
+metavariable. When the repeat pattern is used in code generation, it will repeat for each combination of metavariables
 used within it.
 
 We already have zero and one metavariable dealt with, so we want a rule in our macro that takes two or more inputs:
@@ -275,7 +275,7 @@ macro_rules! hello {
             $(
                 output.push_str(" and ");
                 output.push_str($rest);
-            )+;
+            )+
             output
         }
     }
@@ -319,7 +319,7 @@ If we were to unwrap the code generated for the final test, it would look someth
 );
 ```
 
-Hopefully you're probably starting to see why writing a quick macro can really cut down on repeated boilerplate code,
+Hopefully, you're probably starting to see why writing a quick macro can really cut down on repeated boilerplate code,
 and we're really only making a quick toy macro to demonstrate the power they provide!
 
 You might be wondering if we can use repeats to reduce the number of rules we have. We unfortunately can't do things
@@ -336,7 +336,7 @@ macro_rules! hello {
             $(
                 output.push_str(" and ");
                 output.push_str($rest);
-            )*;
+            )*
             output
         }
     }
@@ -356,8 +356,8 @@ we'd _have_ to use the comma after the first literal so `hello!("Yuki")` would _
 Instead, we've moved the comma token to the beginning of the repeat pattern which can contain things that aren't
 metavariables too.
 
-Ok, so I wasn't quite lying about not being able to treat the first and last differently with macro repeats, we can't
-do it with _just_ macro repeats, BUT, we can work around that with very low-cost language features like slices.
+I wasn't quite lying about not being able to treat the first and last differently with macro repeats. We can't do it
+with _just_ macro repeats, BUT we can work around that with very low-cost language features like slices.
 
 ```rust
 macro_rules! hello {
@@ -368,7 +368,7 @@ macro_rules! hello {
             let names = [$($names, )*];
 
             // We get an iterator over the array. By precisely specifying the
-            // type of the iterator here we can avoid Rust not knowing what to
+            // type of the iterator here, we can avoid Rust not knowing what to
             // do if the iterator is empty.
             use std::iter::Peekable;
             use std::slice::Iter;
@@ -376,15 +376,15 @@ macro_rules! hello {
 
             // We initialise our string as before.
             let mut output = String::from("Hello, ");
-            // If there are no metavariables were passed then the array will be
-            // empty so we'll use our default value
+            // If there are no metavariables were passed, then the array will be
+            // empty, so we'll use our default value
             output.push_str(names_iter.next().unwrap_or(&"world"));
 
             // We'll loop until no more items are in the iterator
             while let Some(next_name) = names_iter.next() {
 
-                // By looking ahead to see if there's more items we can now use
-                // grammatically correct separators
+                // By looking ahead to see if there are more items, we can now 
+                // use grammatically correct separators
                 match names_iter.peek() {
                     Some(_) => output.push_str(", "),
                     None => output.push_str(" and "),
@@ -414,18 +414,18 @@ fn main() {
 
 Being able to quickly compose macros like this can save us a lot of time when repeating the same code over and over.
 
-Tokens, Metavariables and Fragment-Specifiers
----------------------------------------------
+Tokens, Metavariables, and Fragment-Specifiers
+----------------------------------------------
 
 Rust (like most languages) turns your human written code into tokens. Tokens are like the atoms of a programming
 language, the smallest meaningfully divisible parts. 
 
 For example, the statement `let hello = String::from("Hello");` can be broken into the following tokens:
 
-![Tokens](macros/TokenTreeLight.svg)
+![Tokens](macros/Tokens.svg)
 
 When working with `macro_rules!` though, Rust actually won't allow us to work with tokens directly. Instead, the
-smallest part we get are token trees. A token tree can be either any individual token _except_ delimiter tokens 
+smallest part we get is token trees. A token tree can be either any individual token _except_ delimiter tokens 
 (parentheses `()`, square brackets `[]`, and curly brackets `{}`), or a group of token trees wrapped in delimiter
 tokens. That statement broken into token trees looks similar but isn't _quite_ the same:
 
@@ -435,7 +435,7 @@ We'll see later in the chapter as to how this subtle difference can be extremely
 
 `macro_rules!` also allows us to match against categorisations of token trees, or groups of token trees. When we wrote
 the `hello!` macro, we captured tokens that were specifically literals into metavariables with fragment-specifiers, but
-we can categorise tokens tree and groups of token trees in other ways too.
+we can categorise token trees and groups of token trees in other ways too.
 
 Here's a quick rundown of some of the most common fragment-specifiers:
 
@@ -445,15 +445,15 @@ Here's a quick rundown of some of the most common fragment-specifiers:
 - `literal` is the specifier we used earlier to match against a literal value. This matches integers, floats, booleans,
   characters, a whole set of string types (string literals, raw string literals, byte string literals, C string
   literals) and more.
-- `expr` short for "expression". An expression is any series of token trees that has a value (eg, 
+- `expr` short for "expression". An expression is any series of token trees that has a value (e.g., 
   `String::from("Hello")` is an expression, but `let hello = String::from("Hello");` is not). Blocks are also 
   expressions as they have a value.
 - `block` is specifically a block expression
 - `stmt` short for "statement". This could be thought of as a line of code, though it could be split across multiple
-  lines, usually ending in a semicolon. Statements usually either set a value to something, or call a function. 
+  lines, usually ending in a semicolon. Statements usually either set a value to something or call a function. 
 - `ident` short for "identifier". These are things like variable names, type names, or anything that's not specifically
   a keyword (though you can make a raw identifier using `r#`, e.g. `true` is not an identifier because it's a keyword
-  but `r#true` is an identifier). In our earlier `this must be present`, each of those tokens is also an identifier,
+  but `r#true` is an identifier). In our earlier `this must be present`, each of those tokens is also an identifier;
   they don't need to exist in code.
 - `path` is a type path. This could be an identifier on its own, or a sequence of identifiers seperated by `::` tokens.
   Like with identifiers, they don't need to exist within the code, they just need to fit the pattern.
@@ -466,8 +466,8 @@ Here's a quick rundown of some of the most common fragment-specifiers:
   attributes to apply to it.
 
 There's a lot here, and I've ignored the backwards compatible fragment specifiers (some specifiers have changed
-behaviour over the years). If you want to see the full list of fragment-specifiers, or more complete descriptions of
-each of them check out the official documentation here:
+behaviour over the years). If you want to see the full list of fragment-specifiers, or more complete descriptions for
+each of them, check out the official documentation here:
 https://doc.rust-lang.org/reference/macros-by-example.html#metavariables
 
 Usefully DRY
@@ -498,13 +498,13 @@ pub trait HasCompany {
 ```
 
 The trait itself does not provide any code, so each item that implements this code must decide on its behaviour. I'm
-a big believer in unit tests so lets look at how that works with a test using `Role` as an example.:
+a big believer in unit tests, so let's look at how that works with a test using `Role` as an example.:
 
 ```rust
 # pub trait HasCompany {
-    # fn get_company_id(&self) -> u128;
-    #
-}
+# fn get_company_id(&self) -> u128;
+#
+# }
 #
 #[derive(Clone, Debug)]
 pub struct Role {
@@ -534,7 +534,7 @@ mod tests {
 ```
 
 That's fine, but we're going to be doing this for every item that implements that trait, as well as for every
-implementation of every other trait. Every time we add a new storable item we'll have to add tests for its
+implementation of every other trait. Every time we add a new storable item, we'll have to add tests for its
 implementation.
 
 The way I worked around this was, first I created a trait allowing me to create test instances of the types I want to
@@ -543,7 +543,8 @@ test, then I created macros that use that trait to run the test:
 ```rust
 // This trait exists in a central location
 pub trait TestHelper: Sized {
-    // Aside: I'm _actually_ using anyhow for Result which is more flexible
+    // Aside: I _actually_ use anyhow for Result in the code, which is more
+    // flexible
     fn new_test() -> Result<Self, String>;
 }
 
@@ -618,8 +619,8 @@ Domain Specific Languages
 
 Ever wanted to write your own language?
 
-We're going to get a little bit silly here, but Domain Specific Languages (DSLs) can be incredibly useful for
-conceptualising code in meaningful ways. For example, JSX is a DSL for writing React in Javascript.
+We're going to get a little bit silly here, but Domain-Specific Languages (DSLs) can be incredibly useful for
+conceptualising code in meaningful ways. For example, JSX is a DSL for writing React in JavaScript.
 
 This:
 
@@ -641,15 +642,16 @@ const heading = React.createElement(
 );
 ```
 
-So, I promised silly, lets write our own DSL... a Brain Fudge interpreter.
+So, I promised silly, let's write our own DSL... a Brain Fudge interpreter.
 
-The programming language Brain Fudge (which is not in fact called Brain Fudge) was created by Urban Müller in 1993. The
-language is what's known as an "esoteric" language which is, generally, a fully functional language that you would never
-actually want to use. Often they're considered jokes, but Brain Fudge actually lets us write real programs with just
-eight instructions. This makes it ideal for creating a full DSL with little effort.
+Urban Müller created the programming language Brain Fudge (which is not, in fact, called Brain Fudge) in 1993.
+
+The language is what's known as an "esoteric" language, which is, generally, a fully functional language that you would 
+never actually want to use. Often they're considered jokes, but Brain Fudge actually lets us write real programs with 
+just eight instructions. This makes it ideal for creating a full DSL with little effort.
 
 The language operates on theoretically infinite sequential memory initialised to `0`. You start with a pointer
-pointing to the first cell in memory and then process instructions that allow you to move the pointer, modify the data
+pointing to the first cell in memory. Each instruction can then allow you to move the pointer, modify the data
 at that point in memory and either output or input data at the current pointer location.
 
 This is what the instructions do:
@@ -660,7 +662,7 @@ This is what the instructions do:
 - `-` decrements the value at the current position in memory
 - `.` outputs the value at the current position in memory
 - `,` takes one byte of input and stores it in memory (we won't use this in this example though)
-- `[` and `]` contain a loop that repeats the contained code. Each time the loop begins the value at the current
+- `[` and `]` contain a loop that repeats the contained code. Each time the loop begins, the value at the current
   position is checked, and the loop is then skipped if the value is 0.
 
 That sounds easy enough, right... well, here's Hello World in Brain Fudge.
@@ -672,7 +674,7 @@ That sounds easy enough, right... well, here's Hello World in Brain Fudge.
 Don't panic! For now, we'll just trust that this is the Hello World program, we'll implement the instructions and see
 what happens when we run it.
 
-We're going to use two macros. First let's create a macro that initialises the program.
+We're going to use two macros. First, let's create a macro that initialises the program.
 
 ```rust
 macro_rules! brain_fudge {
@@ -697,8 +699,8 @@ Let's break it down:
   all tokens in Rust so this _should_ work well... (**foreshadowing**).
 - `memory` is going to be our programs' memory. We're using a Vec with a single initialised value of `0` under the
   assumption that even the smallest program requires one word of memory. We'll expand the Vec as necessary. Maybe not
-  the most time effective but it'll be ok. For our memory we're using `u8` to represent one word. You can use larger
-  words if you like but different programs might function differently depending on what word size is used and how
+  the most time-effective, but it'll be ok. For our memory we're using `u8` to represent one word. You can use larger
+  words if you like, but different programs might function differently depending on what word size is used and how
   overflows are handled (more on that later).
 - `pointer` points to the current position in memory (our Vector)
 - `output` is where we'll store output data from the program. We're using a Vec<u8> here, but actually any type that has
@@ -707,9 +709,9 @@ Let's break it down:
   considering each byte to be a character. Again, this won't be appropriate for every use case which is why utilising
   `Write` might be better but do you _really_ want to use this DSL properly 😅
 
-So now we need to handle the token stream, but before we do that, lets write some tests. We'll keep it simple for now,
+So now we need to handle the token stream, but before we do that, let's write some tests. We'll keep it simple for now,
 while `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`
-outputs "Hello, world!\n", so does the following, with only 3 of the 8 possible instructions:
+outputs "Hello, world!\n", so does the following, with only three of the eight possible instructions:
 
 ```rust,should_panic
 # macro_rules! brain_fudge {
@@ -767,12 +769,12 @@ So lets work out how to handle `>`, `+` and `.`
 
 We'll create a new helper macro that can handle these tokens by having a rule that matches a token string that starts
 with the token we want to handle and passes remaining tokens back to itself. We also need a special arm to handle when
-there are no tokens left so we have an endpoint to our recursive calls.
+there are no tokens left, so we have an endpoint to our recursive calls.
 
 Unlike before, when we create our match arms, we're going to use a semicolon as a separator. The reason for this is
-that Brain Fudge uses `,`s as part of its syntax (even if we're not using it here). This doesn't actually cause a
-problem with matching (even if the first character of your Brain Fudge program is a comma, it still matches based on
-position relative to the other commas), but we _can_ use semicolons as separators in our macro which aren't part of the
+that Brain Fudge uses `,`s as part of its syntax (even if we're not using it here). This surprisingly doesn't cause a
+problem with matching, even if the first character of your Brain Fudge program is a comma, it still matches based on
+position relative to the other commas. But we _can_ use semicolons as separators in our macro, which aren't part of the
 Brain Fudge language, and it _will_ help readability when we get to the final part of this chapter.
 
 Each arm will also expect the memory, the pointer, and the output buffer before matching on the specific token:
@@ -810,7 +812,7 @@ macro_rules! brain_fudge_helper {
 }
 ```
 
-And update our brain_fudge! macro to call the helper, passing in the program state.
+And update our `brain_fudge!` macro to call the helper, passing in the program state.
 
 ```rust,compile_fail
 # macro_rules! brain_fudge_helper {
@@ -884,17 +886,17 @@ assert_eq!(
 # }
 ```
 
-Aaaand, it errors.
+When we build it... ah, it errors.
 
 ```text
 error: recursion limit reached while expanding `brain_fudge_helper!`
 ```
 
 Rust keeps track of how many times we recurse (call a function/macro from the same function/macro), and by default, the
-maximum amount of times we can do this is 128. Our macro, using our silly Hello World example, recurses 1120 times!
+maximum number of times we can do this is 128. Our macro, using our silly Hello World example, recurses 1120 times!
 
-So, we _could_ avoid recursing by looping through the tokens instead, and that will work for our Hello World... but it
-won't work for loops when we come to do that so for now, we're going to play a dangerous game and manually tell Rust
+So, we _could_ avoid recursing by looping through the tokens instead. That will work for our Hello World... but it
+won't work for loops when we come to them. For now, we're going to play a dangerous game and manually tell Rust
 it's fine for it to recurse 2048 times.
 
 The `recursion_limit` attribute applies at the crate level so be careful with this one!
@@ -977,7 +979,7 @@ Huzzah! We've made a good start. Dealing with `>` and `-` will be easy enough, t
 have. More complex is the loop `[`...`]`. Luckily, we aren't dealing with characters, we're dealing with token trees!
 
 In Rust, the bracket pairs `()`, `[]`, and `{}` are all considered tokens that wrap other tokens, so Rust will correctly
-handle them in pairs, even when nested. Eg, with the token tree `[+[-]]` Rust will correctly match the first `[` token
+handle them in pairs, even when nested. E.g. with the token tree `[+[-]]` Rust will correctly match the first `[` token
 with the final `]` rather than the first `]`.
 
 This means to make our loop arm work, we can match against any token tree that starts with a `[`, contains more tokens
@@ -1105,7 +1107,7 @@ The exact error we get is:
 
 Why is it pointing at `>>`? We have a match on `>`.
 
-Well here's the problem with using tokens for our DSL. Rust considers `>>` to be a single token. Specifically it's a
+Well, here's the problem with using tokens for our DSL. Rust considers `>>` to be a single token. Specifically, it's a
 "right shift" operator. Tokens in Rust can be multiple characters. Here are our problem tokens and what they mean in
 each language:
 
@@ -1117,9 +1119,9 @@ each language:
 | `->`  | function/closure return type | decrement value, increment pointer |
 | `<-`  | unused but reserved          | decrement pointer, decrement value |
 
-Soooo... we need to take care of these special cases, unfortunately. Luckily, while `>>` is a right shift token, `> >`
-_is_ two greater than tokens. Tokens can be seperated by whitespace and will still match the `tt` fragment-specifier,
-all we need to do is split the token and pass it back into the macro
+We need to take care of these special cases, unfortunately. Luckily, while `>>` is a right shift token, `> >` _is_ two
+greater than tokens. Tokens can be seperated by whitespace and will still match the `tt` fragment-specifier, all we need
+to do is split the token and pass it back into the macro
 
 ```rust
 #![recursion_limit = "2048"]
@@ -1244,8 +1246,8 @@ Challenge
 
 I stopped setting homework, but I thought I'd set a little challenge for anyone who wants to do it.
 
-Can you edit our `brain_fudge!` macro to work with programs that take input via the `,` token? To do this I recommend
-making the following change to the `brain_fudge!` macro:
+Can you edit our `brain_fudge!` macro to work with programs that take input via the `,` token? To achieve this, I
+recommend making the following change to the `brain_fudge!` macro:
 
 ```rust
 macro_rules! brain_fudge {
