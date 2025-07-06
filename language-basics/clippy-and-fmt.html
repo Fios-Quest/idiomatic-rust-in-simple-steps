@@ -167,7 +167,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="clippy-and-fmt"><a class="header" href="#clippy-and-fmt">Clippy and Fmt</a></h1>
-<p>The Rust ecosystem has a wealth of tools that support us when writing Rust but there are two important tools I want to
+<p>The Rust ecosystem has a wealth of tools that support us when writing Rust, but there are two important tools I want to
 cover at this point:</p>
 <ul>
 <li><code>rustfmt</code> - Pronounced Rust Format, helps us keep our code styles consistent, so that its easy to share your code or
@@ -268,17 +268,22 @@ colons <code>::</code> outside of backticks, Clippy will assume this is a mistak
 typically might decide at the group level, what to include, and whether it should be considered a warning or completely
 denied. For example, I tend to include a group of lints called <code>pedantic</code>  with a warning (these are usually allowed by
 clippy which means you don't get told if there is a potential issue).</p>
-<p>To do this you can either:</p>
+<p>To do this you can do one of the following:</p>
 <ul>
-<li>run: <code>cargo clippy -- -W clippy::pedantic</code> or...</li>
+<li>run: <code>cargo clippy -- -W clippy::pedantic</code></li>
 <li>in your entry file to my project (eg, <code>main.rs</code>, or <code>lib.rs</code>) you can add the line:
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span>#![warn(clippy::pedantic)]
 <span class="boring">fn main() {
 </span><span class="boring">}</span></code></pre></pre>
 </li>
+<li>in your <code>Cargo.toml</code> file, you can add the lines
+<pre><code class="language-toml">[lints.clippy]
+pedantic = "warn"
+</code></pre>
+</li>
 </ul>
-<p>The benefit of the latter is you can set a nice default for the project without you or anyone else needing to remember
+<p>The benefit of the latter two is you can set a nice default for the project without you or anyone else needing to remember
 what options to pass to Clippy, while the former is useful if you want to override that or any other behaviour.</p>
 <p>For a full list of lints, check the list here:
 <a href="https://rust-lang.github.io/rust-clippy/master/index.html#/Configuration">https://rust-lang.github.io/rust-clippy/master/index.html#/Configuration</a></p>
