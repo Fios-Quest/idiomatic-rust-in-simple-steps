@@ -29,7 +29,7 @@ So what is the behaviour we want to model in these states?
 ### Hangry (Hungry and Angry)
 
 - While hangry, he only really makes one noise, a desperate plea to "pay attention and do your job"
-- He'll get hyper focused on you getting your attention and may choose violence
+- He'll get hyper focused on getting your attention and may choose violence
 - Once he's eaten, he'll get Eepy
 
 ### Eepy (Sleepy)
@@ -107,9 +107,9 @@ fn main() {
    |                      ^^^^^^^^^^^^^^^^^^^^^^^^ private field
 ```
 
-This is because although `Cat` is public, it's `name` is not.
+This is because although `Cat` is public, its `name` is not.
 
-We could, of course, simple make `name` public, but this means anything can access it at any time and, if your `cat` is
+We could, of course, simply make `name` public, but this means anything can access it at any time and, if your `cat` is
 mutable, the name can be changed. We don't want anything renaming Yuki, so, we'll manage the property privately.
 
 To create the object then, we'll need a "constructor", a function that is associated with our `Cat` type, that returns
@@ -128,10 +128,10 @@ impl TypeName {
 }
 ```
 
-Our constructor is simply a function that lives inside the impl block of `Cat`, takes the cats name, and returns an
+Our constructor is simply a function that lives inside the impl block of `Cat`, takes the cat's name, and returns an
 instantiated `Cat` with the given name. One nice thing about `impl` blocks is that they have a special shortcut when
 referring to the type that is being implemented called `Self`. This means that while we _could_ specifically return
-the `Cat` type, but we could also use `Self`. There are a lot of benefits to the latter in more advanced code, so we'll
+the `Cat` type, we could also use `Self`. There are a lot of benefits to the latter in more advanced code, so we'll
 use that here.
 
 ```rust,no_run
@@ -154,7 +154,7 @@ the same as thing as the `name` field, writing `Self { name: name }` is redundan
 
 Let's make our `Cat` implementation slightly more useful by adding a function that will get the name of our cat too. In
 order to get the name we'll create a function with a special parameter `&self`. You might notice a couple of odd things
-about this. First, it has no type, and second, the variable self name itself gets the `&` which would normally be on the
+about this. First, it has no type, and second, the variable name itself gets the `&` which would normally be on the
 type, to show that it is a reference.
 
 `self` is a keyword, that translates in the parameters of a function header to `self: Self`, ie, a variable called 
@@ -190,7 +190,7 @@ impl Cat {
 Any implementation function where the first parameter is some form of `self` may be referred to as a "method", and is
 available on the instantiated type. Any other function in the implementation is called a "static method".
 
-We can finally create a working program, so returning to `main`, lets use our new implementation:
+We can finally create a working program, so returning to `main`, let's use our new implementation:
 
 ```rust
 # // This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
@@ -408,7 +408,7 @@ Generics are a way that we can create a template where some of the details are f
 deeper into this in the next chapter, but we can use rudimentary generics to manage our states.
 
 Functions, Structs and Enums can all be made generic by adding triangle brackets after their name, containing a list of
-generic parameters. Very over you might see a single letter generic name, particularly you might see something like 
+generic parameters. Very often you might see a single letter generic name, particularly you might see something like 
 `<T>` as you do with `Option<T>`, however, you might want to hint about the purposed of the type like the Error `E` in 
 `Result<T, E>`.
 
@@ -646,8 +646,8 @@ I'd like you to try to organise this project yourself, but if you get stuck, you
 This is cool... but we've got a slight problem. We can't get Yuki's name, and really his actions should belong to him,
 not be part of the state (I try not to choose violence when I'm hangry for example).
 
-We should move some of this behaviour to the Cat, but type, but how can we access details on our Cat type, when we 
-don't know that our Generic states will contain Cat's until runtime?
+We should move some of this behaviour to the Cat type, but how can we access details on our Cat type when we 
+don't know that our Generic states will contain Cats until runtime?
 
 In the next chapter we'll discuss Traits which provide a way to resolve this, as well as some other cool things they
 can do with Generics!
