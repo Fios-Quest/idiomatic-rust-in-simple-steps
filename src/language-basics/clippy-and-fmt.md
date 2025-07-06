@@ -1,7 +1,7 @@
 Clippy and Fmt
 ==============
 
-The Rust ecosystem has a wealth of tools that support us when writing Rust but there are two important tools I want to
+The Rust ecosystem has a wealth of tools that support us when writing Rust, but there are two important tools I want to
 cover at this point:
 
 - `rustfmt` - Pronounced Rust Format, helps us keep our code styles consistent, so that its easy to share your code or
@@ -110,15 +110,20 @@ typically might decide at the group level, what to include, and whether it shoul
 denied. For example, I tend to include a group of lints called `pedantic`  with a warning (these are usually allowed by
 clippy which means you don't get told if there is a potential issue).
 
-To do this you can either:
+To do this you can do one of the following:
 
-- run: `cargo clippy -- -W clippy::pedantic` or...
+- run: `cargo clippy -- -W clippy::pedantic`
 - in your entry file to my project (eg, `main.rs`, or `lib.rs`) you can add the line:
   ```rust
   #![warn(clippy::pedantic)]
   ```
+- in your `Cargo.toml` file, you can add the lines
+  ```toml
+  [lints.clippy]
+  pedantic = "warn"
+  ```
 
-The benefit of the latter is you can set a nice default for the project without you or anyone else needing to remember
+The benefit of the latter two is you can set a nice default for the project without you or anyone else needing to remember
 what options to pass to Clippy, while the former is useful if you want to override that or any other behaviour.
 
 For a full list of lints, check the list here:
