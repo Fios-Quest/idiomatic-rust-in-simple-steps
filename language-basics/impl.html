@@ -190,7 +190,7 @@ those states.</p>
 <h3 id="hangry-hungry-and-angry"><a class="header" href="#hangry-hungry-and-angry">Hangry (Hungry and Angry)</a></h3>
 <ul>
 <li>While hangry, he only really makes one noise, a desperate plea to "pay attention and do your job"</li>
-<li>He'll get hyper focused on you getting your attention and may choose violence</li>
+<li>He'll get hyper focused on getting your attention and may choose violence</li>
 <li>Once he's eaten, he'll get Eepy</li>
 </ul>
 <h3 id="eepy-sleepy"><a class="header" href="#eepy-sleepy">Eepy (Sleepy)</a></h3>
@@ -255,8 +255,8 @@ fn main() {
 6  |     let yuki = Cat { name: "Yuki".to_string() };
    |                      ^^^^^^^^^^^^^^^^^^^^^^^^ private field
 </code></pre>
-<p>This is because although <code>Cat</code> is public, it's <code>name</code> is not.</p>
-<p>We could, of course, simple make <code>name</code> public, but this means anything can access it at any time and, if your <code>cat</code> is
+<p>This is because although <code>Cat</code> is public, its <code>name</code> is not.</p>
+<p>We could, of course, simply make <code>name</code> public, but this means anything can access it at any time and, if your <code>cat</code> is
 mutable, the name can be changed. We don't want anything renaming Yuki, so, we'll manage the property privately.</p>
 <p>To create the object then, we'll need a "constructor", a function that is associated with our <code>Cat</code> type, that returns
 an instantiated object. To do this we need to use an <code>impl</code> block.</p>
@@ -267,10 +267,10 @@ of the block is:</p>
 <pre><code class="language-rust ignore">impl TypeName {
     // code goes here
 }</code></pre>
-<p>Our constructor is simply a function that lives inside the impl block of <code>Cat</code>, takes the cats name, and returns an
+<p>Our constructor is simply a function that lives inside the impl block of <code>Cat</code>, takes the cat's name, and returns an
 instantiated <code>Cat</code> with the given name. One nice thing about <code>impl</code> blocks is that they have a special shortcut when
 referring to the type that is being implemented called <code>Self</code>. This means that while we <em>could</em> specifically return
-the <code>Cat</code> type, but we could also use <code>Self</code>. There are a lot of benefits to the latter in more advanced code, so we'll
+the <code>Cat</code> type, we could also use <code>Self</code>. There are a lot of benefits to the latter in more advanced code, so we'll
 use that here.</p>
 <pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -291,7 +291,7 @@ and inside the <code>impl</code> block, we have access to the private <code>name
 the same as thing as the <code>name</code> field, writing <code>Self { name: name }</code> is redundant, we can just write <code>Self { name }</code>.</p>
 <p>Let's make our <code>Cat</code> implementation slightly more useful by adding a function that will get the name of our cat too. In
 order to get the name we'll create a function with a special parameter <code>&amp;self</code>. You might notice a couple of odd things
-about this. First, it has no type, and second, the variable self name itself gets the <code>&amp;</code> which would normally be on the
+about this. First, it has no type, and second, the variable name itself gets the <code>&amp;</code> which would normally be on the
 type, to show that it is a reference.</p>
 <p><code>self</code> is a keyword, that translates in the parameters of a function header to <code>self: Self</code>, ie, a variable called
 <code>self</code> with the type of whatever the implementation is for. When you use <code>&amp;self</code> it instead translates to <code>self: &amp;Self</code>.
@@ -324,7 +324,7 @@ is goes out of scope.</p>
 </blockquote>
 <p>Any implementation function where the first parameter is some form of <code>self</code> may be referred to as a "method", and is
 available on the instantiated type. Any other function in the implementation is called a "static method".</p>
-<p>We can finally create a working program, so returning to <code>main</code>, lets use our new implementation:</p>
+<p>We can finally create a working program, so returning to <code>main</code>, let's use our new implementation:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
 </span><span class="boring">mod cat {
 </span><span class="boring">    pub struct Cat {
@@ -522,7 +522,7 @@ not we haven't made this more flexible... but, what if the states were generic?<
 <p>Generics are a way that we can create a template where some of the details are filled in later. We're going to get
 deeper into this in the next chapter, but we can use rudimentary generics to manage our states.</p>
 <p>Functions, Structs and Enums can all be made generic by adding triangle brackets after their name, containing a list of
-generic parameters. Very over you might see a single letter generic name, particularly you might see something like
+generic parameters. Very often you might see a single letter generic name, particularly you might see something like
 <code>&lt;T&gt;</code> as you do with <code>Option&lt;T&gt;</code>, however, you might want to hint about the purposed of the type like the Error <code>E</code> in
 <code>Result&lt;T, E&gt;</code>.</p>
 <p>You can even use whole words, though this is seen less.</p>
@@ -736,8 +736,8 @@ public in your general state <code>mod.rs</code>.</p>
 <h2 id="next-chapter"><a class="header" href="#next-chapter">Next Chapter</a></h2>
 <p>This is cool... but we've got a slight problem. We can't get Yuki's name, and really his actions should belong to him,
 not be part of the state (I try not to choose violence when I'm hangry for example).</p>
-<p>We should move some of this behaviour to the Cat, but type, but how can we access details on our Cat type, when we
-don't know that our Generic states will contain Cat's until runtime?</p>
+<p>We should move some of this behaviour to the Cat type, but how can we access details on our Cat type when we
+don't know that our Generic states will contain Cats until runtime?</p>
 <p>In the next chapter we'll discuss Traits which provide a way to resolve this, as well as some other cool things they
 can do with Generics!</p>
 
