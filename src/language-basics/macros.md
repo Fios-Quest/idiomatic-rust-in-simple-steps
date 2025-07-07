@@ -376,8 +376,8 @@ macro_rules! hello {
 
             // We initialise our string as before.
             let mut output = String::from("Hello, ");
-            // If there are no metavariables were passed, then the array will be
-            // empty, so we'll use our default value
+            // If no metavariables were passed, then the array will be empty,
+            // so we'll use our default value
             output.push_str(names_iter.next().unwrap_or(&"world"));
 
             // We'll loop until no more items are in the iterator
