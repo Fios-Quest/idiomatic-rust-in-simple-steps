@@ -417,8 +417,8 @@ Being able to quickly compose macros like this can save us a lot of time when re
 Tokens, Metavariables, and Fragment-Specifiers
 ----------------------------------------------
 
-Rust (like most languages) turns your human written code into tokens. Tokens are like the atoms of a programming
-language, the smallest meaningfully divisible parts. 
+Rust (like most languages) turns your human written code into tokens so that it can process what you've written. Tokens
+are like the atoms of a programming language, the smallest meaningfully divisible parts. 
 
 For example, the statement `let hello = String::from("Hello");` can be broken into the following tokens:
 
