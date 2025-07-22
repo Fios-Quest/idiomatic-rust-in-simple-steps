@@ -36,6 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc.js"></script>
@@ -92,10 +93,13 @@
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -146,7 +150,12 @@
 
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -463,8 +472,8 @@ with <em>just</em> macro repeats, BUT we can work around that with very low-cost
 
             // We initialise our string as before.
             let mut output = String::from("Hello, ");
-            // If there are no metavariables were passed, then the array will be
-            // empty, so we'll use our default value
+            // If no metavariables were passed, then the array will be empty,
+            // so we'll use our default value
             output.push_str(names_iter.next().unwrap_or(&amp;"world"));
 
             // We'll loop until no more items are in the iterator
@@ -499,8 +508,8 @@ fn main() {
 }</code></pre></pre>
 <p>Being able to quickly compose macros like this can save us a lot of time when repeating the same code over and over.</p>
 <h2 id="tokens-metavariables-and-fragment-specifiers"><a class="header" href="#tokens-metavariables-and-fragment-specifiers">Tokens, Metavariables, and Fragment-Specifiers</a></h2>
-<p>Rust (like most languages) turns your human written code into tokens. Tokens are like the atoms of a programming
-language, the smallest meaningfully divisible parts.</p>
+<p>Rust (like most languages) turns your human written code into tokens so that it can process what you've written. Tokens
+are like the atoms of a programming language, the smallest meaningfully divisible parts.</p>
 <p>For example, the statement <code>let hello = String::from("Hello");</code> can be broken into the following tokens:</p>
 <p><img src="macros/Tokens.svg" alt="Tokens" /></p>
 <p>When working with <code>macro_rules!</code> though, Rust actually won't allow us to work with tokens directly. Instead, the
@@ -1404,6 +1413,7 @@ cover some best practices to make unsafe as safe as possible!</p>
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+
 
 
     </div>
