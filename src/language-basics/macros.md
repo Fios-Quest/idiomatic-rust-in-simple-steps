@@ -191,8 +191,7 @@ valid!
         },
         "Hello, Yuki".to_string()
     );
-    #
-}
+# }
 ```
 
 Expressions in Rust are particularly useful as they have a type and a value, just like variables, allowing you to use
