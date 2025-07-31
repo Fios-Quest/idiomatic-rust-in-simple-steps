@@ -26,6 +26,10 @@ Not really all that unsafe
 It's important to note that Unsafe Rust doesn't turn _off_ any of Rusts safety measures, what it does do is turn _on_ a
 whole other set of language features on which Rusts safety tools can not work.
 
+I really can't stress this enough as it might be one of the greatest misconceptions in Rust. Unsafe Rust does _not_
+turn off _any_ safety measures. It turns on tools that Rust can not guarantee are safe, so you need to make extra
+certain you are using them safely. 
+
 For example, in safe Rust we use references. These work a lot like pointers in other languages, but they are not
 pointers. References in unsafe Rust still must abide by the rules of the borrow checker. Unsafe Rust doesn't turn off
 the borrow checker, instead it gives us access to raw pointers which can't be borrow checked.
@@ -33,6 +37,10 @@ the borrow checker, instead it gives us access to raw pointers which can't be bo
 Unlike what you might have been lead to believe, unsafe Rust is not the wild west, and you will not lose all control
 simply by using it. Being mindful of the language features that are unsafe will help keep you focused on writing sound
 code.
+
+Some of these tools exist in other commonly used low level languages, that have been around for decades and are still,
+rightly, popular today. In these langauges, these tools are available at any time. They're necessary tools that we
+need in order to do some things that there is no other way to do.
 
 How to use unsafe
 -----------------
@@ -136,4 +144,52 @@ Raw Pointers
 Our previous example was pretty tame. We were using static data so, although there was some risk with relation to
 threads it was still on the safer side. Let's play with fire.
 
-References in Rust are a bit like pointers in other languages, but have a number of tools to make them safer
+We use References in Rust a bit like pointers are used in other languages, but references have a number of features
+that make them safer to use. A pointer is essentially just a umber that is an address to a location in memory. When
+you allocate heap data, even in Rust, the operating system amongst other things provides you with a pointer to the
+location where the memory was allocted.
+
+If we just used a pointer, it would still contain an address to that location even if we'd subsequently told the
+operating system to free that memory and, programatically, we have no way to know if that location is still ours to use
+later. Using that pointer after the memory its been pointed to has been freed is, well, unsafe, and is the root of an
+extremely common bug you might have heard of, use after free.
+
+In fact, because we don't know from just the pointer whether the memory was freed or not, we might try to free the
+memory again, leading to anothr bug "double free".
+
+References help us avoid that because we can track their use at compile time, helping us make sure that they are always
+valid before we even run the code... but the operating system doesn't use references. Actually, pointers can't be used
+between _any_ two separate pieces of software, beecause of the compile time nature of them. We cn however share pointer
+locations.
+
+So, even in Rust, we occassionally need to deal with pointers.
+
+You can actually get pointers in safe Rust. Try running this program multiple times:
+
+```rust
+fn main() {
+    let hello = String::from("Hello, world!");
+    let pointer = &raw const hello;
+    println!("{hello} is located at {}", pointer as usize);
+}
+```
+
+If you run this code multiple times, you should get a different number every time (this may depend on underlying memory
+management)
+
+What we can't do is use those pointers to get data in safe Rust. For that we need to dip into unsafe:
+
+
+```rust,compile_fail
+fn main() {
+    let hello = String::from("Hello, world!");
+    let pointer = &raw const hello;
+    unsafe {
+        println!("At location {pointer} is the string {}", *hello);
+    }
+}
+```
+
+Ah, but this doesn't work. The reason is that strings, in any langauge, take up more than one word of memory. The
+compiler fails because (incoming pun), 
+
