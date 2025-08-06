@@ -60,8 +60,8 @@ fn main() {
 
 /// # Safety
 /// 
-/// This function doesn't actually do anything therefore you don't need to do
-/// anything in particular to use it safely.
+/// This function doesn't _actually_ do anything, therefore, you don't need to 
+/// do anything in particular to use it safely.
 unsafe fn this_code_is_unsafe() {}
 ```
 
@@ -119,7 +119,8 @@ static mut HELLO_MESSAGE: &str = "Hello!";
 fn main() {
     another_function();
     
-    // SAFETY: We only ever modify this variable from the main thread, HELLO_MESSAGE is never used by other threads
+    // SAFETY: We only ever modify this variable from the main thread, 
+    // HELLO_MESSAGE is never used by other threads
     unsafe {
         HELLO_MESSAGE = "CHANGED!";
     }
@@ -142,12 +143,12 @@ Raw Pointers
 ------------
 
 Our previous example was pretty tame. We were using static data, so, although there was some risk with relation to
-threads it was still on the safer side. Let's play with fire.
+threads, it was still on the safer side. Let's play with fire.
 
-We use References in Rust a bit like pointers are used in other languages, but references have a number of features
-that make them safer to use. A pointer is essentially just a number that is an address to a location in memory. When
-you allocate heap data, even in Rust, the operating system amongst other things provides you with a pointer to the
-location where the memory was allocated.
+We use References in Rust a bit like other languages use pointers, but references have a number of features that make
+them safer to use. A pointer is essentially just a number that is an address to a location in memory. When you allocate
+heap data, even in Rust, the operating system amongst other things provides you with a pointer to the location where the
+memory was allocated.
 
 If we just used a pointer, it would still contain an address to that location even if we subsequently told the
 operating system to free that memory. Programmatically, we have no way to know if that location is still ours to use
@@ -159,19 +160,17 @@ memory again, leading to another bug "double free".
 
 References help us avoid that because we can track their use at compile time, helping us make sure that they are always
 valid before we even run the code... but the operating system doesn't use references. Actually, pointers can't be used
-between _any_ two separate pieces of software, because of the compile time nature of them. We can however share pointer
-locations.
+between _any_ two separate pieces of software, because of the compile time nature of them. We can, however, share 
+pointer locations.
 
 So, even in Rust, we occasionally need to deal with pointers.
 
 You can actually get pointers in safe Rust. Try running this program multiple times:
 
 ```rust
-fn main() {
-    let hello = String::from("Hello, world!");
-    let pointer = &raw const hello;
-    println!("{hello} is located at {}", pointer as usize);
-}
+let hello = String::from("Hello, world!");
+let pointer = &raw const hello;
+println!("{hello} is located at {}", pointer as usize);
 ```
 
 If you run this code multiple times, you should get a different number every time (this may depend on underlying memory
@@ -181,12 +180,106 @@ What we can't do is use those pointers to get data in safe Rust. For that we nee
 dereference the pointer to go back from the numeric location to the data that's stored there.
 
 ```rust
+let hello = String::from("Hello, world!");
+let pointer = &raw const hello;
+// SAFETY: The string data `pointer` points to has not been freed
+unsafe {
+    println!("At location {} is the string '{}'", pointer as usize, *pointer);
+}
+```
+
+This is unsafe because the validity of the pointer cannot be confirmed. If we dropped the String before the unsafe 
+block, this code would still compile, but there's now a serious risk that the data at that location no longer represents
+our string.
+
+There is more that we can do with raw pointers, which we'll come to later.
+
+Unsafe functions
+----------------
+
+When we write code, we regularly break it up into small reusable chunks known as functions. You are, at this point, I
+hope, very familiar with this idea.
+
+So far we've demonstrated that we can place unsafe code inside a block to encapsulate unsafe behavior. This means that
+you can write unsafe code inside a function, but the function makes sure that there's no risk, meaning calling the 
+function itself _is_ safe.
+
+A good example of this is the [`std::mem::swap`](https://doc.rust-lang.org/std/mem/fn.swap.html) which swaps the values
+at two mutable locations:
+
+```rust
+let mut left = "Left".to_string();
+let mut right = "Right".to_string();
+
+println!("Left is {left}");
+println!("Right is {right}");
+
+std::mem::swap(&mut left, &mut right);
+    
+assert_eq!(left, "Right".to_string());
+assert_eq!(right, "Left".to_string());
+
+println!("Left is {left}");
+println!("Right is {right}");
+```
+
+Because `swap` guarantees the types are the same and, through using mutable references, knows nothing else is accessing
+the memory while it does its thing, conceptually this function is safe, even if the first thing it does internally is
+run unsafe code. This is what we call a safe abstraction around unsafe code.
+
+But that's not always possible. Sometimes, the very concept a function or method represents is unsafe.
+
+Let's say that through arbitrary means, we've got a pointer to some heap data that we know represents a String. We know
+how long the String is and how much memory at that location is ours. We want to take ownership of that memory and turn
+it into a `String` type.
+
+We can use the `from_raw_parts` on the `String` type to build a `String` directly from memory, but the entire concept
+of manually creating a string like this is unsafe.
+
+Firstly, something else likely manages that heap memory. If we create a `String` from it, we're going to take ownership
+of the heap data, and when the String goes out of scope, Rust will try to free it. How do we prevent a double free when
+the thing that originally created the data also wants to free it.
+
+Secondly, `from_raw_parts` takes a pointer, a length, and a capacity, none of which it can work out is valid at compile
+time.
+
+Remember, length and capacity of collections including `String` are different. Length is how much data is being used
+currently. Capacity is how much memory is available to contain the data. Most types will cause a reallocation when the
+capacity is filled, causing us another problem to look out for!
+
+Luckily, by being aware of the problems ahead of time, we can still use this function safely.
+
+```rust
+use std::ops::Deref;
+
 fn main() {
-    let hello = String::from("Hello, world!");
-    let pointer = &raw const hello;
-    // SAFETY: The string data `pointer` points to is still in scope
+    // We'll manually make sure our string never exceeds 100 bytes
+    let capacity = 100;
+
+    let mut original_string = String::with_capacity(capacity);
+    // 57 ascii chars = 57 bytes
+    original_string.push_str("This string is a longer string but less than the capacity");
+
+    let pointer = &raw mut original_string as *mut u8;
+
+    // SAFETY: We create a string from the original, but we prevent the new string
+    // from being moved by staying inside its capacity, and we prevent it being
+    // dropped by using ManuallyDrop.
     unsafe {
-        println!("At location {} is the string '{}'", pointer as usize, *pointer);
+        let overlapping_string = String::from_raw_parts(pointer, 15, capacity);
+
+        // Before we do anything else, we're going to prevent overlapping_string 
+        // from being dropped, which will cause a double free when original_string
+        // is dropped. We could equally prevent the original string being dropped,
+        // but because of scoping it's safer to do it this way around. 
+        // 
+        // The ManuallyDrop type is also unsafe
+        let mut overlapping_string = std::mem::ManuallyDrop::new(overlapping_string);
+
+        assert_eq!(overlapping_string.deref(), &"This string is ".to_string());
     }
 }
+
+
+
 ```
