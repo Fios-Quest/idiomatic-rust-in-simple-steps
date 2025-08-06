@@ -9,7 +9,7 @@ thrill of it)?
 
 Rust is safe, but Rust is not an island.
 
-Sometimes when we use Rust, we need to access heap memory, utilise peripherals, and talk to other software. We can't
+Sometimes when we use Rust, we need to access heap memory, use peripherals, and talk to other software. We can't
 guarantee that any of these actions are safe.
 
 But wait! Haven't we _been_ accessing Heap Memory throughout this book? Yes, we have. Types like `Vec` and `String`
@@ -17,20 +17,20 @@ use the Heap to store their data. They take responsibility for and abstract away
 `Vec`, `String` and similar types _is_ considered safe.
 
 As a Rust engineer, most of the time you won't personally need to worry about unsafe Rust. You can get by with using
-other peoples APIs like the standard library. The point of this chapter isn't to prepare you to write lots of unsafe
-Rust, its to make you feel comfortable for the odd occasion you might have to touch it.
+other people's APIs like the standard library. The point of this chapter isn't to prepare you to write lots of unsafe
+Rust; it's to make you feel comfortable for the odd occasion you might have to touch it.
 
 Not really all that unsafe
 --------------------------
 
 It's important to note that Unsafe Rust doesn't turn _off_ any of Rusts safety measures, what it does do is turn _on_ a
-whole other set of language features on which Rusts safety tools can not work.
+whole other set of language features on which Rusts safety tools cannot work.
 
 I really can't stress this enough as it might be one of the greatest misconceptions in Rust. Unsafe Rust does _not_
-turn off _any_ safety measures. It turns on tools that Rust can not guarantee are safe, so you need to make extra
+turn off _any_ safety measures. It turns on tools that Rust cannot guarantee are safe, so you need to make extra
 certain you are using them safely. 
 
-For example, in safe Rust we use references. These work a lot like pointers in other languages, but they are not
+For example, in safe Rust we use references. These are similar to pointers in other languages, but they are not
 pointers. References in unsafe Rust still must abide by the rules of the borrow checker. Unsafe Rust doesn't turn off
 the borrow checker, instead it gives us access to raw pointers which can't be borrow checked.
 
@@ -38,9 +38,9 @@ Unlike what you might have been lead to believe, unsafe Rust is not the wild wes
 simply by using it. Being mindful of the language features that are unsafe will help keep you focused on writing sound
 code.
 
-Some of these tools exist in other commonly used low level languages, that have been around for decades and are still,
-rightly, popular today. In these langauges, these tools are available at any time. They're necessary tools that we
-need in order to do some things that there is no other way to do.
+Some of these tools exist in other commonly used low-level languages that have been around for decades and are still,
+rightly, popular today. In these languages, these tools are available at any time. They're necessary tools that we
+need to do things that there is no other way to do.
 
 How to use unsafe
 -----------------
@@ -68,7 +68,7 @@ unsafe fn this_code_is_unsafe() {}
 What's with all the comments?
 
 This is not necessarily a widely used practice, however, the Rust Standard Library team, who have to work with `unsafe`
-a lot, have standardised around making safety communication almost contractual.
+a lot, have standardized around making safety communication almost contractual.
 
 Prior to the `unsafe` block, the first thing we see is a `SAFETY:` comment. This tells the reader how the author made
 sure this code was safe. This may seem odd. If the code is provably safe, why do we need `unsafe` at all? `unsafe` turns
@@ -84,7 +84,7 @@ The `unsafe` function also has "Safety" doc comment. It's a doc comment because 
 this function. It explains how to make sure you use the function safely in the API documentation.
 
 You can read more about this practice in the official 
-[Standard library developers Guide](https://std-dev-guide.rust-lang.org/policy/safety-comments.html)
+[Standard library developer's Guide](https://std-dev-guide.rust-lang.org/policy/safety-comments.html)
 
 Mutable Statics
 ---------------
@@ -105,7 +105,7 @@ fn another_function() {
 ```
 
 Static variables are a bit like global variables in other languages. They're really handy if you want to read data from
-anywhere in your application, you want to minimise memory footprint (this will only appear in the binary itself) and,
+anywhere in your application, you want to minimize memory footprint (this will only appear in the binary itself) and,
 importantly, you never want to change it.
 
 In the [Threads](./threads.md#sharing-state) chapter, we briefly discussed the danger of modifying data across multiple
@@ -135,34 +135,34 @@ fn another_function() {
 }
 ```
 
-Notice that it's not just unsafe to write to the static, its also considered unsafe to read from it. However, so long as
-we never modify this in a different thread, we know this behaviour is safe.
+Notice that it's not just unsafe to write to the static, it's also considered unsafe to read from it. However, so long as
+we never modify this in a different thread, we know this behavior is safe.
 
 Raw Pointers
 ------------
 
-Our previous example was pretty tame. We were using static data so, although there was some risk with relation to
+Our previous example was pretty tame. We were using static data, so, although there was some risk with relation to
 threads it was still on the safer side. Let's play with fire.
 
 We use References in Rust a bit like pointers are used in other languages, but references have a number of features
-that make them safer to use. A pointer is essentially just a umber that is an address to a location in memory. When
+that make them safer to use. A pointer is essentially just a number that is an address to a location in memory. When
 you allocate heap data, even in Rust, the operating system amongst other things provides you with a pointer to the
-location where the memory was allocted.
+location where the memory was allocated.
 
-If we just used a pointer, it would still contain an address to that location even if we'd subsequently told the
-operating system to free that memory and, programatically, we have no way to know if that location is still ours to use
-later. Using that pointer after the memory its been pointed to has been freed is, well, unsafe, and is the root of an
+If we just used a pointer, it would still contain an address to that location even if we subsequently told the
+operating system to free that memory. Programmatically, we have no way to know if that location is still ours to use
+later. Using that pointer after the memory it's been pointed to has been freed is, well, unsafe, and is the root of an
 extremely common bug you might have heard of, use after free.
 
 In fact, because we don't know from just the pointer whether the memory was freed or not, we might try to free the
-memory again, leading to anothr bug "double free".
+memory again, leading to another bug "double free".
 
 References help us avoid that because we can track their use at compile time, helping us make sure that they are always
 valid before we even run the code... but the operating system doesn't use references. Actually, pointers can't be used
-between _any_ two separate pieces of software, beecause of the compile time nature of them. We cn however share pointer
+between _any_ two separate pieces of software, because of the compile time nature of them. We can however share pointer
 locations.
 
-So, even in Rust, we occassionally need to deal with pointers.
+So, even in Rust, we occasionally need to deal with pointers.
 
 You can actually get pointers in safe Rust. Try running this program multiple times:
 
@@ -177,15 +177,16 @@ fn main() {
 If you run this code multiple times, you should get a different number every time (this may depend on underlying memory
 management)
 
-What we can't do is use those pointers to get data in safe Rust. For that we need to dip into unsafe:
-
+What we can't do is use those pointers to get data in safe Rust. For that we need to dip into unsafe. Below we
+dereference the pointer to go back from the numeric location to the data that's stored there.
 
 ```rust
 fn main() {
     let hello = String::from("Hello, world!");
     let pointer = &raw const hello;
+    // SAFETY: The string data `pointer` points to is still in scope
     unsafe {
-        println!("At location {} is the string {}", pointer as usize, *pointer);
+        println!("At location {} is the string '{}'", pointer as usize, *pointer);
     }
 }
 ```
