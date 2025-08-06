@@ -180,16 +180,12 @@ management)
 What we can't do is use those pointers to get data in safe Rust. For that we need to dip into unsafe:
 
 
-```rust,compile_fail
+```rust
 fn main() {
     let hello = String::from("Hello, world!");
     let pointer = &raw const hello;
     unsafe {
-        println!("At location {pointer} is the string {}", *hello);
+        println!("At location {} is the string {}", pointer as usize, *pointer);
     }
 }
 ```
-
-Ah, but this doesn't work. The reason is that strings, in any langauge, take up more than one word of memory. The
-compiler fails because (incoming pun), 
-
