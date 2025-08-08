@@ -20,6 +20,78 @@ As a Rust engineer, most of the time you won't personally need to worry about un
 other people's APIs like the standard library. The point of this chapter isn't to prepare you to write lots of unsafe
 Rust; it's to make you feel comfortable for the odd occasion you might have to touch it.
 
+Recap on Memory
+---------------
+
+Typically, when we talk about memory in programming, we're talking about RAM, but even then we subdivide memory into
+three main types of usages, each of which has different pros and cons.
+
+Stack Memory is where all variables live. It's very fast because the entire stack is pre-allocated when your program
+runs, but there are some catches. 
+
+First, it's actually quite limited. When your program starts its given an amount of memory that you can not determine
+ahead of time, and you can not change. It's _usually_ 2MiB, but you might find it's less on things like embedded 
+devices. If you go over this small amount, your program will crash.
+
+Second, stack data must be of known size at compile time. You don't really need to worry about why this is (it's because
+stack frames, the memory for each function on the stack must have a known size) only that your data can not change in
+size.
+
+But wait! We've stored lots of things in variables that have variable size; Strings, Vec's, HashMaps, etc. The data for
+these types is not actually stored in the variable. What typically happens is that data is stored on the Heap, and the
+data's location, which is of known size, is stored on the stack.
+
+Semantically, it's probably fine to say that the variable contains that data, people will always know what you mean.
+However, for the purpose of this chapter, we really need to differentiate what is on the stack and what isn't.
+
+In the below code, `number_example` stores the actual number on the heap, since its of a known size, 32 bits unless
+otherwise specified. `string_example`, however, contains the location of the string data, not the data itself, which is
+stored on the heap.
+
+```rust
+fn main() {
+    let number_example = 42;
+    let string_example = String::from("This is string data too");
+}
+```
+
+So, the Heap, is where we can store things of arbitrary size, and we can (usually) store things far larger than the 
+stack. Technically, we can't resize heap allocations, but we can request new, larger portions of heap memory, copy our
+data there, free the old memory and add more things in the new location until we run out of space again.
+
+So it's bigger and more flexible than the stack, but, it also has some downsides. It's much slower than stack memory
+because it must be allocated on request, and freed once we're done with it. Allocation and Freeing in Rust is usually
+handled by the standard library and, other than what we're going to discuss in this chapter, you almost never need to
+think about that process. However, it still takes time.
+
+> Note: Once heap memory is allocated, it's _almost_ free to use, with the only overhead essentially being the
+> redirection from the stack to the heap in O(1) time. For this reason, some software will actually allocate large 
+> amounts of memory called Page Files that can store lots of different things. This can be done in Rust too and there
+> are pros and cons to this too, but it's far outside the scope of this guide.
+
+There's a third kind of memory we don't really talk about as much but it might be the most important.
+
+Static Memory is where all values and data you write into your program are initially stored, though often times its
+subsequently moved somewhere else. For example, in the program:
+
+```rust
+const CONST_EXAMPLE: &str = "This is string data";
+
+fn main() {
+    let number_example = 42;
+    let string_example = String::from("This is string data too");
+}
+```
+
+The data for `CONST_EXAMPLE` remains in static memory, but similar to variables that contain heap data locations,
+`CONST_EXAMPLE` itself is a reference to that data (note the`&`). `42` and `"This is string data too"` are also
+initially stored in static data, however, `42` is copied to the stack in `number_example` whereas 
+`"This is string data too"` is cloned onto the heap and the location of the data is stored in `string_example`.
+
+Differentiating where things are stored is about to become _very_ important, and it's easy to make mistakes if we don't
+differentiate between the stack, the heap and static memory. (Thank-you [@ChillFish8](https://github.com/ChillFish8)
+for helping me out when I made that exact mistake writing this chapter 😉)
+
 Not really all that unsafe
 --------------------------
 
