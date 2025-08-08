@@ -375,8 +375,8 @@ macro_rules! hello {
 
             // We initialise our string as before.
             let mut output = String::from("Hello, ");
-            // If there are no metavariables were passed, then the array will be
-            // empty, so we'll use our default value
+            // If no metavariables were passed, then the array will be empty,
+            // so we'll use our default value
             output.push_str(names_iter.next().unwrap_or(&"world"));
 
             // We'll loop until no more items are in the iterator
@@ -416,8 +416,8 @@ Being able to quickly compose macros like this can save us a lot of time when re
 Tokens, Metavariables, and Fragment-Specifiers
 ----------------------------------------------
 
-Rust (like most languages) turns your human written code into tokens. Tokens are like the atoms of a programming
-language, the smallest meaningfully divisible parts. 
+Rust (like most languages) turns your human written code into tokens so that it can process what you've written. Tokens
+are like the atoms of a programming language, the smallest meaningfully divisible parts. 
 
 For example, the statement `let hello = String::from("Hello");` can be broken into the following tokens:
 
