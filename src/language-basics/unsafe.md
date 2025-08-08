@@ -336,26 +336,38 @@ fn main() {
     // 57 ascii chars = 57 bytes
     original_string.push_str("This string is a longer string but less than the capacity");
 
-    let pointer = &raw mut original_string as *mut u8;
+    let pointer = original_string.as_mut_ptr();
 
     // SAFETY: We create a string from the original, but we prevent the new string
     // from being moved by staying inside its capacity, and we prevent it being
     // dropped by using ManuallyDrop.
     unsafe {
+        // `from_raw_parts` is an `unsafe` method so can only be called inside an
+        // unsafe block
         let overlapping_string = String::from_raw_parts(pointer, 15, capacity);
 
-        // Before we do anything else, we're going to prevent overlapping_string 
-        // from being dropped, which will cause a double free when original_string
-        // is dropped. We could equally prevent the original string being dropped,
-        // but because of scoping it's safer to do it this way around. 
+        // Before we do anything else, we're going to prevent `overlapping_string` 
+        // from being dropped, which would otherwise cause a double free when 
+        // `original_string` is dropped later. We could equally prevent 
+        // `original_string` being dropped instead, but, to me, it makes sense to
+        // have this behaviour in the inner code block.
         // 
-        // The ManuallyDrop type is also unsafe
+        // The ManuallyDrop type is actually safe. Although it prevents the memory
+        // being freed, and _could_ result in memory leaks that's not considered
+        // unsafe in the same way as other things in this chapter. Just be careful
+        // using it.
         let mut overlapping_string = std::mem::ManuallyDrop::new(overlapping_string);
 
+        // Confirm we have the right location!
         assert_eq!(overlapping_string.deref(), &"This string is ".to_string());
+        
+        // Push some data onto the back of the string
+        overlapping_string.push_str("short");
+        
+        assert_eq!(overlapping_string.deref(), &"This string is short".to_string());
     }
+    
+    // Un oh!
+    assert_eq!(original_string, "This string is shortger string but less than the capacity");
 }
-
-
-
 ```
