@@ -208,8 +208,12 @@ fn another_function() {
 }
 ```
 
-Notice that it's not just unsafe to write to the static, it's also considered unsafe to read from it. However, so long as
-we never modify this in a different thread, we know this behavior is safe.
+Notice that it's not just unsafe to write to the static, it's also considered unsafe to read from it. However, so long
+as we never modify this in a different thread, we know this behavior is safe.
+
+There's a catch here though. Remember, `HELLO_MESSAGE` is a reference to some data that exists in static memory. What
+we've done here is change the reference itself to point to the location of `"CHANGED!"` which is also built into the
+programs static memory.
 
 Raw Pointers
 ------------
