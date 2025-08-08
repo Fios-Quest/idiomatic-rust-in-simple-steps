@@ -241,34 +241,63 @@ pointer locations.
 
 So, even in Rust, we occasionally need to deal with pointers.
 
-You can actually get pointers in safe Rust. Try running this program multiple times:
+You can actually get pointers in safe Rust. Try running this program multiple times, you should get a different number
+every time:
 
 ```rust
-let hello = String::from("Hello, world!");
-let pointer = &raw const hello;
-println!("{hello} is located at {}", pointer as usize);
+let the_answer = 42;
+let pointer = &raw const the_answer;
+println!("The variable at {pointer:p} the data '{the_answer}'");
 ```
 
-If you run this code multiple times, you should get a different number every time (this may depend on underlying memory
-management)
+One cool thing worth pointing out is that Rust even types your pointers making it harder to muddle them up later. 
 
-What we can't do is use those pointers to get data in safe Rust. For that we need to dip into unsafe. Below we
-dereference the pointer to go back from the numeric location to the data that's stored there.
+```rust
+# use std::any::type_name;
+# 
+# // Thanks to @DevinR528 https://github.com/DevinR528
+# // Source: https://users.rust-lang.org/t/how-check-type-of-variable/33845/2
+# fn type_of<T>(_: T) -> &'static str {
+#     type_name::<T>()
+# }
+# 
+# fn main() {
+    let the_answer = 42;
+    let pointer = &raw const the_answer;
+    println!("{}", type_of(pointer));
+# }
+```
+
+Remember, in some circumstances, the variable that you're accessing the data via, does not contain the actual data.
+Strings are a really, good example of this. The pointer to the variable does not point to the data, but we can access
+the pointer to the data via a method on the string itself (this is inherited from string slices). Again, there's nothing
+unsafe about doing this.
 
 ```rust
 let hello = String::from("Hello, world!");
-let pointer = &raw const hello;
-// SAFETY: The string data `pointer` points to has not been freed
+let pointer_to_variable = &raw const hello;
+let pointer_to_data = hello.as_ptr();
+println!(
+    "The variable at {pointer_to_variable:p}, \
+    points to {pointer_to_data:p} \
+    which contains the data '{hello}'",
+);
+```
+
+Getting pointers is perfectly safe, what we can't do is use those pointers to get data in safe Rust. For that we need to
+dip into unsafe. Below we dereference the pointer to go back from the location to the data that's stored there.
+
+```rust
+let the_answer = 42;
+let pointer = &raw const the_answer;
 unsafe {
-    println!("At location {} is the string '{}'", pointer as usize, *pointer);
+    let data_at_pointer = *pointer;
+    assert_eq!(data_at_pointer, 42);
 }
 ```
 
-This is unsafe because the validity of the pointer cannot be confirmed. If we dropped the String before the unsafe 
-block, this code would still compile, but there's now a serious risk that the data at that location no longer represents
-our string.
-
-There is more that we can do with raw pointers, which we'll come to later.
+This is unsafe because the validity of the pointer cannot be confirmed. `pointer` could outlive `the_answer`, after 
+which, what is pointer pointing at? There's no real way to know.
 
 Unsafe functions
 ----------------
