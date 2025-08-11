@@ -400,3 +400,179 @@ fn main() {
     assert_eq!(original_string, "This string is shortger string but less than the capacity");
 }
 ```
+
+It's not unusual to create an unsafe function (because conceptually what you're doing is unsafe, like creating a string
+directly from memory), but then wrap that function in safe code. For example, the internal representation of data inside
+the String is a slice, which also has the method `from_raw_parts` (though it works slightly differently as slices don't
+have capacity, just length). `slice::from_raw_parts_mut` is unsafe, but it's used inside the safe method
+`String::retain`.
+
+Creating safe abstractions might look something like this:
+
+```rust
+// SAFETY: To use this safely you must be sure of the following:
+// - obviously there isn't a checklist here because this function does nothing
+unsafe fn conceptually_dangerous_function() -> bool {
+    true
+}
+
+fn safe_abstraction() -> bool {
+    // Do some checks
+    
+    // SAFETY: We confirmed safety by doing the following checks
+    // - again, the function does nothing so nothing to really check here
+    unsafe {
+        conceptually_dangerous_function()
+    }
+}
+
+fn main() {
+    // We can safely call the safe abstraction to do unsafe things safely
+    let output = safe_abstraction();
+    assert!(output);
+}
+```
+
+It's worth noting that if you have a trait where any of its methods are unsafe, then the entire trait is considered
+unsafe, and so is it's implementation. It's actually kind of rare to _have_ to use this feature. If you're trait has
+an unsafe method but a safe abstraction, you could move the unsafe method to an unsafe function.
+
+For example, the trait has two provided methods, but we still can't implement it safely. 
+
+```rust,compile_fail
+unsafe trait WontWork {
+    // SAFETY: This method isn't actually unsafe
+    unsafe fn conceptually_dangerous_method(&self) -> bool {
+        true
+    }
+    
+    fn safe_abstraction(&self) -> bool {
+        // SAFETY: The method called isn't actually unsafe
+        unsafe {
+            self.conceptually_dangerous_method()
+        }
+    }
+}
+
+struct ExampleUnitType;
+
+impl WontWork for ExampleUnitType {}
+```
+
+However, if we don't need to ever overwrite the unsafe method, we could just extract it from the trait entirely
+
+```rust
+// SAFETY: This method isn't actually unsafe
+unsafe fn conceptually_dangerous_method<T: WillWork + ?Sized>(w: &T) -> bool {
+    true
+}
+
+trait WillWork {
+    fn safe_abstraction(&self) -> bool {
+        // SAFETY: The method called isn't actually unsafe
+        unsafe {
+            conceptually_dangerous_method(self)
+        }
+    }
+}
+
+struct ExampleUnitType;
+
+impl WillWork for ExampleUnitType {}
+```
+
+You're likely to need unsafe Traits only when the behaviour the trait describes itself is unsafe. For example, `Send`
+and `Sync` are automatically applied to all types that are only constructed from types that are also `Send` and `Sync`.
+If your type contains types that are not `Send` and/or `Sync` then the compiler can no longer guarantee safety itself.
+You can still implement `Send` and `Sync` for your type manually but its now up to you to check the implementation is
+safe, so the traits themselves are `unsafe`.
+
+Unions
+------
+
+Unions, in software engineering, are a way of storing different types in the same section of memory. They're typically 
+broken into two types, tagged and untagged. "Tagged" simply means the type is part of data, so you can only access the
+data _as_ the type that it is. We use tagged unions in Rust all the time, and they're perfectly safe:
+
+```rust
+enum ThisIsATaggedUnion {
+    Number(u64),
+    Character(char),
+}
+```
+
+Enums are tagged unions, they only ever take up as much memory as is taken by the largest data type representable inside
+them, plus a discrimination value which differentiates the variants at runtime (usually represented as an isize but
+Rust compilers _may_ use smaller numeric types):
+
+```rust
+enum ThisIsATaggedUnion {
+    Number(u64),
+    Character(char),
+}
+
+fn main() {
+    let number = ThisIsATaggedUnion::Number(42);
+    let character = ThisIsATaggedUnion::Character('c');
+    
+    assert_eq!(size_of_val(&number), size_of_val(&character));
+    assert_ne!(size_of_val(&'c'), size_of_val(&character));
+    
+    println!("Size of character: {} bytes", size_of_val(&'c'));
+    println!("Size of u64: {} bytes", size_of_val(&42_u64));
+    
+    let discriminant = std::mem::discriminant(&number);
+    println!("Size of enum discriminant: {} bytes", size_of_val(&discriminant));
+    
+    println!("Size of enum number: {} bytes", size_of_val(&number));
+    println!("Size of enum character: {} bytes", size_of_val(&character));
+}
+```
+
+But Rust also has "untagged" unions, where the type being used is not part of the data, and you can access the data as
+either type. This is obviously unsafe but provide several useful features, either by interrogating the data in different
+ways, or for working with other programming languages that use untagged unions.
+
+> Note: My first attempt at an example for unions was an IPv4 addresses that used both a 32bit integer, _and_ a 4 byte
+> array, however, with that example we have to consider "endianness" which is the order in which bytes are stored in
+> memory. This felt like it went too far off-topic, however its still worth pointing out that when creating unions that
+> share multiple bytes of data, you _may_ need to consider endianness.
+
+In this example, we can interrogate characters as u32's (characters in Rust are four bytes, although most string types
+use a variable byte width encoding such as utf-8).
+
+```rust
+union CharOrNumber {
+    number: u32,
+    character: char,
+}
+
+fn main() {
+    // Creating unions is safe:
+    let mut h = CharOrNumber { character: 'O' };
+    // Reading unions is unsafe 
+    unsafe {
+        println!("The numeric value of the character {} is 0x{:x}", h.character, h.number)
+    }
+    
+    // Writing values is safe, 
+    h.character = 'o';
+    
+    // See how both character and number change
+    unsafe {
+        println!("The numeric value of the character {} is 0x{:x}", h.character, h.number)
+    }
+}
+```
+
+
+Assembly
+--------
+
+Miri
+----
+
+Summary
+-------
+
+
