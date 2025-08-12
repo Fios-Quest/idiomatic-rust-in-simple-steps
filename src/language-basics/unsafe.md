@@ -565,14 +565,84 @@ fn main() {
 }
 ```
 
-
 Assembly
 --------
 
-Miri
-----
+This next example of unsafe is so incredibly unsafe the only time you're ever likely to use it is if you need insane
+speed and know _exactly_ what you're doing with the _exact_ hardware you're targeting.
+
+You might have heard of assembly, but crucially its not one language. Assembly languages are any language that have a
+near 1:1 relationship with the actual instructions of the CPU you're building for.
+
+In the below example you can see a function that takes a number and multiplies it by 6 using assembly. There are two
+versions of the function, one that works using the "x86_64" (most Windows and Linux machines and very old macs) and
+another that works using "aarch64" (all modern Macs but some newer Windows and Linux machines). As you can see, apart
+from `mov`, the other instructions look very different but do the same things.
+
+```rust
+use std::arch::asm;
+
+#[cfg(target_arch = "x86_64")]
+fn multiply_by_six(input: u64) -> u64 {
+    let mut x = input;
+    unsafe  {
+        asm!(
+            "mov {tmp}, {x}",
+            "shl {tmp}, 1",
+            "shl {x}, 2",
+            "add {x}, {tmp}",
+            x = inout(reg) x,
+            tmp = out(reg) _,
+        );
+    }
+    x
+}
+
+#[cfg(target_arch = "aarch64")]
+fn multiply_by_six(input: u64) -> u64 {
+    let mut x = input;
+    unsafe  {
+        asm!(
+            "mov {tmp}, {x}",
+            "lsl {tmp}, {tmp}, #1",
+            "lsl {x}, {x}, #2",
+            "add {x}, {x}, {tmp}",
+            x = inout(reg) x,
+            tmp = out(reg) _,
+        );
+    }
+    x
+}
+
+fn main() {
+    assert_eq!(multiply_by_six(4), 24);
+    println!("4 * 6 is {}", multiply_by_six(4));
+}
+```
+
+For obvious reasons Rust can not help keep you safe when you're sending instructions straight to the CPU, so assembly is
+only available within unsafe code. Of all Rust's unsafe features, this is the one you're least likely to need to touch,
+but, as with the others, it's there if you need it.
 
 Summary
 -------
+
+Outside of specialist use cases, you're unlikely to have to write much, if any, unsafe code yourself. Nonetheless,
+hopefully after this chapter you see that it's not as scary as it seems. You still have all the normal safety checks
+plus some additional features, and, now you know what to look for to keep yourself safe when the compiler can no longer
+help.
+
+If you are going to be writing unsafe Rust, there's a tool called [Miri](https://github.com/rust-lang/miri) that will
+help you detect potentially undefined behaviour you might have missed in your running code. It's not a silver bullet but
+is a final layer of protection you should use to protect yourself.
+
+Next Time
+---------
+
+We're going to lean into pretty much everything we've learned so far to learn async Rust. This is going to be a bit of
+a weird chapter. We'll go deeper than you generally need to go in our exploration of the space (typically you would just
+grab a crate to do all the hard stuff), but you should come out the other side with a much better idea of how async
+works under the hood, and feel comfortable with what I think many would agree is the last remaining truly sharp edge of
+Rust programming.
 
 
