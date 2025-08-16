@@ -1,0 +1,861 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Unsafe - Idiomatic Rust in Simple Steps</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Learn idiomatic Rust in simple steps even if you have no former knowledge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Idiomatic Rust in Simple Steps</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="unsafe-rust"><a class="header" href="#unsafe-rust">Unsafe Rust</a></h1>
+<p>Arguably, the main reason you'd want to pick up Rust over any other low-level language is that Rust keeps you safe.</p>
+<p>When you write a program in a compiled language like Rust, C, C++, Zig, it's converted into instructions for processors
+(CPUs, GPUs). These instructions are very direct, move the data in this register to this other register, add, subtract,
+or multiply (but, fun fact, sometimes not divide). There are no restrictions on what those low-level instructions can
+do, which means you can do things that might not be considered safe. For example, allow two threads to read and write to
+the same register at the same time.</p>
+<p>Using high-level languages allows us to abstract this behavior in ways that are easier for us to understand. These
+languages can go further than just making the instructions easier to read and write, they can also enforce their own
+rules as to how they're used.</p>
+<p>The reason that Rust has ownership rules and borrow checkers is to make sure that we, the software engineers, don't ask
+the processor to do anything that <em>could</em> be unsafe. To the best of its ability, Rust will check that your code is safe,
+but, if it <em>only</em> let you do things <em>it</em> could prove are safe, you'd be cut off from making a lot of programs.</p>
+<p>Sometimes when we use Rust, we need to access heap memory, use peripherals, and talk to other software, or even dip into
+those specific processor instructions we just mentioned. We can't guarantee that any of these actions are safe.</p>
+<p>But wait! Haven't we <em>been</em> accessing Heap Memory throughout this book? Yes, we have. Types like <code>Vec</code> and <code>String</code>
+use the Heap to store their data. They take responsibility for, and abstract away, any unsafe work, meaning that <em>using</em>
+<code>Vec</code>, <code>String</code> and similar types <em>is</em> considered safe.</p>
+<p>As a Rust engineer, depending on the type of project you're working on, most of the time you won't personally need to
+worry about unsafe Rust. You can get by with using other people's APIs like the standard library. The point of this
+chapter isn't to prepare you to write lots of unsafe Rust; it's to make you feel comfortable for the odd occasion you
+might have to touch it.</p>
+<h2 id="recap-on-memory"><a class="header" href="#recap-on-memory">Recap on Memory</a></h2>
+<p>Typically, when we talk about memory in programming, we're talking about RAM, but even then we subdivide memory into
+three main types of usages, each of which has different pros and cons.</p>
+<p>Stack Memory is where all variables live. It's fast because the entire stack is pre-allocated when your program runs,
+but there are some catches.</p>
+<p>First, it's actually quite limited. When your program starts, it's given an amount of memory that you cannot determine
+ahead of time, and you cannot change. It's <em>usually</em> 2MiB, but you might find It's less on targets like embedded
+devices. If you use more than this small amount of memory, your program will crash.</p>
+<p>Second, stack data must be of known size at compile time. You don't really need to worry about why this is only that
+data on the stack cannot change in size.</p>
+<p>But wait! We've stored lots of things in variables that have variable size; <code>String</code>s, <code>Vec</code>s, <code>HashMaps</code>, etc. The data
+for these types is not stored in the variable. What typically happens is that data is stored on the Heap, and the data's
+location, and some other metadata, which is of known size, is stored on the stack.</p>
+<p>Semantically, it's probably fine to say that the variable contains that data; people will always know what you mean.
+However, for this chapter, we really need to differentiate what is on the stack and what isn't.</p>
+<p>In the below code, <code>number_example</code> stores the actual number on the stack, since its of a known size, 32 bits unless
+otherwise specified. <code>string_example</code>, however, contains the location of the string data, not the data itself, which is
+stored on the heap. (We'll talk about how it gets to the heap shortly).</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let number_example = 42;
+    let string_example = String::from("This is string data too");
+}</code></pre></pre>
+<p>The Heap is where we can store things of arbitrary size, and we can (usually) store things far larger than the stack.
+Heap memory is allocated on request and freed once you're done using it. Technically, we can't resize heap allocations,
+but we can request new, larger portions of heap memory, copy our data there, free the old memory, and add more things in
+the new location until we run out of space again.</p>
+<p>So it's bigger and more flexible than the stack, but it also has some downsides. It's much slower than stack memory
+because allocating and freeing the memory takes time. Allocation and Freeing in Rust is usually handled by the standard
+library and, other than what we're going to discuss in this chapter, you almost never need to think about that process,
+but it's not free.</p>
+<blockquote>
+<p>Note: Once heap memory is allocated, it's <em>almost</em> free to use, with the only overhead essentially being the
+redirection from the stack to the heap in O(1) time. For this reason, some software will actually allocate large
+amounts of memory called Page Files that can store lots of different things. This can be done in Rust too, and there
+are pros and cons to this too, but it's far outside the scope of this guide.</p>
+</blockquote>
+<p>There's a third kind of memory we don't really talk about as much, but it might be the most important.</p>
+<p>Static Memory is where all values and data you write into your program are initially stored, though frequently it's
+subsequently moved somewhere else. For example, in the program:</p>
+<pre><pre class="playground"><code class="language-rust">const CONST_EXAMPLE: &amp;str = "This is string data";
+
+fn main() {
+    let number_example = 42;
+    let string_example = String::from("This is string data too");
+}</code></pre></pre>
+<p>The data for <code>CONST_EXAMPLE</code> remains in static memory, but similar to variables that contain heap data locations,
+<code>CONST_EXAMPLE</code> itself is a reference to that data (note the<code>&amp;</code>). <code>42</code> and <code>"This is string data too"</code> are also
+initially stored in static data, however, <code>42</code> is copied to the stack in <code>number_example</code> whereas
+<code>"This is string data too"</code> is cloned onto the heap and the location of the data is stored in <code>string_example</code>.</p>
+<p>Differentiating where things are stored is about to become <em>very</em> important, and it's easy to make mistakes if we don't
+differentiate between the stack, the heap and static memory. (Thank-you <a href="https://github.com/ChillFish8">@ChillFish8</a>
+for helping me out when I made that exact mistake writing this chapter 😉)</p>
+<h2 id="not-really-all-that-unsafe"><a class="header" href="#not-really-all-that-unsafe">Not really all that unsafe</a></h2>
+<p>It's important to note that Unsafe Rust doesn't turn <em>off</em> any of Rusts safety measures, what it does do is turn <em>on</em> a
+whole other set of language features on which Rusts usual safety tools cannot work.</p>
+<p>I really can't stress this enough as it might be one of the greatest misconceptions in Rust. Unsafe Rust does <em>not</em>
+turn off <em>any</em> safety measures. It turns on tools that Rust cannot guarantee are safe, so you need to make extra
+certain you are using them safely.</p>
+<p>For example, in safe Rust we use references. These are similar to pointers in other languages which point to a location
+in memory, but they are not pointers. The validity of pointers is not checked, but in Rust, reference abides by rules
+that guarantee they are valid. References in unsafe Rust must still abide by the rules of the borrow checker. Unsafe
+Rust doesn't turn off the borrow checker, instead it gives us access to raw pointers which can't be borrow checked.</p>
+<p>Some of these tools exist in other commonly used low-level languages that have been around for decades and are still,
+rightly, very popular today. In these languages, these tools are available at any time. Having the tools is not a bad
+thing. They're necessary tools that we need to do things that there is no other way to do.</p>
+<h2 id="how-to-use-unsafe"><a class="header" href="#how-to-use-unsafe">How to use unsafe</a></h2>
+<p>Any time we use unsafe code we need to wrap it inside an <code>unsafe</code> block. The code below uses an <code>unsafe</code> block to call a
+function that is itself marked as <code>unsafe</code>. Because the function is marked as <code>unsafe</code> it can <em>only</em> be called within
+<code>unsafe</code> code, however, even within that function, code is treated as safe until you use another <code>unsafe</code> block. We'll
+talk about what it means to mark functions as <code>unsafe</code> further on.</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    // SAFETY: This function is a no-op
+    unsafe {
+        this_code_is_unsafe();
+    }
+}
+
+/// # Safety
+/// 
+/// This function doesn't do anything, therefore, you don't need to do anything
+/// in particular to use it safely.
+unsafe fn this_code_is_unsafe() {}</code></pre></pre>
+<p>What's with all the comments?</p>
+<p>This is not necessarily a widely used practice, however, the Rust Standard Library team, who have to work with <code>unsafe</code>
+a lot, have standardized around making safety communication almost contractual.</p>
+<p>Prior to the <code>unsafe</code> block, the first thing we see is a <code>SAFETY:</code> comment. This tells the reader how the author made
+sure this code was safe. This may seem odd. If the code is provably safe, why do we need <code>unsafe</code> at all? <code>unsafe</code> turns
+on language features that can't be proven safe by the compiler, but that's no excuse for writing <code>unsafe</code> code unsafely.</p>
+<p>The <code># Safety</code> section of the doc comment on the function <code>this_code_is_unsafe</code> should be used to tell consumers of that
+function how to use the function safely. What you'll often find is that <code>SAFETY:</code> comments should mirror <code># Safety</code> doc
+comments, to show that the code follows the guidelines laid out. We'll talk more about unsafe functions later.</p>
+<p>The practice of writing a <code>SAFETY:</code> comment ensures that when we write <code>unsafe</code> code, we think hard about how we know
+this code isn't going to hurt us later. Documenting how we know this code is safe is crucial.</p>
+<p>You can read more about this practice in the official
+<a href="https://std-dev-guide.rust-lang.org/policy/safety-comments.html">Standard library developer's Guide</a></p>
+<h2 id="mutable-statics"><a class="header" href="#mutable-statics">Mutable Statics</a></h2>
+<p>There's a type of "variable" that can be read from anywhere, the static.</p>
+<pre><pre class="playground"><code class="language-rust">static HELLO_MESSAGE: &amp;str = "Hello!";
+
+fn main() {
+    println!("This function can read HELLO_MESSAGE without having ownership: {HELLO_MESSAGE}");
+    another_function();
+}
+
+fn another_function() {
+    println!("So can this one: {HELLO_MESSAGE}");
+}</code></pre></pre>
+<p>Static variables are a bit like global variables in other languages. They're really handy if you want to read data from
+anywhere in your application, you want to minimize stack/heap footprint and, importantly, you never want to change it.</p>
+<p>Rust allows you to mutate <code>static</code>s, but making the static mutable also makes it <code>unsafe</code>. Being able to access the
+static from anywhere means that it's visible to all threads. Mutating the static across threads would cause the exact
+problems we talked about in the <a href="./threads.html#sharing-state">Threads</a> chapter.</p>
+<pre><pre class="playground"><code class="language-rust">static mut HELLO_MESSAGE: &amp;str = "Hello!";
+
+fn main() {
+    another_function();
+    
+    // SAFETY: We only ever modify this variable from the main thread, 
+    // HELLO_MESSAGE is never used by other threads
+    unsafe {
+        HELLO_MESSAGE = "CHANGED!";
+    }
+    
+    another_function();
+}
+
+fn another_function() {
+    // SAFETY: This function is only called in the main thread
+    unsafe {
+        println!("HELLO_MESSAGE is currently: {HELLO_MESSAGE}");
+    }
+}</code></pre></pre>
+<p>Notice that it's not just unsafe to write to the static, it's also considered unsafe to read from it. However, so long
+as we never modify this in a different thread, we know this behavior is safe.</p>
+<p>There's a catch to watch for here. Remember, <code>HELLO_MESSAGE</code> is a reference to some data that exists in static memory.
+What we've done here is change the reference itself to point to the location of <code>"CHANGED!"</code> which is also built into
+the program's static memory.</p>
+<h2 id="raw-pointers"><a class="header" href="#raw-pointers">Raw Pointers</a></h2>
+<p>Our previous example was pretty tame. We were using static data, so, although there was some risk with relation to
+threads, it was still on the safer side. Let's play with fire.</p>
+<p>We use References in Rust a bit like other languages use pointers to point to something that's actually stored
+elsewhere. But references have a number of features that make them safer to use. A pointer is essentially just a number
+that is an address to a location in memory. When you allocate heap data, even in Rust, the operating system amongst
+other things provides you with a pointer to the location where the memory was allocated.</p>
+<p>If we just used a pointer, it would still contain an address to that location even if we subsequently told the
+operating system to free that memory. Programmatically, we have no way to know if that location is still ours to use
+later. Using that pointer after the memory would be an error, and is the root of an extremely common bug you might have
+heard of, use after free.</p>
+<p>In fact, because we don't know from just the pointer whether the memory was freed or not, we might even try to free the
+memory again, leading to another bug "double free".</p>
+<p>References help us avoid that because we can track their use at compile time, helping us make sure that they are always
+valid before we even run the code... but the operating system doesn't use references. Actually, references can't be used
+between <em>any</em> two separate pieces of software, because of the compile time nature of them. We can, however, share
+pointer locations.</p>
+<p>So, even in Rust, pointers are being used all the time, whether we see them or not. Sometimes, as software engineers, we
+may even need to use pointers directly ourselves.</p>
+<p>You can actually get pointers in safe Rust. Try running this program multiple times, you should get a different number
+every time:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>let the_answer = 42;
+let pointer = &amp;raw const the_answer;
+
+println!("The variable at {pointer:p} contains the data '{the_answer}'");
+<span class="boring">}</span></code></pre></pre>
+<p>One cool thing worth pointing out is that Rust even types your pointers, making it harder to muddle them up later. A
+pointer to an <code>i32</code> has the type <code>*const i32</code></p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::any::type_name;
+</span><span class="boring">
+</span><span class="boring">// Thanks to @DevinR528 https://github.com/DevinR528
+</span><span class="boring">// Source: https://users.rust-lang.org/t/how-check-type-of-variable/33845/2
+</span><span class="boring">fn type_of&lt;T&gt;(_: T) -&gt; &amp;'static str {
+</span><span class="boring">    type_name::&lt;T&gt;()
+</span><span class="boring">}
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>let the_answer = 42;
+let pointer = &amp;raw const the_answer;
+    
+assert_eq!(type_of(pointer), "*const i32");
+println!("{}", type_of(pointer));
+<span class="boring">}</span></code></pre></pre>
+<p>Remember, in some circumstances, the variable that you're accessing the data via does not contain the actual data.
+Strings are a good example of this. The pointer to the variable does not point to the data, it points to metadata which
+itself contains a pointer to the data. We can access the pointer to the data via a method on the string itself (this is
+inherited from string slices). Again, there's nothing unsafe about doing this.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>let hello = String::from("Hello, world!");
+let pointer_to_variable = &amp;raw const hello;
+let pointer_to_data = hello.as_ptr();
+    
+println!(
+    "The variable at {pointer_to_variable:p}, \
+    points to {pointer_to_data:p} \
+    which contains the data '{hello}'",
+);
+<span class="boring">}</span></code></pre></pre>
+<p>Getting pointers is perfectly safe. What we can't do is use those pointers to get data in safe Rust. For that we need to
+dip into unsafe. Below we dereference the pointer to go back from the location to the data that's stored there.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>let the_answer = 42;
+let pointer = &amp;raw const the_answer;
+
+// SAFETY: We own `the_answer` which in scope and is not being used elsewhere
+unsafe {
+    let data_at_pointer = *pointer;
+    assert_eq!(data_at_pointer, 42);
+}
+<span class="boring">}</span></code></pre></pre>
+<p>This is unsafe because the validity of the pointer cannot be confirmed. <code>pointer</code> could outlive <code>the_answer</code>, after
+which, what is <code>pointer</code> pointing at? It is still pointing at the same memory location, but something else might have
+already started using that location.</p>
+<h2 id="unsafe-functions"><a class="header" href="#unsafe-functions">Unsafe functions</a></h2>
+<p>When we write code, we regularly break it up into small reusable chunks known as functions. You are, at this point, I
+hope, very familiar with this idea.</p>
+<p>So far we've demonstrated that we can place unsafe code inside a block to encapsulate unsafe behavior. This means that
+you can write unsafe code inside a function, as long as you write the function to make sure that there's no risk,
+meaning, for someone calling the function, it <em>is</em> safe.</p>
+<p>A good example of this is the <a href="https://doc.rust-lang.org/std/mem/fn.swap.html"><code>std::mem::swap</code></a> which swaps the values
+at two mutable locations:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>let mut left = "Left".to_string();
+let mut right = "Right".to_string();
+
+println!("Left is {left}");
+println!("Right is {right}");
+
+std::mem::swap(&amp;mut left, &amp;mut right);
+    
+assert_eq!(left, "Right".to_string());
+assert_eq!(right, "Left".to_string());
+
+println!("Left is {left}");
+println!("Right is {right}");
+<span class="boring">}</span></code></pre></pre>
+<p>Because <code>swap</code> guarantees the types are the same and, through using mutable references, knows nothing else is accessing
+the memory while it does its thing, conceptually this function is safe, even if the first thing it does internally is
+run unsafe code. This is what we call a safe abstraction around unsafe code.</p>
+<p>But that's not always possible. Sometimes, the very concept a function or method represents is unsafe.</p>
+<p>Let's say that through arbitrary means, we've got a pointer to some heap data that we know represents a String. We know
+how long the String is and how much memory at that location is ours. We want to take ownership of that memory and turn
+it into a <code>String</code> type.</p>
+<p>We can use the <code>from_raw_parts</code> on the <code>String</code> type to build a <code>String</code> directly from memory, but the entire concept
+of manually creating a string like this is unsafe.</p>
+<p>Firstly, something else likely manages that Heap memory. If we create a <code>String</code> from it, we're going to take joint
+ownership of the heap data, and when our String goes out of scope, Rust will try to free it. How do we prevent a double
+free when the thing that originally created the data also wants to free it?</p>
+<p>Secondly, <code>from_raw_parts</code> takes a pointer, a length, and a capacity, none of which can be validated at compile time.</p>
+<p>Remember, length and capacity of collections including <code>String</code> are different. Length is how much data is being stored
+currently. Capacity is how much memory is available to contain potential data. Most types will cause a reallocation when
+the capacity is filled, causing us another problem to look out for!</p>
+<p>Luckily, by being aware of the problems ahead of time, we can still use this function safely.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::ops::Deref;
+</span><span class="boring">
+</span><span class="boring">fn main() {
+</span>// We'll manually make sure our string never exceeds 100 bytes
+// Note: The string _may_ be created with more than 100 bytes, we will own the
+// entire _actual_ capacity and need to free it all.
+let capacity = 100;
+
+let mut original_string = String::with_capacity(capacity);
+// 57 ascii chars = 57 bytes
+original_string.push_str("This string is a longer string but less than the capacity");
+
+let pointer = original_string.as_mut_ptr();
+
+// SAFETY: We create a string from the original, but we prevent the new string
+// from being moved by staying inside its capacity, and we prevent it being
+// dropped by using ManuallyDrop.
+unsafe {
+    // `from_raw_parts` is an `unsafe` method so can only be called inside an
+    // unsafe block
+    let overlapping_string = String::from_raw_parts(pointer, 15, capacity);
+
+    // Before we do anything else, we're going to prevent `overlapping_string` 
+    // from being dropped, which would otherwise cause a double free when 
+    // `original_string` is dropped later. We could equally prevent 
+    // `original_string` being dropped instead, but, to me, it makes sense to
+    // have this behavior in the inner code block. This also means if the
+    // capacity of `original_string` was larger than `capacity` it won't cause
+    // unfreed memory.
+    // 
+    // The ManuallyDrop type is actually safe. Although it prevents the memory
+    // being freed, and _could_ result in memory leaks that's not considered
+    // unsafe in the same way as other things in this chapter. Just be careful
+    // using it.
+    let mut overlapping_string = std::mem::ManuallyDrop::new(overlapping_string);
+
+    // Confirm we have the right location!
+    assert_eq!(overlapping_string.deref(), &amp;"This string is ".to_string());
+    
+    // Push some data onto the back of the string
+    overlapping_string.push_str("short");
+    
+    assert_eq!(overlapping_string.deref(), &amp;"This string is short".to_string());
+}
+
+// Un oh!
+assert_eq!(original_string, "This string is shortger string but less than the capacity");
+<span class="boring">}</span></code></pre></pre>
+<p>It's not unusual to create an unsafe function (because conceptually what you're doing is unsafe, like creating a string
+directly from memory), but then wrap that function in safe code. For example, the internal representation of data inside
+the String is a slice, which also has the method <code>from_raw_parts</code> (though it works slightly differently as slices don't
+have capacity, just length). <code>slice::from_raw_parts_mut</code> is unsafe, but it's used inside the safe method
+<code>String::retain</code>.</p>
+<p>Creating safe abstractions might look something like this:</p>
+<pre><pre class="playground"><code class="language-rust">/// # SAFETY
+/// 
+/// To use this safely you... don't need to do anything because this function
+/// just returns true
+unsafe fn conceptually_dangerous_function() -&gt; bool {
+    true
+}
+
+fn safe_abstraction() -&gt; bool {
+    // Do some checks
+    
+    // SAFETY: We confirmed safety by doing the following checks
+    // - again, the function does nothing so nothing to really check here
+    unsafe {
+        conceptually_dangerous_function()
+    }
+}
+
+<span class="boring">fn main() {
+</span>// We can safely call the safe abstraction to do unsafe things safely
+let output = safe_abstraction();
+assert!(output);
+<span class="boring">}</span></code></pre></pre>
+<p>When it comes to traits, if any of its methods are unsafe, then the entire trait is considered unsafe, and so is its
+implementation. It's actually kind of rare to <em>have</em> to use this feature. If your trait has an unsafe method but a safe
+abstraction, you could move the unsafe method to an unsafe function.</p>
+<p>For example, this trait has two provided methods, but we still can't implement it safely, even with the default
+implementations.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>unsafe trait NotSafe {
+    /// # Safety
+    ///
+    /// This method isn't actually unsafe
+    unsafe fn conceptually_dangerous_method(&amp;self) -&gt; bool {
+        true
+    }
+    
+    fn safe_abstraction(&amp;self) -&gt; bool {
+        // SAFETY: The method called isn't actually unsafe
+        unsafe {
+            self.conceptually_dangerous_method()
+        }
+    }
+}
+
+struct ExampleUnitType;
+
+impl NotSafe for ExampleUnitType {}
+<span class="boring">}</span></code></pre></pre>
+<p>We can implement it with the unsafe keyword though:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>unsafe trait NotSafe {
+    // ...snip...
+<span class="boring">    /// # Safety
+</span><span class="boring">    ///
+</span><span class="boring">    /// This method isn't actually unsafe
+</span><span class="boring">    unsafe fn conceptually_dangerous_method(&amp;self) -&gt; bool {
+</span><span class="boring">        true
+</span><span class="boring">    }
+</span><span class="boring">    
+</span><span class="boring">    fn safe_abstraction(&amp;self) -&gt; bool {
+</span><span class="boring">        // SAFETY: The method called isn't actually unsafe
+</span><span class="boring">        unsafe {
+</span><span class="boring">            self.conceptually_dangerous_method()
+</span><span class="boring">        }
+</span><span class="boring">    }
+</span>}
+
+struct ExampleUnitType;
+
+unsafe impl NotSafe for ExampleUnitType {}
+<span class="boring">}</span></code></pre></pre>
+<p>However, if we don't need to ever override the unsafe method, we could just extract it from the trait entirely</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/// # Safety 
+/// 
+/// This method isn't actually unsafe
+unsafe fn conceptually_dangerous_method&lt;T: Safer + ?Sized&gt;(w: &amp;T) -&gt; bool {
+    true
+}
+
+trait Safer {
+    fn safe_abstraction(&amp;self) -&gt; bool {
+        // # Safety The method called isn't actually unsafe
+        unsafe {
+            conceptually_dangerous_method(self)
+        }
+    }
+}
+
+struct ExampleUnitType;
+
+impl Safer for ExampleUnitType {}
+<span class="boring">}</span></code></pre></pre>
+<p>You're likely to need unsafe Traits only when the behavior the trait describes is itself is unsafe. For example, <code>Send</code>
+and <code>Sync</code> are automatically applied to all types that are only constructed from types that are also <code>Send</code> and <code>Sync</code>.
+If your type contains types that are not <code>Send</code> and/or <code>Sync</code> then the compiler can no longer guarantee safety itself.
+You can still implement <code>Send</code> and <code>Sync</code> for your type manually but its now up to you to check the implementation is
+safe, so the traits themselves are <code>unsafe</code>.</p>
+<h2 id="unions"><a class="header" href="#unions">Unions</a></h2>
+<p>Unions, in software engineering, are a way of storing different types in the same section of memory. They're typically
+broken into two flavors, tagged and untagged. "Tagged" simply means the type is part of data, so you can only access the
+data <em>as</em> the type that it is. We use tagged unions in Rust all the time, and they're perfectly safe:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>enum ThisIsATaggedUnion {
+    Number(u64),
+    Character(char),
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Enums are tagged unions, they only ever take up as much memory as is taken by the largest data type representable inside
+them, plus a discrimination value which differentiates the variants at runtime (usually represented as an <code>isize</code> but
+Rust compilers <em>may</em> use smaller numeric types):</p>
+<pre><pre class="playground"><code class="language-rust">enum ThisIsATaggedUnion {
+    Number(u64),
+    Character(char),
+}
+
+<span class="boring">fn main() {
+</span>let number = ThisIsATaggedUnion::Number(42);
+let character = ThisIsATaggedUnion::Character('c');
+
+assert_eq!(size_of_val(&amp;number), size_of_val(&amp;character));
+assert_ne!(size_of_val(&amp;'c'), size_of_val(&amp;character));
+
+println!("Size of character: {} bytes", size_of_val(&amp;'c'));
+println!("Size of u64: {} bytes", size_of_val(&amp;42_u64));
+
+let discriminant = std::mem::discriminant(&amp;number);
+println!("Size of enum discriminant: {} bytes", size_of_val(&amp;discriminant));
+
+println!("Size of enum number: {} bytes", size_of_val(&amp;number));
+println!("Size of enum character: {} bytes", size_of_val(&amp;character));
+<span class="boring">}</span></code></pre></pre>
+<p>But Rust also has "untagged" unions, where the type being used is not part of the data, and you can access the data as
+any listed type. Untagged unions are obviously unsafe, but they provide several useful features, either by allowing you
+to interrogate the data in different ways, or for working with other programming languages that use untagged unions.</p>
+<blockquote>
+<p>Note: My first attempt at an example for unions was an IPv4 address that used both a 32bit integer, <em>and</em> a four byte
+array, however, with that example we have to consider "endianness" which is the order in which bytes are stored in
+memory. This felt like it went too far off-topic, however, it's still worth pointing out that when creating unions
+that share multiple bytes of data, you <em>may</em> need to consider endianness.</p>
+</blockquote>
+<p>In this example, we can interrogate characters as u32's (characters in Rust are four bytes, although most string types
+use a variable byte width encoding such as utf-8).</p>
+<pre><pre class="playground"><code class="language-rust">union CharOrNumber {
+    number: u32,
+    character: char,
+}
+
+<span class="boring">fn main() {
+</span>// Creating unions is safe:
+let mut h = CharOrNumber { character: 'O' };
+
+// Reading unions is an unsafe operation. Even in this case where both u32 and 
+// char are 32 bits wide, not all valid i32 values are valid chars, but all
+// chars are valid i32s
+    
+// SAFETY: We only set the character variant meaning both variants are valid.
+unsafe {
+    println!("The numeric value of the character {} is 0x{:x}", h.character, h.number)
+}
+
+// Writing values is safe, 
+h.character = 'o';
+
+// See how both character and number change
+
+// SAFETY: We only set the character variant meaning both variants are valid.
+unsafe {
+    println!("The numeric value of the character {} is 0x{:x}", h.character, h.number)
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="assembly"><a class="header" href="#assembly">Assembly</a></h2>
+<p>This next example of unsafe is so incredibly unsafe the only time you're ever likely to use it is if you need insane
+speed and know <em>exactly</em> what you're doing with the <em>exact</em> hardware you're targeting.</p>
+<p>You might have heard of assembly, but crucially, it's not one language. Assembly languages are languages that have a near
+1:1 relationship with the actual instructions of the CPU you're building for.</p>
+<p>In the below example you can see a function that takes a number and multiplies it by 6 using assembly. There are two
+versions of the function, one that works using the "x86_64" (most Windows and Linux machines and older Macs) and another
+that works using "aarch64" (all modern Macs but also some newer Windows and Linux machines). As you can see, apart from
+<code>mov</code>, the other instructions look very different but do the same things.</p>
+<pre><pre class="playground"><code class="language-rust">use std::arch::asm;
+
+#[cfg(target_arch = "x86_64")]
+fn multiply_by_six(input: u64) -&gt; u64 {
+    let mut x = input;
+    unsafe  {
+        asm!(
+            "mov {tmp}, {x}",
+            "shl {tmp}, 1",
+            "shl {x}, 2",
+            "add {x}, {tmp}",
+            x = inout(reg) x,
+            tmp = out(reg) _,
+        );
+    }
+    x
+}
+
+#[cfg(target_arch = "aarch64")]
+fn multiply_by_six(input: u64) -&gt; u64 {
+    let mut x = input;
+    unsafe  {
+        asm!(
+            "mov {tmp}, {x}",
+            "lsl {tmp}, {tmp}, #1",
+            "lsl {x}, {x}, #2",
+            "add {x}, {x}, {tmp}",
+            x = inout(reg) x,
+            tmp = out(reg) _,
+        );
+    }
+    x
+}
+
+<span class="boring">fn main() {
+</span>let four_times_six = multiply_by_six(4);
+assert_eq!(four_times_six, 24);
+println!("4 * 6 is {}", four_times_six);
+<span class="boring">}</span></code></pre></pre>
+<p>For obvious reasons, Rust cannot help keep you safe when you're sending instructions straight to the CPU (or any
+hardware for that matter, but we're not covering that here), so assembly is only available within unsafe code. Of all
+Rust's unsafe features, this is the one you're least likely to need to touch, but, as with the others, it's there if you
+need it.</p>
+<h2 id="extern"><a class="header" href="#extern">extern</a></h2>
+<p>A lot of the time you're going to be working with other peoples code. Most often, that code will be written in Rust,
+downloaded as a crate, and combined with your code into a single binary. Sometimes, though, you'll want to work with
+code written in other languages, either by consuming a library written in another language, or by building a library
+that another language can consume.</p>
+<p>This is done with <code>extern</code>.</p>
+<p>For compiled languages to interoperate, they need to use an Application Binary Interface. Rust doesn't (and probably
+never will) have a stable ABI. Instead, we use typically use C's, though
+<a href="https://doc.rust-lang.org/reference/items/external-blocks.html#abi">other options also exist</a>.</p>
+<p>Creating a library that can be consumed by other languages is fairly safe. You define a function that will be made
+available externally (thus the name). The function itself is safe... exposing it is not. To be made available, the name
+of the function has to be known.</p>
+<p>Rust "mangles" its function names to make sure that there are never any collisions. To expose the function, we need to
+know its name, so we need to prevent the mangling, but that means there's a risk of collision. Pre Rust-2024 preventing
+mangling was done with the <code>#[no_mangle]</code> attribute, but as of Rust 2024, we need to explicitly tell Rust that we
+understand the dangers.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// SAFETY: No other global function will use this name, this does not need to
+// be part of the documentation though.
+#[unsafe(no_mangle)]
+pub extern "C" fn exported_function(input: i32) -&gt; bool {
+    println!("Function called from another program with the value {input}");
+    true
+}
+<span class="boring">}</span></code></pre></pre>
+<p>There's one more thing to consider, though. Our code will be called by code that we can't control. You probably want to
+make sure you validate data coming from eternal code, especially for anything more complex than a number.</p>
+<p>You can also call functions from other libraries if they use a supported ABI too. You do this by linking an extern block
+to a specific library and then listing the signatures of the functions exposed by that library that you want to use in
+your code.</p>
+<p>Everything about this is unsafe. If there's no dynamic library on the target system that shares a name with the linked
+library, the program will panic. If the function names do not match, the program will panic. If the function names match
+but the signature doesn't, you'll get undefined behavior.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">struct SomeErrorType;
+</span><span class="boring">
+</span>// SAFETY: The listed function signatures match those exposed in
+// the some_external_library header files.
+#[link(name = "some_external_library")]
+unsafe extern "C" {
+    fn some_function_exposed_by_the_library(x: i32) -&gt; bool;
+}
+
+fn some_validator(test: bool) -&gt; Result&lt;bool, SomeErrorType&gt; {
+    // Do some validation of our data
+    Ok(test)
+}
+
+fn safe_abstraction(x: i32) -&gt; Result&lt;bool, SomeErrorType&gt; {
+    // SAFETY: We validate data returned from the external library to make sure
+    // its valid
+    unsafe {
+        let answer = some_function_exposed_by_the_library(x);
+        some_validator(answer)
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>Outside of specialist use cases, you're unlikely to have to write much, if any, unsafe code yourself. Nonetheless,
+hopefully after this chapter you see that it's not as scary as it seems. You still have all the normal safety checks
+plus some additional features, and now you know what to look for to keep yourself safe when the compiler can no longer
+help.</p>
+<p>If you are going to be writing unsafe Rust, there's a tool called <a href="https://github.com/rust-lang/miri">Miri</a> that will,
+in your running code, help you detect potentially undefined behavior you might have missed. It's not a panacea but is a
+final layer of protection you should use to protect yourself.</p>
+<h2 id="next-chapter"><a class="header" href="#next-chapter">Next Chapter</a></h2>
+<p>We're going to lean into pretty much everything we've learned so far to learn async Rust. This is going to be a bit of
+a unique chapter. We'll go deeper than you generally need to go in our exploration of the space (typically you would
+grab a crate to do all the hard stuff). But by learning the core concepts, you should come out the other side with a
+much better idea of how async works under the hood. As with this chapter, while you won't need to know everything, it
+should help you feel comfortable with what I think many would agree is the last remaining truly sharp edge of Rust
+programming.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../language-basics/macros.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../language-basics/macros.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
