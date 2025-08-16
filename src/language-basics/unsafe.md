@@ -1,15 +1,15 @@
 Unsafe Rust
 ===========
 
-Arguably, the main reason you'd want to pick up Rust over any other low level language is that Rust keeps you safe.
+Arguably, the main reason you'd want to pick up Rust over any other low-level language is that Rust keeps you safe.
 
 When you write a program in a compiled language like Rust, C, C++, Zig, it's converted into instructions for processors 
 (CPUs, GPUs). These instructions are very direct, move the data in this register to this other register, add, subtract,
-or multiply (but, fun fact, sometimes not divide). There are no restrictions on what those low level instructions can do
-which means you can do things that might not be considered safe, for example, allow two threads to read and write to the
-same register at the same time.
+or multiply (but, fun fact, sometimes not divide). There are no restrictions on what those low-level instructions can 
+do, which means you can do things that might not be considered safe. For example, allow two threads to read and write to
+the same register at the same time.
 
-Using high level languages allows us to abstract this behaviour in ways that are easier for us to understand. These
+Using high-level languages allows us to abstract this behavior in ways that are easier for us to understand. These
 languages can go further than just making the instructions easier to read and write, they can also enforce their own
 rules as to how they're used.
 
@@ -35,24 +35,24 @@ Recap on Memory
 Typically, when we talk about memory in programming, we're talking about RAM, but even then we subdivide memory into
 three main types of usages, each of which has different pros and cons.
 
-Stack Memory is where all variables live. It's very fast because the entire stack is pre-allocated when your program
-runs, but there are some catches. 
+Stack Memory is where all variables live. It's fast because the entire stack is pre-allocated when your program runs,
+but there are some catches. 
 
-First, it's actually quite limited. When your program starts its given an amount of memory that you can not determine
-ahead of time, and you can not change. It's _usually_ 2MiB, but you might find it's less on targets like embedded 
+First, it's actually quite limited. When your program starts, it's given an amount of memory that you cannot determine
+ahead of time, and you cannot change. It's _usually_ 2MiB, but you might find It's less on targets like embedded
 devices. If you use more than this small amount of memory, your program will crash.
 
 Second, stack data must be of known size at compile time. You don't really need to worry about why this is only that
-data on the stack can not change in size.
+data on the stack cannot change in size.
 
 But wait! We've stored lots of things in variables that have variable size; `String`s, `Vec`s, `HashMaps`, etc. The data 
-for these types is not actually stored in the variable. What typically happens is that data is stored on the Heap, and
-the data's location, and some other metadata, which is of known size, is stored on the stack.
+for these types is not stored in the variable. What typically happens is that data is stored on the Heap, and the data's
+location, and some other metadata, which is of known size, is stored on the stack.
 
-Semantically, it's probably fine to say that the variable contains that data, people will always know what you mean.
-However, for the purpose of this chapter, we really need to differentiate what is on the stack and what isn't.
+Semantically, it's probably fine to say that the variable contains that data; people will always know what you mean.
+However, for this chapter, we really need to differentiate what is on the stack and what isn't.
 
-In the below code, `number_example` stores the actual number on the heap, since its of a known size, 32 bits unless
+In the below code, `number_example` stores the actual number on the stack, since its of a known size, 32 bits unless
 otherwise specified. `string_example`, however, contains the location of the string data, not the data itself, which is
 stored on the heap. (We'll talk about how it gets to the heap shortly).
 
@@ -64,23 +64,23 @@ fn main() {
 ```
 
 The Heap is where we can store things of arbitrary size, and we can (usually) store things far larger than the stack.
-Heap memory is allocated on request, and freed once you're done using it. Technically, we can't resize heap allocations,
-but we can request new, larger portions of heap memory, copy our data there, free the old memory and add more things in
+Heap memory is allocated on request and freed once you're done using it. Technically, we can't resize heap allocations,
+but we can request new, larger portions of heap memory, copy our data there, free the old memory, and add more things in
 the new location until we run out of space again.
 
-So it's bigger and more flexible than the stack, but, it also has some downsides. It's much slower than stack memory
+So it's bigger and more flexible than the stack, but it also has some downsides. It's much slower than stack memory
 because allocating and freeing the memory takes time. Allocation and Freeing in Rust is usually handled by the standard
 library and, other than what we're going to discuss in this chapter, you almost never need to think about that process,
 but it's not free.
 
 > Note: Once heap memory is allocated, it's _almost_ free to use, with the only overhead essentially being the
 > redirection from the stack to the heap in O(1) time. For this reason, some software will actually allocate large 
-> amounts of memory called Page Files that can store lots of different things. This can be done in Rust too and there
+> amounts of memory called Page Files that can store lots of different things. This can be done in Rust too, and there
 > are pros and cons to this too, but it's far outside the scope of this guide.
 
-There's a third kind of memory we don't really talk about as much but it might be the most important.
+There's a third kind of memory we don't really talk about as much, but it might be the most important.
 
-Static Memory is where all values and data you write into your program are initially stored, though often times its
+Static Memory is where all values and data you write into your program are initially stored, though frequently it's 
 subsequently moved somewhere else. For example, in the program:
 
 ```rust
@@ -112,10 +112,9 @@ turn off _any_ safety measures. It turns on tools that Rust cannot guarantee are
 certain you are using them safely.
 
 For example, in safe Rust we use references. These are similar to pointers in other languages which point to a location
-in memory, but they are not pointers. The validity of pointers are not checked, but in Rust, reference's abide by rules
-the guarantee they are valid. References in unsafe Rust must still abide by the rules of the borrow checker.
-Unsafe Rust doesn't turn off the borrow checker, instead it gives us access to raw pointers which can't be borrow
-checked.
+in memory, but they are not pointers. The validity of pointers is not checked, but in Rust, reference abides by rules 
+that guarantee they are valid. References in unsafe Rust must still abide by the rules of the borrow checker. Unsafe 
+Rust doesn't turn off the borrow checker, instead it gives us access to raw pointers which can't be borrow checked.
 
 Some of these tools exist in other commonly used low-level languages that have been around for decades and are still,
 rightly, very popular today. In these languages, these tools are available at any time. Having the tools is not a bad
@@ -139,8 +138,8 @@ fn main() {
 
 /// # Safety
 /// 
-/// This function doesn't _actually_ do anything, therefore, you don't need to 
-/// do anything in particular to use it safely.
+/// This function doesn't do anything, therefore, you don't need to do anything
+/// in particular to use it safely.
 unsafe fn this_code_is_unsafe() {}
 ```
 
@@ -185,7 +184,7 @@ Static variables are a bit like global variables in other languages. They're rea
 anywhere in your application, you want to minimize stack/heap footprint and, importantly, you never want to change it.
 
 Rust allows you to mutate `static`s, but making the static mutable also makes it `unsafe`. Being able to access the
-static from anywhere means that its visible to all threads. Mutating the static across threads would cause the exact
+static from anywhere means that it's visible to all threads. Mutating the static across threads would cause the exact
 problems we talked about in the [Threads](./threads.md#sharing-state) chapter.
 
 ```rust
@@ -216,7 +215,7 @@ as we never modify this in a different thread, we know this behavior is safe.
 
 There's a catch to watch for here. Remember, `HELLO_MESSAGE` is a reference to some data that exists in static memory.
 What we've done here is change the reference itself to point to the location of `"CHANGED!"` which is also built into
-the programs static memory.
+the program's static memory.
 
 Raw Pointers
 ------------
@@ -224,8 +223,8 @@ Raw Pointers
 Our previous example was pretty tame. We were using static data, so, although there was some risk with relation to
 threads, it was still on the safer side. Let's play with fire.
 
-We use References in Rust a bit like other languages use pointers, to point to something that's actually stored 
-elsewhere. But, references have a number of features that make them safer to use. A pointer is essentially just a number
+We use References in Rust a bit like other languages use pointers to point to something that's actually stored 
+elsewhere. But references have a number of features that make them safer to use. A pointer is essentially just a number
 that is an address to a location in memory. When you allocate heap data, even in Rust, the operating system amongst
 other things provides you with a pointer to the location where the memory was allocated.
 
@@ -242,7 +241,7 @@ valid before we even run the code... but the operating system doesn't use refere
 between _any_ two separate pieces of software, because of the compile time nature of them. We can, however, share 
 pointer locations.
 
-So, even in Rust, pointers are being used all the time, whether we see it or not. Sometimes, as software engineers, we 
+So, even in Rust, pointers are being used all the time, whether we see them or not. Sometimes, as software engineers, we 
 may even need to use pointers directly ourselves.
 
 You can actually get pointers in safe Rust. Try running this program multiple times, you should get a different number
@@ -257,7 +256,7 @@ println!("The variable at {pointer:p} contains the data '{the_answer}'");
 # }
 ```
 
-One cool thing worth pointing out is that Rust even types your pointers making it harder to muddle them up later. A 
+One cool thing worth pointing out is that Rust even types your pointers, making it harder to muddle them up later. A 
 pointer to an `i32` has the type `*const i32`
 
 ```rust
@@ -278,7 +277,7 @@ println!("{}", type_of(pointer));
 # }
 ```
 
-Remember, in some circumstances, the variable that you're accessing the data via, does not contain the actual data.
+Remember, in some circumstances, the variable that you're accessing the data via does not contain the actual data.
 Strings are a good example of this. The pointer to the variable does not point to the data, it points to metadata which
 itself contains a pointer to the data. We can access the pointer to the data via a method on the string itself (this is
 inherited from string slices). Again, there's nothing unsafe about doing this.
@@ -297,7 +296,7 @@ println!(
 # }
 ```
 
-Getting pointers is perfectly safe, what we can't do is use those pointers to get data in safe Rust. For that we need to
+Getting pointers is perfectly safe. What we can't do is use those pointers to get data in safe Rust. For that we need to
 dip into unsafe. Below we dereference the pointer to go back from the location to the data that's stored there.
 
 ```rust
@@ -361,9 +360,9 @@ it into a `String` type.
 We can use the `from_raw_parts` on the `String` type to build a `String` directly from memory, but the entire concept
 of manually creating a string like this is unsafe.
 
-Firstly, something else likely manages that heap memory. If we create a `String` from it, we're going to take joint
+Firstly, something else likely manages that Heap memory. If we create a `String` from it, we're going to take joint
 ownership of the heap data, and when our String goes out of scope, Rust will try to free it. How do we prevent a double 
-free when the thing that originally created the data also wants to free it.
+free when the thing that originally created the data also wants to free it?
 
 Secondly, `from_raw_parts` takes a pointer, a length, and a capacity, none of which can be validated at compile time.
 
@@ -400,7 +399,7 @@ unsafe {
     // from being dropped, which would otherwise cause a double free when 
     // `original_string` is dropped later. We could equally prevent 
     // `original_string` being dropped instead, but, to me, it makes sense to
-    // have this behaviour in the inner code block. This also means if the
+    // have this behavior in the inner code block. This also means if the
     // capacity of `original_string` was larger than `capacity` it won't cause
     // unfreed memory.
     // 
@@ -458,9 +457,9 @@ assert!(output);
 # }
 ```
 
-When it comes to traits, if any of its methods are unsafe, then the entire trait is considered unsafe, and so is it's
-implementation. It's actually kind of rare to _have_ to use this feature. If you're trait has an unsafe method but a
-safe abstraction, you could move the unsafe method to an unsafe function.
+When it comes to traits, if any of its methods are unsafe, then the entire trait is considered unsafe, and so is its
+implementation. It's actually kind of rare to _have_ to use this feature. If your trait has an unsafe method but a safe
+abstraction, you could move the unsafe method to an unsafe function.
 
 For example, this trait has two provided methods, but we still can't implement it safely, even with the default
 implementations. 
@@ -536,7 +535,7 @@ struct ExampleUnitType;
 impl Safer for ExampleUnitType {}
 ```
 
-You're likely to need unsafe Traits only when the behaviour the trait describes is itself is unsafe. For example, `Send`
+You're likely to need unsafe Traits only when the behavior the trait describes is itself is unsafe. For example, `Send`
 and `Sync` are automatically applied to all types that are only constructed from types that are also `Send` and `Sync`.
 If your type contains types that are not `Send` and/or `Sync` then the compiler can no longer guarantee safety itself.
 You can still implement `Send` and `Sync` for your type manually but its now up to you to check the implementation is
@@ -588,10 +587,10 @@ But Rust also has "untagged" unions, where the type being used is not part of th
 any listed type. Untagged unions are obviously unsafe, but they provide several useful features, either by allowing you
 to interrogate the data in different ways, or for working with other programming languages that use untagged unions.
 
-> Note: My first attempt at an example for unions was an IPv4 addresses that used both a 32bit integer, _and_ a 4 byte
+> Note: My first attempt at an example for unions was an IPv4 address that used both a 32bit integer, _and_ a four byte
 > array, however, with that example we have to consider "endianness" which is the order in which bytes are stored in
-> memory. This felt like it went too far off-topic, however its still worth pointing out that when creating unions that
-> share multiple bytes of data, you _may_ need to consider endianness.
+> memory. This felt like it went too far off-topic, however, it's still worth pointing out that when creating unions
+> that share multiple bytes of data, you _may_ need to consider endianness.
 
 In this example, we can interrogate characters as u32's (characters in Rust are four bytes, although most string types
 use a variable byte width encoding such as utf-8).
@@ -605,7 +604,12 @@ union CharOrNumber {
 # fn main() {
 // Creating unions is safe:
 let mut h = CharOrNumber { character: 'O' };
-// Reading unions is unsafe 
+
+// Reading unions is an unsafe operation. Even in this case where both u32 and 
+// char are 32 bits wide, not all valid i32 values are valid chars, but all
+// chars are valid i32s
+    
+// SAFETY: We only set the character variant meaning both variants are valid.
 unsafe {
     println!("The numeric value of the character {} is 0x{:x}", h.character, h.number)
 }
@@ -614,6 +618,8 @@ unsafe {
 h.character = 'o';
 
 // See how both character and number change
+
+// SAFETY: We only set the character variant meaning both variants are valid.
 unsafe {
     println!("The numeric value of the character {} is 0x{:x}", h.character, h.number)
 }
@@ -626,13 +632,13 @@ Assembly
 This next example of unsafe is so incredibly unsafe the only time you're ever likely to use it is if you need insane
 speed and know _exactly_ what you're doing with the _exact_ hardware you're targeting.
 
-You might have heard of assembly, but crucially its not one language. Assembly languages are languages that have a near
+You might have heard of assembly, but crucially, it's not one language. Assembly languages are languages that have a near
 1:1 relationship with the actual instructions of the CPU you're building for.
 
 In the below example you can see a function that takes a number and multiplies it by 6 using assembly. There are two
-versions of the function, one that works using the "x86_64" (most Windows and Linux machines and very old macs) and
-another that works using "aarch64" (all modern Macs but also some newer Windows and Linux machines). As you can see,
-apart from `mov`, the other instructions look very different but do the same things.
+versions of the function, one that works using the "x86_64" (most Windows and Linux machines and older Macs) and another
+that works using "aarch64" (all modern Macs but also some newer Windows and Linux machines). As you can see, apart from
+`mov`, the other instructions look very different but do the same things.
 
 ```rust
 use std::arch::asm;
@@ -676,7 +682,7 @@ println!("4 * 6 is {}", four_times_six);
 # }
 ```
 
-For obvious reasons Rust can not help keep you safe when you're sending instructions straight to the CPU (or any
+For obvious reasons, Rust cannot help keep you safe when you're sending instructions straight to the CPU (or any
 hardware for that matter, but we're not covering that here), so assembly is only available within unsafe code. Of all
 Rust's unsafe features, this is the one you're least likely to need to touch, but, as with the others, it's there if you
 need it.
@@ -685,24 +691,24 @@ extern
 ------
 
 A lot of the time you're going to be working with other peoples code. Most often, that code will be written in Rust,
-downloaded as a crate, and combined with your code into a single binary. Sometimes though you'll want to work with code
-written in other languages, either by consuming a library written in another language, or by building a library that
-another language can consume.
+downloaded as a crate, and combined with your code into a single binary. Sometimes, though, you'll want to work with
+code written in other languages, either by consuming a library written in another language, or by building a library
+that another language can consume.
 
 This is done with `extern`.
 
-For compiled languages to interoperate they need to use an Application Binary Interface. Rust doesn't (and probably
+For compiled languages to interoperate, they need to use an Application Binary Interface. Rust doesn't (and probably
 never will) have a stable ABI. Instead, we use typically use C's, though
 [other options also exist](https://doc.rust-lang.org/reference/items/external-blocks.html#abi). 
 
 Creating a library that can be consumed by other languages is fairly safe. You define a function that will be made
-available externally (thus the name). The function itself is safe... exposing it is not. In order to be made available,
-the name of the function has to be known.
+available externally (thus the name). The function itself is safe... exposing it is not. To be made available, the name
+of the function has to be known.
 
-Rust "mangles" its function names to make sure that there are never any collisions. In order to expose the function we
-need to know its name, so we need to prevent the mangling, but that means there's a risk of collision. Pre Rust-2024
-preventing mangling was done with the `#[no_mangle]` attribute, but as of Rust 2024, we need to explicitly tell Rust
-that we understand the dangers.
+Rust "mangles" its function names to make sure that there are never any collisions. To expose the function, we need to
+know its name, so we need to prevent the mangling, but that means there's a risk of collision. Pre Rust-2024 preventing
+mangling was done with the `#[no_mangle]` attribute, but as of Rust 2024, we need to explicitly tell Rust that we
+understand the dangers.
 
 ```rust
 // SAFETY: No other global function will use this name, this does not need to
@@ -714,16 +720,16 @@ pub extern "C" fn exported_function(input: i32) -> bool {
 }
 ```
 
-There's one more thing to consider though. Our code will be called by code that we can't control. You probably want to
+There's one more thing to consider, though. Our code will be called by code that we can't control. You probably want to
 make sure you validate data coming from eternal code, especially for anything more complex than a number.
 
 You can also call functions from other libraries if they use a supported ABI too. You do this by linking an extern block
-to a specific library, and then listing the signatures of the functions exposed by that library that you want to use in
+to a specific library and then listing the signatures of the functions exposed by that library that you want to use in
 your code.
 
 Everything about this is unsafe. If there's no dynamic library on the target system that shares a name with the linked
 library, the program will panic. If the function names do not match, the program will panic. If the function names match
-but the signature doesn't you'll get undefined behaviour. 
+but the signature doesn't, you'll get undefined behavior. 
 
 ```rust
 # struct SomeErrorType;
@@ -755,20 +761,19 @@ Summary
 
 Outside of specialist use cases, you're unlikely to have to write much, if any, unsafe code yourself. Nonetheless,
 hopefully after this chapter you see that it's not as scary as it seems. You still have all the normal safety checks
-plus some additional features, and, now you know what to look for to keep yourself safe when the compiler can no longer
+plus some additional features, and now you know what to look for to keep yourself safe when the compiler can no longer
 help.
 
 If you are going to be writing unsafe Rust, there's a tool called [Miri](https://github.com/rust-lang/miri) that will,
-in your running code, help you detect potentially undefined behaviour you might have missed. It's not a silver bullet
-but is a final layer of protection you should use to protect yourself.
+in your running code, help you detect potentially undefined behavior you might have missed. It's not a panacea but is a
+final layer of protection you should use to protect yourself.
 
 Next Chapter
 ------------
 
 We're going to lean into pretty much everything we've learned so far to learn async Rust. This is going to be a bit of
-a weird chapter. We'll go deeper than you generally need to go in our exploration of the space (typically you would just
-grab a crate to do all the hard stuff), but you should come out the other side with a much better idea of how async
-works under the hood, and feel comfortable with what I think many would agree is the last remaining truly sharp edge of
-Rust programming.
-
-
+a unique chapter. We'll go deeper than you generally need to go in our exploration of the space (typically you would
+grab a crate to do all the hard stuff). But by learning the core concepts, you should come out the other side with a
+much better idea of how async works under the hood. As with this chapter, while you won't need to know everything, it
+should help you feel comfortable with what I think many would agree is the last remaining truly sharp edge of Rust
+programming.
