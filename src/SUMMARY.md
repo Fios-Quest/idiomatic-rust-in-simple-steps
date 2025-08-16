@@ -21,7 +21,7 @@
     - [Iterators](./language-basics/iterators.md)
     - [Threads](./language-basics/threads.md)
     - [Macros](./language-basics/macros.md)
-    - [Unsafe]()
+    - [Unsafe](language-basics/unsafe.md)
     - [Async]()
 - [Common Patterns]()
     - [Derive]()
