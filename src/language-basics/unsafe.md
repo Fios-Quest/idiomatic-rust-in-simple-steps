@@ -731,7 +731,7 @@ Everything about this is unsafe. If there's no dynamic library on the target sys
 library, the program will panic. If the function names do not match, the program will panic. If the function names match
 but the signature doesn't, you'll get undefined behavior. 
 
-```rust
+```rust,compile_fail
 # struct SomeErrorType;
 # 
 // SAFETY: The listed function signatures match those exposed in
