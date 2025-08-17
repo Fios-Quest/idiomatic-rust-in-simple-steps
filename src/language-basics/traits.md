@@ -83,7 +83,7 @@ impl ToString for Person {
 ```
 
 > ⚠️ **Important:** You actually _shouldn't_ implement `ToString`. I use it here because it's very slightly easier to
-> understand that what you _should_ do, which is implement the trait `Display`. We'll cover this at the end of the 
+> understand than what you _should_ do, which is implement the trait `Display`. We'll cover this at the end of the 
 > chapter when the reason why is easier to understand.
 
 It's worth noting that in order to use methods associated with a trait, the trait must be in scope. We don't have to do
@@ -107,7 +107,7 @@ We'll also do a little reorganising while we're at it.
 
 The idea here is that all animals will implement the `Animal` trait, then we'll have some known behaviour.
 
-First lets create an animal module. In `main.rs` add `mod animal` and then create the file `animal/mod.rs`.
+First let's create an animal module. In `main.rs` add `mod animal` and then create the file `animal/mod.rs`.
 
 Let's move `cat.rs` to `animal/cat.rs` so that it's a submodule of `animal`. Finally, don't forget to add `pub mod cat;`
 to `animal/mod.rs` and to update your use statement in `main.rs` to `animal::cat::Cat`.
@@ -231,7 +231,7 @@ pub struct Mischievous<A: Animal> {
 }
 ```
 
-Update all of you other states (`Hangry`, and `Eepy`) to match.
+Update all of your other states (`Hangry`, and `Eepy`) to match.
 
 Now that we know that whatever is in each state's `animal` field must implement the `Animal` trait, we can treat it as
 such in any implementation code for those states. Just remember that for generic `impl`s, it is the `impl` that
@@ -412,7 +412,7 @@ So that's our first problem solved! We can now access the `Cat`'s data through t
 Making more flexible `Animal`s
 ------------------------------
 
-Now that we can read details from the underlying `Cat` object, lets start to think about how we can expand this 
+Now that we can read details from the underlying `Cat` object, let's start to think about how we can expand this 
 functionality out to other types of animals... starting with the most dangerous of animal.
 
 Start by adding `pub mod human;` to `animal.mod`.
@@ -475,7 +475,7 @@ pub mod cat;
 pub mod human;
 ```
 
-Finally, lets update our main function, and run the program to make sure everything is working.
+Finally, let's update our main function, and run the program to make sure everything is working.
 
 ```rust
 # pub mod animal {
@@ -638,7 +638,7 @@ fn main() {
 Notice that we barely had to change anything to add humans to our code, how cool is that!
 
 But there's still an issue... my mischievous state doesn't tend to have me breaking into wardrobes by pulling on exposed
-clothing... I have a opposable thumb.
+clothing... I have an opposable thumb.
 
 In fact, when I'm in a mischievous mood, I probably don't behave the same as other humans, I probably don't behave the
 same as you when you're feeling mischievous.
@@ -646,7 +646,7 @@ same as you when you're feeling mischievous.
 Optional Homework
 -----------------
 
-Can you change the code so that each states behaviours are defined when the structs are instantiated? To do this you
+Can you change the code so that each state's behaviours are defined when the structs are instantiated? To do this you
 will need to:
 - modify the `Human` and `Cat` structs
 - add methods to the `Animal` trait
@@ -947,7 +947,7 @@ Having gone through the rest of the chapter this hopefully makes some sense. We'
 generic `T` where `T` already has `Display`. We can then create the string using the display method of that type.
 
 Because those built in types already have `Display`, they get `ToString` for free. Once you've implemented `Display` for
-`Person` to, you not only won't need `ToString` any more, you'll find that `ToString` if you leave you're `ToString`
+`Person`, you not only won't need `ToString` any more, you'll find that if you leave you're `ToString`
 implementation in, you can't compile your code because it now conflicts with this other implementation.
 
 So why do both `Display` and `ToString` exist, especially if everything with `Display` gets a free `ToString`
