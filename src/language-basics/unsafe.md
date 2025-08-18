@@ -125,7 +125,7 @@ Raw Pointers
 
 One of the main reasons you might want to dip into unsafe Rust is to communicate with memory on its terms. Rust's
 abstractions around memory are powerful, usually free (or otherwise cheap) and very flexible, but they don't cover
-everything. You may have a use case where you need to talk to memory directly without going through Rust's abstractions
+everything. You may have a use case where you need to talk to memory directly without going through Rust's abstractions,
 and Rust lets you do that by turning on its unsafe features to access raw pointers.
 
 We use References in Rust a bit like other languages use pointers to point to something that's actually stored 
@@ -305,7 +305,7 @@ unsafe {
     // `original_string` is dropped later. We could equally prevent 
     // `original_string` being dropped instead, but, to me, it makes sense to
     // have this behavior in the inner code block. This also means if the
-    // capacity of `original_string` was larger than `capacity` it won't cause
+    // capacity of `original_string` was larger than `capacity`, it won't cause
     // unfreed memory.
     // 
     // The ManuallyDrop type is actually safe. Although it prevents the memory
@@ -339,7 +339,7 @@ Creating safe abstractions might look something like this:
 ```rust
 /// # SAFETY
 /// 
-/// To use this safely you... don't need to do anything because this function
+/// To use this safely, you... don't need to do anything because this function
 /// just returns true
 unsafe fn conceptually_dangerous_function() -> bool {
     true
@@ -672,16 +672,16 @@ If you don't need mind sacrificing a tiny bit of speed, the same thing can be ac
 tools like atomic types or interior mutability. If you really need the speed, then you can still fall back on raw
 pointers.
 
-To find out more about the change you can read 
+To find out more about the change, you can read 
 [this section](https://doc.rust-lang.org/edition-guide/rust-2024/static-mut-references.html) of the Rust Editions Guide.
 
-At the end of the day though, mutable globals are a bit of a crutch and should generally be avoided where possible, and
+At the end of the day, though, mutable globals are a bit of a crutch and should generally be avoided where possible, and
 I think there's a lesson here. Any time you find yourself reaching for unsafe code, you want to be sure that there's no
 other acceptable way to do the same thing. Unsafe Rust _can_ speed up your code and _can_ let you do things there's no
 other way of doing, but you should assess the various possibilities and trade-offs before commiting to unsafe.
 
 Even if you have to use unsafe code, are there safe abstractions for what you're attempting in the standard library or
-well tested crates? You shouldn't be afraid of unsafe, but you should understand that it is going to turn on features
+well-tested crates? You shouldn't be afraid of unsafe, but you should understand that it is going to turn on features
 that _can_ behave in surprised ways.
 
 Summary
