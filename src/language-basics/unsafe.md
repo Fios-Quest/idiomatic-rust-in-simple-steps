@@ -672,10 +672,17 @@ If you don't need mind sacrificing a tiny bit of speed, the same thing can be ac
 tools like atomic types or interior mutability. If you really need the speed, then you can still fall back on raw
 pointers.
 
-At the end of the day though, mutable globals are a bit of a crutch and should generally be avoided where possible. 
-
 To find out more about the change you can read 
 [this section](https://doc.rust-lang.org/edition-guide/rust-2024/static-mut-references.html) of the Rust Editions Guide.
+
+At the end of the day though, mutable globals are a bit of a crutch and should generally be avoided where possible, and
+I think there's a lesson here. Any time you find yourself reaching for unsafe code, you want to be sure that there's no
+other acceptable way to do the same thing. Unsafe Rust _can_ speed up your code and _can_ let you do things there's no
+other way of doing, but you should assess the various possibilities and trade-offs before commiting to unsafe.
+
+Even if you have to use unsafe code, are there safe abstractions for what you're attempting in the standard library or
+well tested crates? You shouldn't be afraid of unsafe, but you should understand that it is going to turn on features
+that _can_ behave in surprised ways.
 
 Summary
 -------
