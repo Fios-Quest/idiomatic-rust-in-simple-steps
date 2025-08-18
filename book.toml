@@ -21,3 +21,5 @@ copy-js = true
 editable = true
 line-numbers = true
 
+[rust]
+edition = "2024"

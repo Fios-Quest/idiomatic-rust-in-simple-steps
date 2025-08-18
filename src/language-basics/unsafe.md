@@ -159,69 +159,16 @@ comments, to show that the code follows the guidelines laid out. We'll talk more
 The practice of writing a `SAFETY:` comment ensures that when we write `unsafe` code, we think hard about how we know
 this code isn't going to hurt us later. Documenting how we know this code is safe is crucial.
 
-You can read more about this practice in the official 
+You can read more about this practice in the official
 [Standard library developer's Guide](https://std-dev-guide.rust-lang.org/policy/safety-comments.html)
-
-Mutable Statics
----------------
-
-There's a type of "variable" that can be read from anywhere, the static.
-
-```rust
-static HELLO_MESSAGE: &str = "Hello!";
-
-fn main() {
-    println!("This function can read HELLO_MESSAGE without having ownership: {HELLO_MESSAGE}");
-    another_function();
-}
-
-fn another_function() {
-    println!("So can this one: {HELLO_MESSAGE}");
-}
-```
-
-Static variables are a bit like global variables in other languages. They're really handy if you want to read data from
-anywhere in your application, you want to minimize stack/heap footprint and, importantly, you never want to change it.
-
-Rust allows you to mutate `static`s, but making the static mutable also makes it `unsafe`. Being able to access the
-static from anywhere means that it's visible to all threads. Mutating the static across threads would cause the exact
-problems we talked about in the [Threads](./threads.md#sharing-state) chapter.
-
-```rust
-static mut HELLO_MESSAGE: &str = "Hello!";
-
-fn main() {
-    another_function();
-    
-    // SAFETY: We only ever modify this variable from the main thread, 
-    // HELLO_MESSAGE is never used by other threads
-    unsafe {
-        HELLO_MESSAGE = "CHANGED!";
-    }
-    
-    another_function();
-}
-
-fn another_function() {
-    // SAFETY: This function is only called in the main thread
-    unsafe {
-        println!("HELLO_MESSAGE is currently: {HELLO_MESSAGE}");
-    }
-}
-```
-
-Notice that it's not just unsafe to write to the static, it's also considered unsafe to read from it. However, so long
-as we never modify this in a different thread, we know this behavior is safe.
-
-There's a catch to watch for here. Remember, `HELLO_MESSAGE` is a reference to some data that exists in static memory.
-What we've done here is change the reference itself to point to the location of `"CHANGED!"` which is also built into
-the program's static memory.
 
 Raw Pointers
 ------------
 
-Our previous example was pretty tame. We were using static data, so, although there was some risk with relation to
-threads, it was still on the safer side. Let's play with fire.
+One of the main reasons you might want to dip into unsafe Rust is to communicate with memory directly. Rust's
+abstractions around memory are powerful, usually free (or otherwise cheap) and very flexible, but they don't cover
+every possible need. You may have a use case where you need to talk to memory without going through Rust's abstractions,
+and Rust lets you do that by turning on its unsafe features to access raw pointers.
 
 We use References in Rust a bit like other languages use pointers to point to something that's actually stored 
 elsewhere. But references have a number of features that make them safer to use. A pointer is essentially just a number
@@ -400,7 +347,7 @@ unsafe {
     // `original_string` is dropped later. We could equally prevent 
     // `original_string` being dropped instead, but, to me, it makes sense to
     // have this behavior in the inner code block. This also means if the
-    // capacity of `original_string` was larger than `capacity` it won't cause
+    // capacity of `original_string` was larger than `capacity`, it won't cause
     // unfreed memory.
     // 
     // The ManuallyDrop type is actually safe. Although it prevents the memory
@@ -434,7 +381,7 @@ Creating safe abstractions might look something like this:
 ```rust
 /// # SAFETY
 /// 
-/// To use this safely you... don't need to do anything because this function
+/// To use this safely, you... don't need to do anything because this function
 /// just returns true
 unsafe fn conceptually_dangerous_function() -> bool {
     true
@@ -755,6 +702,28 @@ fn safe_abstraction(x: i32) -> Result<bool, SomeErrorType> {
     }
 }
 ```
+
+Mutable Statics
+---------------
+
+In older editions of Rust, it was possible to have mutable statics via unsafe Rust. This would allow you to have mutable
+global variables that were safe to use so long as they weren't shared between threads. As of Rust 2024, this is no
+longer the case.
+
+If you don't mind sacrificing a tiny bit of speed, the same thing can be achieved through safe abstractions and tools
+like atomic types or interior mutability. If you really need the speed, then you can still fall back on raw pointers.
+
+To find out more about the change, you can read 
+[this chapter](https://doc.rust-lang.org/edition-guide/rust-2024/static-mut-references.html) of the Rust Editions Guide.
+
+At the end of the day, though, mutable globals are a bit of a crutch and should generally be avoided where possible, and
+I think there's a lesson here. Any time you find yourself reaching for unsafe code, you want to be sure that there's no
+other acceptable way to do the same thing. Unsafe Rust _can_ speed up your code and _can_ let you do things there's no
+other way of doing, but you should assess the various possibilities and trade-offs before commiting to unsafe.
+
+Even if you have to use unsafe code, are there safe abstractions for what you're attempting in the standard library or
+well-tested crates? You shouldn't be afraid of unsafe, but you should understand that it is going to turn on features
+that _can_ behave in surprised ways.
 
 Summary
 -------
