@@ -723,7 +723,7 @@ other way of doing, but you should assess the various possibilities and trade-of
 
 Even if you have to use unsafe code, are there safe abstractions for what you're attempting in the standard library or
 well-tested crates? You shouldn't be afraid of unsafe, but you should understand that it is going to turn on features
-that _can_ behave in surprised ways.
+that _can_ behave in surprising ways.
 
 Summary
 -------
