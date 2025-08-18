@@ -836,7 +836,7 @@ be the unit type <code>()</code>).</li>
 <p>As I mentioned, after this chapter we will be talking about Rust differently. This will primarily be by using the assert
 macros to state what a value <em>should</em> be.</p>
 <p>For example, one of our earlier code examples looks like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let min_byte: u8 = 0b0000_0000;
 let max_byte: u8 = 0b1111_1111;
@@ -844,7 +844,7 @@ println!("min_byte: {min_byte}"); // 0
 println!("max_byte: {max_byte}"); // 255
 <span class="boring">}</span></code></pre></pre>
 <p>But from here on out it'll look like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let min_byte: u8 = 0b0000_0000;
 let max_byte: u8 = 0b1111_1111;

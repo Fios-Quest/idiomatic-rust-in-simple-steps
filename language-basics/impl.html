@@ -234,7 +234,7 @@ products like RustRover it's <code>Alt</code>/<code>⌥</code> + <code>enter</co
 <code>src</code> folder.</p>
 <p>Inside our <code>cat.rs</code> file lets create a structure to hold a cat, we'll make it public by putting the word <code>pub</code> in front
 of the struct.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -244,7 +244,7 @@ pub struct Cat {
 <span class="boring">}</span></code></pre></pre>
 <p>We can access the <code>Cat</code> struct back in our <code>main</code> function either by giving a full reference to the <code>Cat</code> struct in its
 module, <code>cat::Cat</code> or by using the <code>use</code> keyword. However, you'll find we can't actually <em>create</em> the structure.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail no_run"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
+<pre><pre class="playground"><code class="language-rust compile_fail no_run edition2024"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
 </span><span class="boring">mod cat {
 </span><span class="boring">  pub struct Cat {
 </span><span class="boring">    name: String,
@@ -281,7 +281,7 @@ instantiated <code>Cat</code> with the given name. One nice thing about <code>im
 referring to the type that is being implemented called <code>Self</code>. This means that while we <em>could</em> specifically return
 the <code>Cat</code> type, we could also use <code>Self</code>. There are a lot of benefits to the latter in more advanced code, so we'll
 use that here.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -307,7 +307,7 @@ type, to show that it is a reference.</p>
 Similarly, <code>&amp;mut self</code> translates to <code>self: &amp;mut Self</code>.</p>
 <p>We don't need to take ownership, or have a mutable reference, so for our function we'll use <code>&amp;self</code> to get an immutable
 reference.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -334,7 +334,7 @@ is goes out of scope.</p>
 <p>Any implementation function where the first parameter is some form of <code>self</code> may be referred to as a "method", and is
 available on the instantiated type. Any other function in the implementation is called a "static method".</p>
 <p>We can finally create a working program, so returning to <code>main</code>, let's use our new implementation:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
 </span><span class="boring">mod cat {
 </span><span class="boring">    pub struct Cat {
 </span><span class="boring">        name: String,
@@ -364,7 +364,7 @@ fn main() {
 way.</p>
 <p>A naive approach to this could use an <code>enum</code> to represent the states, and then we could have methods that change the
 state.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -414,7 +414,7 @@ won't.</p>
 <p>Instead, we could use a pattern called a State Machine. In a State Machine we transition fully between different states,
 and those states have different functionality.</p>
 <p>Let's make our states unit structs instead of an enum</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -423,7 +423,7 @@ pub struct Hangry;
 pub struct Eepy;
 <span class="boring">}</span></code></pre></pre>
 <p>We can then apply the functionality to each struct in turn:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -452,7 +452,7 @@ impl Eepy {
 that your cat states are being used correctly.</p>
 <p>At this point, we don't have any data about our cat though. There are a few ways we could deal with this. We could
 extend our states to be the cat like this:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -503,7 +503,7 @@ impl Eepy {
 allocations and makes sure that you don't have an "old" state hanging around.</p>
 </blockquote>
 <p>This is fine... but it's not very flexible. Instead, we're going to put the <em>whole</em> cat inside the state.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -536,7 +536,7 @@ generic parameters. Very often you might see a single letter generic name, parti
 <code>Result&lt;T, E&gt;</code>.</p>
 <p>You can even use whole words, though this is seen less.</p>
 <p>For our purposes, we'll use the letter <code>A</code> to represent "Animal".</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -562,7 +562,7 @@ as the type is being used consistently. So, our <code>new</code> functions can u
 linked to our state's generic <code>A</code>, and our state changes can use <code>A</code> to show that when the state changes, the generic
 type will remain the same.</p>
 <p>I'm also going to add a quick extra function, <code>describe</code>, to each implementation for use at the end.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -621,7 +621,7 @@ impl&lt;A&gt; Eepy&lt;A&gt; {
 }
 <span class="boring">}</span></code></pre></pre>
 <p>Finally, lets update our cat implementation to return a concrete <code>Mischievous&lt;Cat&gt;</code> type:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -646,7 +646,7 @@ impl&lt;A&gt; Eepy&lt;A&gt; {
 }
 <span class="boring">}</span></code></pre></pre>
 <p>We can now play with all of this in our main function:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">mod cat { // Everything here should be in `cat.rs`, I can't do that and have runnable code though ;) 
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">mod cat { // Everything here should be in `cat.rs`, I can't do that and have runnable code though ;) 
 </span><span class="boring">    pub struct Cat {
 </span><span class="boring">        name: String,
 </span><span class="boring">    }

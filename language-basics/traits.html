@@ -192,7 +192,7 @@ lots of types have a method called <code>to_string()</code>, including numbers, 
 because there is a trait called <code>ToString</code> that describes the function header for a method called <code>to_string()</code> and all
 of these types implement that trait.</p>
 <p>This is what ToString looks like in the Rust standard library (sans comments and annotations):</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait ToString {
    fn to_string(&amp;self) -&gt; String;
@@ -207,7 +207,7 @@ those that implement the <code>ToString</code> trait.</p>
 it's safe to rely on it being there. If it doesn't implement <code>ToString</code> you'll get a compiler error (this should show
 up in your IDE before you get as far as compiling though). AS it happens, a <em>lot</em> of built-in types already implement
 <code>ToString</code>.</p>
-<pre><pre class="playground"><code class="language-rust">fn say_hello&lt;S: ToString&gt;(could_be_anything: S) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn say_hello&lt;S: ToString&gt;(could_be_anything: S) {
     println!("Hello {}!", could_be_anything.to_string());
 }
 
@@ -221,7 +221,7 @@ fn main() {
 <a href="https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/">poorly designed</a> Person type with a
 first and last name. We can implement <code>ToString</code> to turn the user into a string which combines their name. You can
 run this example to see that it works with our previous function</p>
-<pre><pre class="playground"><code class="language-rust">struct Person {
+<pre><pre class="playground"><code class="language-rust edition2024">struct Person {
    first: String,
    last: String,
 }
@@ -266,7 +266,7 @@ other traits available to you in the future. For now though, we're going to buil
 to <code>animal/mod.rs</code> and to update your use statement in <code>main.rs</code> to <code>animal::cat::Cat</code>.</p>
 <p>We're now ready to make our trait.</p>
 <p>In <code>animal/mod.rs</code>, underneath <code>pub mod cat;</code>, let our new <code>Animal</code> trait:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: animal/mod.rs
 pub trait Animal {
@@ -280,7 +280,7 @@ Rust's equivalent of Interfaces, everything listed is assumed to be public.</p>
 <p>So, let's implement this for <code>Cat</code>.</p>
 <p>In <code>cat.rs</code> we'll add the implementation. As with implementations for types we start with <code>impl &lt;TRAIT_NAME&gt;</code> but with
 traits we follow it up with <code>for &lt;TYPE&gt;</code>. So our impl block should look like this:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">// Prevent mdbook wrapping everything in a main function
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">// Prevent mdbook wrapping everything in a main function
 </span><span class="boring">fn main() {}
 </span><span class="boring">
 </span><span class="boring">// This should be in your mod/animal.rs
@@ -324,7 +324,7 @@ languages, can infer the value of <code>self</code> (or <code>this</code> in som
 <code>Animal::get_name</code> we could call the <code>Cat</code> method of the same name, manually passing in <code>self</code>. This lets Rust know that
 it should call the <code>Cat</code> implementation of <code>get_name</code>. Now the behaviour of <code>Animal::get_name</code> for <code>Cat</code> will always be
 the same as <code>Cat::get_name</code> even if we change the later method in the future.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">// Prevent mdbook wrapping everything in a main function
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">// Prevent mdbook wrapping everything in a main function
 </span><span class="boring">fn main() {}
 </span><span class="boring">
 </span><span class="boring">// This should be in your mod/animal.rs
@@ -359,7 +359,7 @@ impl Animal for Cat {
 <p>For each state (<code>Mischievous</code>, <code>Hangry</code>, <code>Eepy</code>), we can add a Trait Bound so that the generic <code>A</code> must be a type that
 has implemented the <code>Animal</code> trait. We can do this in the generics list as we did before. For example, <code>Mischievous</code>
 would look like this:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">fn main() {}
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">fn main() {}
 </span><span class="boring">trait Animal {
 </span><span class="boring">    fn get_name(&amp;self) -&gt; &amp;str;
 </span><span class="boring">}
@@ -371,7 +371,7 @@ would look like this:</p>
 such in any implementation code for those states. Just remember that for generic <code>impl</code>s, it is the <code>impl</code> that
 specifies the generic, so we need to make sure we add the Trait Bound there, then we can update our describe to use the
 trait (here I've used the <code>format!</code> macro which is like <code>println!</code> but produces a <code>String</code>):</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">fn main() {}
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">fn main() {}
 </span><span class="boring">trait Animal {
 </span><span class="boring">    fn get_name(&amp;self) -&gt; &amp;str;
 </span><span class="boring">}
@@ -391,7 +391,7 @@ impl&lt;A: Animal&gt; Mischievous&lt;A&gt; {
 }</code></pre></pre>
 <p>Update all of your States to use <code>self.animal.get_name()</code> and, assuming your <code>main.rs</code> still looks like the below, you
 should get your output with your cats name!</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">pub mod animal {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">pub mod animal {
 </span><span class="boring">   // animal/mod.rs
 </span><span class="boring">   pub trait Animal {
 </span><span class="boring">      fn get_name(&amp;self) -&gt; &amp;str;
@@ -539,7 +539,7 @@ fn main() {
 functionality out to other types of animals... starting with the most dangerous of animal.</p>
 <p>Start by adding <code>pub mod human;</code> to <code>animal.mod</code>.</p>
 <p>Then create <code>animal/human.rs</code> and pop this inside:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">// Prevent mdbook wrapping everything in a main function
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">// Prevent mdbook wrapping everything in a main function
 </span><span class="boring">fn main() {}
 </span><span class="boring">pub mod animal {
 </span><span class="boring">    // animal/mod.rs
@@ -589,7 +589,7 @@ impl Animal for Human {
 pub mod cat;
 pub mod human;</code></pre>
 <p>Finally, lets update our main function, and run the program to make sure everything is working.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">pub mod animal {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">pub mod animal {
 </span><span class="boring">   // animal/mod.rs
 </span><span class="boring">   pub trait Animal {
 </span><span class="boring">      fn get_name(&amp;self) -&gt; &amp;str;
@@ -760,7 +760,7 @@ will need to:</p>
 <p>If you get stuck, I've implemented the code below, just hit the eye icon. Please note that a limitation of this book
 means all the code is in one place, you should split your modules into files so that it's easier to manage and work
 with.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">pub mod animal {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">pub mod animal {
 </span><span class="boring">   // animal/mod.rs
 </span><span class="boring">   pub trait Animal {
 </span><span class="boring">      fn get_name(&amp;self) -&gt; &amp;str;
@@ -982,7 +982,7 @@ with.</p>
 internal types I mentioned (numbers, string slices, strings, etc) implement <code>ToString</code> but do in fact implement
 <code>Display</code>.</p>
 <p>Let's start looking at the trait itself:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use std::fmt::{Formatter, Result};
 </span><span class="boring">
@@ -997,7 +997,7 @@ internal types I mentioned (numbers, string slices, strings, etc) implement <cod
 it all for us.</p>
 <p>To change our <code>ToString</code> implementation for <code>Person</code> to <code>Display</code>, in addition to changing the trait name and method,
 we can simply swap the <code>format!</code> macro for <code>write!</code> and pass the formatter as the first part of the macro.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {}
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {}
 </span><span class="boring">
 </span><span class="boring">struct Person {
 </span><span class="boring">   first: String,

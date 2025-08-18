@@ -215,7 +215,7 @@ However, for this chapter, we really need to differentiate what is on the stack 
 <p>In the below code, <code>number_example</code> stores the actual number on the stack, since its of a known size, 32 bits unless
 otherwise specified. <code>string_example</code>, however, contains the location of the string data, not the data itself, which is
 stored on the heap. (We'll talk about how it gets to the heap shortly).</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     let number_example = 42;
     let string_example = String::from("This is string data too");
 }</code></pre></pre>
@@ -236,7 +236,7 @@ are pros and cons to this too, but it's far outside the scope of this guide.</p>
 <p>There's a third kind of memory we don't really talk about as much, but it might be the most important.</p>
 <p>Static Memory is where all values and data you write into your program are initially stored, though frequently it's
 subsequently moved somewhere else. For example, in the program:</p>
-<pre><pre class="playground"><code class="language-rust">const CONST_EXAMPLE: &amp;str = "This is string data";
+<pre><pre class="playground"><code class="language-rust edition2024">const CONST_EXAMPLE: &amp;str = "This is string data";
 
 fn main() {
     let number_example = 42;
@@ -267,7 +267,7 @@ thing. They're necessary tools that we need to do things that there is no other 
 function that is itself marked as <code>unsafe</code>. Because the function is marked as <code>unsafe</code> it can <em>only</em> be called within
 <code>unsafe</code> code, however, even within that function, code is treated as safe until you use another <code>unsafe</code> block. We'll
 talk about what it means to mark functions as <code>unsafe</code> further on.</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     // SAFETY: This function is a no-op
     unsafe {
         this_code_is_unsafe();
@@ -292,51 +292,11 @@ comments, to show that the code follows the guidelines laid out. We'll talk more
 this code isn't going to hurt us later. Documenting how we know this code is safe is crucial.</p>
 <p>You can read more about this practice in the official
 <a href="https://std-dev-guide.rust-lang.org/policy/safety-comments.html">Standard library developer's Guide</a></p>
-<h2 id="mutable-statics"><a class="header" href="#mutable-statics">Mutable Statics</a></h2>
-<p>There's a type of "variable" that can be read from anywhere, the static.</p>
-<pre><pre class="playground"><code class="language-rust">static HELLO_MESSAGE: &amp;str = "Hello!";
-
-fn main() {
-    println!("This function can read HELLO_MESSAGE without having ownership: {HELLO_MESSAGE}");
-    another_function();
-}
-
-fn another_function() {
-    println!("So can this one: {HELLO_MESSAGE}");
-}</code></pre></pre>
-<p>Static variables are a bit like global variables in other languages. They're really handy if you want to read data from
-anywhere in your application, you want to minimize stack/heap footprint and, importantly, you never want to change it.</p>
-<p>Rust allows you to mutate <code>static</code>s, but making the static mutable also makes it <code>unsafe</code>. Being able to access the
-static from anywhere means that it's visible to all threads. Mutating the static across threads would cause the exact
-problems we talked about in the <a href="./threads.html#sharing-state">Threads</a> chapter.</p>
-<pre><pre class="playground"><code class="language-rust">static mut HELLO_MESSAGE: &amp;str = "Hello!";
-
-fn main() {
-    another_function();
-    
-    // SAFETY: We only ever modify this variable from the main thread, 
-    // HELLO_MESSAGE is never used by other threads
-    unsafe {
-        HELLO_MESSAGE = "CHANGED!";
-    }
-    
-    another_function();
-}
-
-fn another_function() {
-    // SAFETY: This function is only called in the main thread
-    unsafe {
-        println!("HELLO_MESSAGE is currently: {HELLO_MESSAGE}");
-    }
-}</code></pre></pre>
-<p>Notice that it's not just unsafe to write to the static, it's also considered unsafe to read from it. However, so long
-as we never modify this in a different thread, we know this behavior is safe.</p>
-<p>There's a catch to watch for here. Remember, <code>HELLO_MESSAGE</code> is a reference to some data that exists in static memory.
-What we've done here is change the reference itself to point to the location of <code>"CHANGED!"</code> which is also built into
-the program's static memory.</p>
 <h2 id="raw-pointers"><a class="header" href="#raw-pointers">Raw Pointers</a></h2>
-<p>Our previous example was pretty tame. We were using static data, so, although there was some risk with relation to
-threads, it was still on the safer side. Let's play with fire.</p>
+<p>One of the main reasons you might want to dip into unsafe Rust is to communicate with memory directly. Rust's
+abstractions around memory are powerful, usually free (or otherwise cheap) and very flexible, but they don't cover
+every possible need. You may have a use case where you need to talk to memory without going through Rust's abstractions,
+and Rust lets you do that by turning on its unsafe features to access raw pointers.</p>
 <p>We use References in Rust a bit like other languages use pointers to point to something that's actually stored
 elsewhere. But references have a number of features that make them safer to use. A pointer is essentially just a number
 that is an address to a location in memory. When you allocate heap data, even in Rust, the operating system amongst
@@ -355,7 +315,7 @@ pointer locations.</p>
 may even need to use pointers directly ourselves.</p>
 <p>You can actually get pointers in safe Rust. Try running this program multiple times, you should get a different number
 every time:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let the_answer = 42;
 let pointer = &amp;raw const the_answer;
 
@@ -363,7 +323,7 @@ println!("The variable at {pointer:p} contains the data '{the_answer}'");
 <span class="boring">}</span></code></pre></pre>
 <p>One cool thing worth pointing out is that Rust even types your pointers, making it harder to muddle them up later. A
 pointer to an <code>i32</code> has the type <code>*const i32</code></p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::any::type_name;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">use std::any::type_name;
 </span><span class="boring">
 </span><span class="boring">// Thanks to @DevinR528 https://github.com/DevinR528
 </span><span class="boring">// Source: https://users.rust-lang.org/t/how-check-type-of-variable/33845/2
@@ -382,7 +342,7 @@ println!("{}", type_of(pointer));
 Strings are a good example of this. The pointer to the variable does not point to the data, it points to metadata which
 itself contains a pointer to the data. We can access the pointer to the data via a method on the string itself (this is
 inherited from string slices). Again, there's nothing unsafe about doing this.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let hello = String::from("Hello, world!");
 let pointer_to_variable = &amp;raw const hello;
 let pointer_to_data = hello.as_ptr();
@@ -395,7 +355,7 @@ println!(
 <span class="boring">}</span></code></pre></pre>
 <p>Getting pointers is perfectly safe. What we can't do is use those pointers to get data in safe Rust. For that we need to
 dip into unsafe. Below we dereference the pointer to go back from the location to the data that's stored there.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let the_answer = 42;
 let pointer = &amp;raw const the_answer;
 
@@ -416,7 +376,7 @@ you can write unsafe code inside a function, as long as you write the function t
 meaning, for someone calling the function, it <em>is</em> safe.</p>
 <p>A good example of this is the <a href="https://doc.rust-lang.org/std/mem/fn.swap.html"><code>std::mem::swap</code></a> which swaps the values
 at two mutable locations:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let mut left = "Left".to_string();
 let mut right = "Right".to_string();
 
@@ -448,7 +408,7 @@ free when the thing that originally created the data also wants to free it?</p>
 currently. Capacity is how much memory is available to contain potential data. Most types will cause a reallocation when
 the capacity is filled, causing us another problem to look out for!</p>
 <p>Luckily, by being aware of the problems ahead of time, we can still use this function safely.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::ops::Deref;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">use std::ops::Deref;
 </span><span class="boring">
 </span><span class="boring">fn main() {
 </span>// We'll manually make sure our string never exceeds 100 bytes
@@ -475,7 +435,7 @@ unsafe {
     // `original_string` is dropped later. We could equally prevent 
     // `original_string` being dropped instead, but, to me, it makes sense to
     // have this behavior in the inner code block. This also means if the
-    // capacity of `original_string` was larger than `capacity` it won't cause
+    // capacity of `original_string` was larger than `capacity`, it won't cause
     // unfreed memory.
     // 
     // The ManuallyDrop type is actually safe. Although it prevents the memory
@@ -502,9 +462,9 @@ the String is a slice, which also has the method <code>from_raw_parts</code> (th
 have capacity, just length). <code>slice::from_raw_parts_mut</code> is unsafe, but it's used inside the safe method
 <code>String::retain</code>.</p>
 <p>Creating safe abstractions might look something like this:</p>
-<pre><pre class="playground"><code class="language-rust">/// # SAFETY
+<pre><pre class="playground"><code class="language-rust edition2024">/// # SAFETY
 /// 
-/// To use this safely you... don't need to do anything because this function
+/// To use this safely, you... don't need to do anything because this function
 /// just returns true
 unsafe fn conceptually_dangerous_function() -&gt; bool {
     true
@@ -530,7 +490,7 @@ implementation. It's actually kind of rare to <em>have</em> to use this feature.
 abstraction, you could move the unsafe method to an unsafe function.</p>
 <p>For example, this trait has two provided methods, but we still can't implement it safely, even with the default
 implementations.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>unsafe trait NotSafe {
     /// # Safety
@@ -553,7 +513,7 @@ struct ExampleUnitType;
 impl NotSafe for ExampleUnitType {}
 <span class="boring">}</span></code></pre></pre>
 <p>We can implement it with the unsafe keyword though:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>unsafe trait NotSafe {
     // ...snip...
@@ -577,7 +537,7 @@ struct ExampleUnitType;
 unsafe impl NotSafe for ExampleUnitType {}
 <span class="boring">}</span></code></pre></pre>
 <p>However, if we don't need to ever override the unsafe method, we could just extract it from the trait entirely</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>/// # Safety 
 /// 
@@ -608,7 +568,7 @@ safe, so the traits themselves are <code>unsafe</code>.</p>
 <p>Unions, in software engineering, are a way of storing different types in the same section of memory. They're typically
 broken into two flavors, tagged and untagged. "Tagged" simply means the type is part of data, so you can only access the
 data <em>as</em> the type that it is. We use tagged unions in Rust all the time, and they're perfectly safe:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>enum ThisIsATaggedUnion {
     Number(u64),
@@ -618,7 +578,7 @@ data <em>as</em> the type that it is. We use tagged unions in Rust all the time,
 <p>Enums are tagged unions, they only ever take up as much memory as is taken by the largest data type representable inside
 them, plus a discrimination value which differentiates the variants at runtime (usually represented as an <code>isize</code> but
 Rust compilers <em>may</em> use smaller numeric types):</p>
-<pre><pre class="playground"><code class="language-rust">enum ThisIsATaggedUnion {
+<pre><pre class="playground"><code class="language-rust edition2024">enum ThisIsATaggedUnion {
     Number(u64),
     Character(char),
 }
@@ -650,7 +610,7 @@ that share multiple bytes of data, you <em>may</em> need to consider endianness.
 </blockquote>
 <p>In this example, we can interrogate characters as u32's (characters in Rust are four bytes, although most string types
 use a variable byte width encoding such as utf-8).</p>
-<pre><pre class="playground"><code class="language-rust">union CharOrNumber {
+<pre><pre class="playground"><code class="language-rust edition2024">union CharOrNumber {
     number: u32,
     character: char,
 }
@@ -687,7 +647,7 @@ speed and know <em>exactly</em> what you're doing with the <em>exact</em> hardwa
 versions of the function, one that works using the "x86_64" (most Windows and Linux machines and older Macs) and another
 that works using "aarch64" (all modern Macs but also some newer Windows and Linux machines). As you can see, apart from
 <code>mov</code>, the other instructions look very different but do the same things.</p>
-<pre><pre class="playground"><code class="language-rust">use std::arch::asm;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::arch::asm;
 
 #[cfg(target_arch = "x86_64")]
 fn multiply_by_six(input: u64) -&gt; u64 {
@@ -746,7 +706,7 @@ of the function has to be known.</p>
 know its name, so we need to prevent the mangling, but that means there's a risk of collision. Pre Rust-2024 preventing
 mangling was done with the <code>#[no_mangle]</code> attribute, but as of Rust 2024, we need to explicitly tell Rust that we
 understand the dangers.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// SAFETY: No other global function will use this name, this does not need to
 // be part of the documentation though.
@@ -764,7 +724,7 @@ your code.</p>
 <p>Everything about this is unsafe. If there's no dynamic library on the target system that shares a name with the linked
 library, the program will panic. If the function names do not match, the program will panic. If the function names match
 but the signature doesn't, you'll get undefined behavior.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">struct SomeErrorType;
 </span><span class="boring">
@@ -789,6 +749,21 @@ fn safe_abstraction(x: i32) -&gt; Result&lt;bool, SomeErrorType&gt; {
     }
 }
 <span class="boring">}</span></code></pre></pre>
+<h2 id="mutable-statics"><a class="header" href="#mutable-statics">Mutable Statics</a></h2>
+<p>In older editions of Rust, it was possible to have mutable statics via unsafe Rust. This would allow you to have mutable
+global variables that were safe to use so long as they weren't shared between threads. As of Rust 2024, this is no
+longer the case.</p>
+<p>If you don't mind sacrificing a tiny bit of speed, the same thing can be achieved through safe abstractions and tools
+like atomic types or interior mutability. If you really need the speed, then you can still fall back on raw pointers.</p>
+<p>To find out more about the change, you can read
+<a href="https://doc.rust-lang.org/edition-guide/rust-2024/static-mut-references.html">this chapter</a> of the Rust Editions Guide.</p>
+<p>At the end of the day, though, mutable globals are a bit of a crutch and should generally be avoided where possible, and
+I think there's a lesson here. Any time you find yourself reaching for unsafe code, you want to be sure that there's no
+other acceptable way to do the same thing. Unsafe Rust <em>can</em> speed up your code and <em>can</em> let you do things there's no
+other way of doing, but you should assess the various possibilities and trade-offs before commiting to unsafe.</p>
+<p>Even if you have to use unsafe code, are there safe abstractions for what you're attempting in the standard library or
+well-tested crates? You shouldn't be afraid of unsafe, but you should understand that it is going to turn on features
+that <em>can</em> behave in surprised ways.</p>
 <h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
 <p>Outside of specialist use cases, you're unlikely to have to write much, if any, unsafe code yourself. Nonetheless,
 hopefully after this chapter you see that it's not as scary as it seems. You still have all the normal safety checks

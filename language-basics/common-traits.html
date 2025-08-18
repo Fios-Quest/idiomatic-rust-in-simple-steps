@@ -199,7 +199,7 @@ the header for methods you need to provide yourself, but they can also define me
 can optionally override. We call the methods you need to write <strong>Required</strong> and the ones you can optionally override
 as <strong>Provided</strong>.</p>
 <p>For example, in the last chapter we defined the trait <code>Animal</code> like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait Animal {
     fn get_name(&amp;self) -&gt; &amp;str;
@@ -209,7 +209,7 @@ as <strong>Provided</strong>.</p>
 a Required method.</p>
 <p>If, instead, we were to write some default functionality, this becomes a Provided method which implementors of the
 Animal trait can choose to override if they want to:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait Animal {
     fn get_name(&amp;self) -&gt; &amp;str {
@@ -266,7 +266,7 @@ won't move ownership, and will use what are called "Copy Semantics" instead of "
 normal, when you reassign a variable, or pass it to a function, if the variable has the <code>Copy</code> trait, you can still
 use the original variable after.</p>
 <p>So ordinarily we can't do something like this, you'll get a compile time error. Try running this:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let x = "String is not Copy".to_string();
 let y = x;
@@ -274,7 +274,7 @@ print!("y owns the str {y}");
 print!("x no longer owns the str {x}");
 <span class="boring">}</span></code></pre></pre>
 <p>However, for types that do implement <code>Copy</code> that does still work thanks to Copy Semantics:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let mut x = 42;
 let y = x;
@@ -336,7 +336,7 @@ provide custom derive macros for traits provided in their own libraries.</p>
 <p><code>Debug</code> is an extremely useful utility Trait that creates a default way to write out types to things like stdout/stderr.</p>
 <p>When printing a <code>Debug</code> value, we use <code>{:?}</code> for a positional marker, or you can put it after the name of a variable,
 eg <code>{name:?}</code>.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Debug)]
 struct Cat {
     name: String,
     age: u8,
@@ -383,7 +383,7 @@ can get there in different ways? Probably not.</p>
 <p>For the most part in Rust, we're only concerned with Partial Equivalence <code>PartialEq</code>, this is what allows us to compare
 values with the <code>==</code> operator. Given what we've just discussed, consider the code below before you run it, what do you
 think the output will be?</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main () {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main () {
 </span>if 0.0 == -0.0 {
     println!("0.0 IS equivalent to -0.0");
 } else {
@@ -403,7 +403,7 @@ want this kind of behaviour for aliased user information or something similar.</
 <p><code>PartialEq</code> has two methods, <code>eq</code> and <code>ne</code>. <code>ne</code> has a default behaviour so you don't need to define it, but you can see
 how in the previous example, being able to make the logic for <code>ne</code> different from simple <code>!x.eq(y)</code> could be handy.</p>
 <p>Lets implement it ourselves below:</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Debug)]
 struct User {
     id: u64,
     email: String,
@@ -431,7 +431,7 @@ assert_eq!(yuki, alias);
 "right hand side" or RHS. This generic parameter defaults to being the same type, but we can write code that allows us
 to compare the equivalence of different types too!</p>
 <p>Taking that User alias example again, what if we had a "root" user type, and an aliased User type.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Debug)]
 struct User {
     id: u64,
     email: String,
@@ -469,7 +469,7 @@ of.</p>
 equivalence, this wouldn't make sense).</p>
 <p>Earlier we chose to make that <code>User</code> type partially equivalent if the id matched. If we instead checked the entire
 object, it could be considered to be exactly equivalent:</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Debug)]
 struct User {
     id: u64,
     email: String,
@@ -495,7 +495,7 @@ assert_eq!(yuki, other_yuki);
 <span class="boring">}</span></code></pre></pre>
 <p>Of course, in this case, it'd be far easier <em>and safer</em> to use the derived version, which protects us making mistakes in
 complex code, or forgetting to check changes we make in our type later:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(PartialEq, Eq)]
 struct User {
@@ -513,7 +513,7 @@ indeed:</p>
 </ul>
 <p>Both <code>PartialOrd</code> and <code>Ord</code> have a required method each (<code>partial_cmp</code> and <code>cmp</code> respectively) as well as some methods
 with default behaviour. The required methods of each trait use the <code>Ordering</code> type which looks roughly like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub enum Ordering {
     Less = -1,
@@ -528,7 +528,7 @@ methods are implemented, their default behaviour relies on <code>partial_cmp</co
 is it greater than, less than, or equal to <code>NaN</code>? We can't determine that, so we use the <code>None</code> variant to represent
 that.</p>
 <p>But how does that affect ordering? What do you think the output of the following code will be:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>// Using the Debug output, see above!
 println!("{:?}", f32::NAN.partial_cmp(&amp;f32::NAN));
 
@@ -542,7 +542,7 @@ println!("NaN == NaN  = {:?}", f32::NAN == f32::NAN);
 type implement <code>PartialOrd</code>, when derived on structs, it will first check the ordering of the first field, and only move
 on to the next field if the first field is equal.</p>
 <p>Eg:</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(PartialEq, PartialOrd)] // Remember PartialEq is required for PartialOrd
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(PartialEq, PartialOrd)] // Remember PartialEq is required for PartialOrd
 struct Rect {
     width: u64,
     height: u64,
@@ -563,7 +563,7 @@ let test_two_rhs = Rect { width: 2, height: 1000 };
 <span class="boring">}</span></code></pre></pre>
 <p>For this reason, it's quite likely that you'd want to implement <code>PartialOrd</code> yourself, depending on how you think types
 should be compared.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(PartialEq)] // Remember PartialEq is required for PartialOrd
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(PartialEq)] // Remember PartialEq is required for PartialOrd
 struct Rect {
     width: u64,
     height: u64,
@@ -606,7 +606,7 @@ only need to implement <code>cmp</code>, and the other methods can use that for 
 implementing both <code>PartialOrd</code> <em>and</em> <code>Ord</code>, the result of <code>partial_cmp</code> <em>must</em> match <code>cmp</code>, though the compiler has no
 way of confirming this for you. The easiest way to handle this is if you need to manually implement <code>PartialOrd</code>, simply
 call <code>cmp</code> and wrap it in an <code>Option</code>. Let's do that with our Rect type.</p>
-<pre><pre class="playground"><code class="language-rust">use std::cmp::Ordering;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::cmp::Ordering;
 
 // Remember PartialEq is required for PartialOrd, Eq is required for Ord
 #[derive(Debug, Eq, PartialEq)]
@@ -663,7 +663,7 @@ location, and create a new smart pointer on the stack to point to it.</p>
 you can use, so it's really handy to differentiate <code>Clone</code> from <code>Copy</code>.</p>
 <p>Luckily, you don't have to do all of this memory allocation stuff yourself. For any type that is built from other types
 that already implement <code>Clone</code> you can derive <code>Clone</code>.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Clone, PartialEq, Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Clone, PartialEq, Debug)]
 struct MyNewType(String); // String already implements Clone, PartialEq and Debug
 
 <span class="boring">fn main() {
@@ -687,7 +687,7 @@ implementation built into the trait itself but, again, allows you to override it
 provide more efficient memory allocation.</p>
 <p>In order to derive <code>Copy</code>, not only must your type be made from only other types that implement <code>Copy</code>, but your type
 must also implement <code>Clone</code>.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Copy, Clone, PartialEq, Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Copy, Clone, PartialEq, Debug)]
 struct MyNewType(u32); // This tuple struct uses a u32 which implements Copy and Clone
 
 // --- Testing copy ---
@@ -703,7 +703,7 @@ assert_eq!(a, b);
 other collections default to being empty. If your type is built from only types that implement <code>Default</code> then you can
 derive the behaviour of <code>Default</code> for your type to be, essentially, the instantiation of your type with all values set
 to <em>their</em> default.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Default, Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Default, Debug)]
 struct Person {
     name: String,
     age: u8,
@@ -718,7 +718,7 @@ assert_eq!(person.age, 0);
 println!("Default persons name is '{}' and their age is '{}'", person.name, person.age);
 <span class="boring">}</span></code></pre></pre>
 <p>Obviously, this may not always be the desired result, so you can obviously implement the trait directly:</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Debug)]
 struct Person {
     name: String,
     age: u8,
@@ -743,7 +743,7 @@ println!("Default persons name is '{}' and their age is '{}'", person.name, pers
 <span class="boring">}</span></code></pre></pre>
 <p>You might be wondering if you can derive <code>Default</code> for Enums, or if you have to implement it directly, and you actually
 can, using an additional attribute that you apply to the value you want to be the default.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Default, Debug, PartialEq)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Default, Debug, PartialEq)]
 enum SomeEnum {
     Variant1,
     #[default]
@@ -758,7 +758,7 @@ assert_eq!(choice, SomeEnum::Variant2);
 <span class="boring">}</span></code></pre></pre>
 <p>Unfortunately the <code>default</code> attribute only works when deriving <code>Default</code> for unit enums, which means if your enum
 contains nested types, you <em>will</em> have to implement <code>Default</code> manually:</p>
-<pre><pre class="playground"><code class="language-rust">// The nested types here mean we can't derive default
+<pre><pre class="playground"><code class="language-rust edition2024">// The nested types here mean we can't derive default
 #[derive(Debug, PartialEq)]
 enum SomeEnum {
     Variant1(u32),
@@ -793,7 +793,7 @@ want to skip over types inside your compound type that can't be hashed <em>BUT</
 behaves correctly. See if you can spot them and the associated tests!</p>
 </blockquote>
 <p>To derive it yourself simply use the derive attribute, and you'll be good to use it in a <code>HashMap</code>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Hash)]
 struct Email(String);
@@ -808,7 +808,7 @@ related to the type that implements it. Once you implement it, if you pass a val
 returns a <code>fmt::Result</code> which is a type alias for <code>Result&lt;(), fmt::Error&gt;</code>. The easiest way to implement it is with the
 <code>write!</code> macro which returns this same type, and to <code>use std::fmt</code> so that you can reference things in the module
 namespace rather than contaminating your own.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use std::fmt;
 
@@ -830,7 +830,7 @@ worth doing as error types with the <code>Error</code> trait provide a lot of ut
 alter the provided behaviour of the <code>Error</code> trait which means the only thing you need to do is make sure that your
 error type <em>also</em> implements <code>Debug</code> and <code>Display</code>. As we know, <code>Debug</code> is usually derivable, so that just leaves
 <code>Display</code>. Let's create a custom Error for a fridge to demonstrate how we <em>might</em> do this.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use std::{fmt, error};
 
@@ -862,7 +862,7 @@ Error libraries that might change the way you work with errors. We will cover th
 from one type, and move it to another type. <code>From</code> and <code>Into</code> are the easiest ways to do this, providing the <code>from</code> and
 <code>into</code> methods respectively. For example, you'll regularly see people turning a string slice into a string in one of
 these two ways:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let first = String::from("first");
 let second: String = "second".into();
 println!("{first}, {second}");
@@ -907,7 +907,7 @@ of the current function.</p>
 it's called, however, if there is a <code>From</code> implementation that can convert them, then the <code>?</code> operator will use that
 to propagate the error.</p>
 <p>Here's an example of a job we need to run that will get a user from a store, and then do something with them.</p>
-<pre><pre class="playground"><code class="language-rust">// A lot of boilerplate code hidden here, use the 👁️ icon if you want to see it. -&gt;
+<pre><pre class="playground"><code class="language-rust edition2024">// A lot of boilerplate code hidden here, use the 👁️ icon if you want to see it. -&gt;
 
 <span class="boring">use std::fmt;
 </span><span class="boring">use std::error::Error;
@@ -999,7 +999,7 @@ fn main() {
 <code>TryFrom</code> and <code>TryInto</code> can help you with possible errors using another feature of traits we haven't discussed,
 associated types.</p>
 <p>To oversimplify things a little, let's say you're talking to an external system that thinks about pets like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>enum PetType {
     Cat,
@@ -1013,7 +1013,7 @@ struct Pet {
 }
 <span class="boring">}</span></code></pre></pre>
 <p>but your system <em>only</em> cares about Cats:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>struct Cat {
     name: String
@@ -1033,7 +1033,7 @@ calling the generic code.</p>
 <li>The trait is easier to use for the caller (less or no generics)</li>
 <li>Relatedly, you are reducing the risk area of making mistakes.</li>
 </ol>
-<pre><pre class="playground"><code class="language-rust">use std::convert::TryFrom; // You do not need to do this since Rust 2021, including for backwards compatability
+<pre><pre class="playground"><code class="language-rust edition2024">use std::convert::TryFrom; // You do not need to do this since Rust 2021, including for backwards compatability
 
 <span class="boring">#[derive(Debug,PartialEq)]
 </span><span class="boring">enum PetType {
@@ -1084,7 +1084,7 @@ println!("Result: {lassie_cat_result:?}");
 <p>And yes, <code>TryInto</code> is automatically provided by Rust for any types that already provide the reverse <code>TryFrom</code>
 implementation. One thing to note though is, like <code>into</code>, you still need to type hint to Rust what the generic parts
 are, but because they're now inside a result its a little more verbose:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::convert::{TryFrom, TryInto}; // You do not need to do this since Rust 2021, including for backwards compatability
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">use std::convert::{TryFrom, TryInto}; // You do not need to do this since Rust 2021, including for backwards compatability
 </span><span class="boring">
 </span><span class="boring">#[derive(Debug,PartialEq)]
 </span><span class="boring">enum PetType {
@@ -1155,7 +1155,7 @@ can be mutably borrowed as itself, <code>&amp;mut T</code>.</p>
 same.</p>
 <p>One type that does this is <code>String</code>. As I mentioned above, <code>String</code> is a smart pointer to a string slice stored on the
 heap, and it implements <code>Borrow&lt;str&gt;</code> to allow us to borrow the data as if it were a string slice type.</p>
-<pre><pre class="playground"><code class="language-rust">// We need to bring the trait in scope
+<pre><pre class="playground"><code class="language-rust edition2024">// We need to bring the trait in scope
 use std::borrow::Borrow;
 
 fn say_hello(who: &amp;str) {
@@ -1178,7 +1178,7 @@ hash <code>v.borrow()</code>.</p>
 pattern. Imagine you have a type that represents an email address. Obviously a sensible type to store that data in might
 be <code>String</code>, however, there's no validation on creating a <code>String</code>, so how do we know if any given string contains a
 valid email. For that we can wrap the string in a "new type".</p>
-<pre><pre class="playground"><code class="language-rust">use std::borrow::Borrow;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::borrow::Borrow;
 <span class="boring">use std::error::Error;
 </span><span class="boring">use std::fmt;
 </span><span class="boring">use std::ops::Deref;
@@ -1293,7 +1293,7 @@ to another, making it less useful for compound types.</p>
 compound types. If we have a more complex object and want to internally reference</p>
 <p>Remember earlier we had our <code>Cat</code> type which only had a name. We could, if we wanted, implement <code>AsRef&lt;str&gt;</code> so that
 it can be used in the place of a <code>&amp;str</code>:</p>
-<pre><pre class="playground"><code class="language-rust">struct Cat {
+<pre><pre class="playground"><code class="language-rust edition2024">struct Cat {
     name: String,
     age: u8,
 }
@@ -1317,7 +1317,7 @@ fn main() {
 <p>Arguably, we could make this code even friendly by changing the <code>cuddle</code> to take a generic, and then calling <code>.as_ref()</code>
 in the function itself. This code looks a little scarier, but once you get used to seeing code like this, you can write
 far more flexible and easy to use code.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Cat {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">struct Cat {
 </span><span class="boring">    name: String,
 </span><span class="boring">}
 </span><span class="boring">
@@ -1358,7 +1358,7 @@ str                            String
 <em>but</em> you need to think carefully about when it's appropriate to do this.</p>
 <p>Let's return to our <code>Email</code> type, it makes sense to allow our <code>Email</code> to be used as an immutable String, so lets
 implement <code>Deref</code> for it:</p>
-<pre><pre class="playground"><code class="language-rust">use std::ops::Deref;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::ops::Deref;
 <span class="boring">use std::error::Error;
 </span><span class="boring">use std::fmt;
 </span><span class="boring">
@@ -1431,7 +1431,7 @@ fn main() {
 <p>Let's think about this differently though, what if instead of dereferencing to a str, we dereferenced to a <code>String</code>,
 <em>and</em> we allowed mutability. Our <code>Email</code> type here does some rudimentary validation, if we allowed mutability of the
 inner <code>String</code>, we allow people to change the email to be invalid, and lose the benefit of the <code>Email</code> type.</p>
-<pre><pre class="playground"><code class="language-rust">use std::ops::{Deref, DerefMut};
+<pre><pre class="playground"><code class="language-rust edition2024">use std::ops::{Deref, DerefMut};
 <span class="boring">use std::error::Error;
 </span><span class="boring">use std::fmt;
 </span><span class="boring">use std::hash::{DefaultHasher, Hash, Hasher};
@@ -1525,7 +1525,7 @@ match Email::is_valid(&amp;email) {
 </ul>
 <p>The Rust standard library is achieving this with the <code>Drop</code> trait.</p>
 <p>You can implement the drop trait yourself:</p>
-<pre><pre class="playground"><code class="language-rust">struct UnitStruct;
+<pre><pre class="playground"><code class="language-rust edition2024">struct UnitStruct;
 
 impl Drop for UnitStruct {
     fn drop(&amp;mut self) {
@@ -1554,7 +1554,7 @@ things to go out of scope, and be aware of what any library code you're consumin
 <p>Most of the time this isn't worth worrying too much about, however, if you do find you want to very precisely control
 <em>when</em> variables are dropped, then let me introduce you to my all-time favourite function <code>std::mem::drop</code>.</p>
 <p>Here it is in full:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub fn drop&lt;T&gt;(_x: T) {}
 <span class="boring">}</span></code></pre></pre>

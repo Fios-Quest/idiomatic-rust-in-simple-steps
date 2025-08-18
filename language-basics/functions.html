@@ -198,7 +198,7 @@ does.</p>
 <p>Up to now, we haven't needed to change any data once it's been created. By default, all variables in Rust are implicitly
 "immutable", meaning that the values inside of them can not be changed.</p>
 <p>This, for example, won't compile (try to run it to see the compiler output)</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn main() {
 </span>let one = 1;
 one = one + 1;
 <span class="boring">println!("one = {one}");
@@ -207,7 +207,7 @@ one = one + 1;
 the above example, is obviously what's happened here (ie, it seems like <code>one</code> should probably not contain <code>2</code>).</p>
 <p>It's good to use immutable variables as much as possible, but software needs to be able to process data. If we could
 never mutate values, we'd always have to depend on creating copies like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let one = 1;
 let two = one + 1;
 <span class="boring">println!("two = {two}");
@@ -215,7 +215,7 @@ let two = one + 1;
 <p>That's fine for small data but imagine we're processing large data like an image. Do we want to copy it every time we
 make a single pixel change?</p>
 <p>You can explicitly opt in to mutability by adding the word <code>mut</code> (pronounced "mute") in front of the variable name.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let mut message = "Hello".to_string();
 message.push_str(", world!"); // Modify message by adding this data to the end
@@ -228,7 +228,7 @@ the return type is the Unit Type <code>()</code>, see the <a href="./data-types.
 function is called the "function header". The function is completed by a code block, code between curly brackets, which
 is also called the function body.</p>
 <p>So lets create the simplest possible function:</p>
-<pre><pre class="playground"><code class="language-rust">fn say_hello() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn say_hello() {
     println!("Hello, world");
 }
 
@@ -238,7 +238,7 @@ is also called the function body.</p>
 <p>This function is called <code>say_hello</code>, it has no parameters and does not return anything. Because it writes to the
 terminal, this function is considered to be impure.</p>
 <p>We can call the function using its name and empty brackets.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn say_hello() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn say_hello() {
 </span><span class="boring">    println!("Hello, world");
 </span><span class="boring">}
 </span><span class="boring">
@@ -247,7 +247,7 @@ terminal, this function is considered to be impure.</p>
 }</code></pre></pre>
 <p>You'll notice this function doesn't actually have any inputs or outputs. Let's start by providing an input.</p>
 <h2 id="passing-parameters"><a class="header" href="#passing-parameters">Passing Parameters</a></h2>
-<pre><pre class="playground"><code class="language-rust">fn say_hello(name: &amp;str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn say_hello(name: &amp;str) {
     println!("Hello, {name}");
 }
 
@@ -258,7 +258,7 @@ terminal, this function is considered to be impure.</p>
 for the parameter, in this case it's a string slice (<code>&amp;str</code>). The parameter can be used as a variable within the
 function, so we use it in our <code>println!</code>.</p>
 <p>To pass the data into the function we place it between the brackets:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn say_hello(name: &amp;str) {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn say_hello(name: &amp;str) {
 </span><span class="boring">    println!("Hello, {name}");
 </span><span class="boring">}
 </span><span class="boring">
@@ -267,7 +267,7 @@ function, so we use it in our <code>println!</code>.</p>
 }</code></pre></pre>
 <p>We can have multiple parameters too. Parameters are ordered so when you call the function, you need to match the order
 they're specified. For example:</p>
-<pre><pre class="playground"><code class="language-rust">fn say_hello_two(first_person: &amp;str, second_person: &amp;str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn say_hello_two(first_person: &amp;str, second_person: &amp;str) {
     println!("Hello, {first_person} and {second_person}");
 }
 
@@ -287,7 +287,7 @@ necessary, it's just for clarity)</li>
 write <code>return</code> (though we can), we just need to make the thing we want to return the last bit of the block and forgo
 the semicolon</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust">fn create_greeting(name: &amp;str) -&gt; String {
+<pre><pre class="playground"><code class="language-rust edition2024">fn create_greeting(name: &amp;str) -&gt; String {
     let message = format!("Hello, {name}");
     message
 }
@@ -301,7 +301,7 @@ fn main() {
 <p>In Rust, functions can call other functions, like how our <code>main()</code> function calls our <code>create_greeting(...)</code> function in
 the previous example. A function that calls itself is described as recursive. Take for example this method for finding
 the nth number in the fibonacci sequence</p>
-<pre><pre class="playground"><code class="language-rust">fn find_fibonacci(n: u128) -&gt; u128 {
+<pre><pre class="playground"><code class="language-rust edition2024">fn find_fibonacci(n: u128) -&gt; u128 {
     if n == 0 || n == 1 { // if n equals 0 or n equals 1
         n
     } else {
@@ -375,7 +375,7 @@ learn, but once you get your head around it, it makes a lot of sense.</p>
 <p>In Rust, all data is "owned". When the variable that "owns" the data goes out of scope, the data is dropped. This means
 that if the data was stored on the Heap, then that bit of memory is immediately freed.</p>
 <p>Let's have a play with this, first, lets look at the scope aspect of ownership:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">fn main() {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">fn main() {
   let a = 'a'; // We create `a` in the outer scope of "main"
 
   { // Start of a new block, starting a nested scope
@@ -399,7 +399,7 @@ a few other bits) gives you this message:</p>
 <p>Which tells us <em>exactly</em> what's wrong! Rust's compiler messages generally amazing, especially when it comes to working
 with ownership, so it's worth getting used to how Rust presents its errors.</p>
 <p>Next, lets look at how data can only be "owned" by one thing at a time:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn main() {
 </span>let a = "hello".to_string(); // We create some data and give it to `a`
 let b = a;                   // We give the data in `a` to `b`, transfering ownership
 println!("{b}");             // This would be fine as b owns "hello"
@@ -412,7 +412,7 @@ variables at once.</p>
 <p>You might have noticed that we swapped from <code>char</code>s in the first ownership example to a <code>String</code> in the second. This is
 because there are two mechanisms at play: "Move" and "Copy".</p>
 <p>Let's try the same code with chars:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let a = '雪';    // We create some data and give it to `a`
 let b = a;       // We set b to be equal to a
 println!("{b}"); // Prints 雪 
@@ -428,14 +428,14 @@ and resources.</p>
 that is Copy is implicit. Data that does not or can not implement Copy may still be duplicated if it implements the
 trait <code>Clone</code>, which provides the <code>.clone()</code> method. We'll talk more about implementing traits in the traits section,
 but <code>String</code> already implements this so here's how to use it:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let a = "hello".to_string(); // We create some data and give it to `a`
 let b = a.clone();           // Allocates memory on the heap and copies the data into it
 println!("{b}");             // Prints "hello"
 println!("{a}");             // Also prints "hello"
 <span class="boring">}</span></code></pre></pre>
 <p>You'll also note that we used a full fat <code>String</code> here, not a string slice reference. Here's what that would look like:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let a = "hello";   // `a` is a reference to data that exists in the binary's "data"
 let b = a;         // references are Copy so the reference is copied from a to b
 println!("{b}");   // Prints "hello"
@@ -450,7 +450,7 @@ references <em>are</em> Copy though.</p>
 <p>When we pass data into functions through the use of parameters, the data follows the rules of move semantics.</p>
 <p>Let's go back to our <code>create_greeting()</code> function. Instead of passing in a string slice reference, what would happen if
 we passed in a <code>String</code>?</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">fn create_greeting(name: String) -&gt; String {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">fn create_greeting(name: String) -&gt; String {
     let message = format!("Hello, {name}");
     message
 }
@@ -465,7 +465,7 @@ fn main() {
 function <code>create_greeting</code>. This means after the function the variable <code>yuki</code> can no longer be used.</p>
 <p>Because the <code>format!</code> macro does not take ownership of the data in <code>name</code>, we could return both the message <em>and</em> the
 original <code>String</code> data using a tuple.</p>
-<pre><pre class="playground"><code class="language-rust">fn create_greeting(name: String) -&gt; (String, String) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn create_greeting(name: String) -&gt; (String, String) {
     let message = format!("Hello, {name}");
     (message, name)
 }
@@ -483,7 +483,7 @@ we destructure the tuple (see <a href="control-flow.html">destructuring with pat
 taking a reference to a string slice instead. The <code>String</code> type can be "dereferenced" into a reference to a string slice
 (remember the internal representation of a String is the same as a string slice), so we can create a reference to our
 <code>yuki</code> <code>String</code> using an ampersand:</p>
-<pre><pre class="playground"><code class="language-rust">// Changed back to taking a &amp;str
+<pre><pre class="playground"><code class="language-rust edition2024">// Changed back to taking a &amp;str
 fn create_greeting(name: &amp;str) -&gt; String {
     let message = format!("Hello, {name}");
     message
@@ -497,7 +497,7 @@ fn main() {
 }</code></pre></pre>
 <p>Let's say we wanted our function to modify the string instead. Ideally we'd want to avoid modifying data that's passed
 to a function but sometimes that's not possible, if you need to do it you can pass a mutable reference.</p>
-<pre><pre class="playground"><code class="language-rust">// Change &amp;str to &amp;mut String
+<pre><pre class="playground"><code class="language-rust edition2024">// Change &amp;str to &amp;mut String
 fn create_greeting(greeting: &amp;mut String, name: &amp;str)  {
     greeting.push_str(", ");
     greeting.push_str(name);
@@ -522,7 +522,7 @@ mutable reference. Mutable references are not Copy.</p>
 <h3 id="lifetimes"><a class="header" href="#lifetimes">Lifetimes</a></h3>
 <p>So far so clear, but it turns out that keeping track of those references is actually quite hard.</p>
 <p>Let's create a function that takes a reference to a string and returns two parts to that string:</p>
-<pre><pre class="playground"><code class="language-rust">fn split(input: &amp;str, at: usize) -&gt; (&amp;str, &amp;str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn split(input: &amp;str, at: usize) -&gt; (&amp;str, &amp;str) {
   let up_to = std::cmp::min(at, input.len()); // Prevent out of bounds
   (&amp;input[..up_to], &amp;input[up_to..])
 }
@@ -548,7 +548,7 @@ split and everything on the right. The cool thing here is that the string isn't 
 <code>right</code> are references that point to the inside of our input string!</p>
 <p>How does Rust know that though? Let's confuse it a bit.</p>
 <p>Instead of splitting at a particular point, we'll find a sub string inside the input string, then split around that:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">fn split(input: &amp;str, sub_string: &amp;str) -&gt; (&amp;str, &amp;str) {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">fn split(input: &amp;str, sub_string: &amp;str) -&gt; (&amp;str, &amp;str) {
   if let Some(found_at) = input.find(sub_string) {
     (&amp;input[..found_at], &amp;input[found_at + sub_string.len()..])
   } else {
@@ -584,7 +584,7 @@ relationship must be understood at compile time.</p>
 the string itself. This would mean that when the function comes to an end, the variable <code>my_string</code> goes out of scope,
 so the data that it owns on the Heap is freed... what would our reference point at now? Luckily Rust won't let us do
 this:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn bad() -&gt; &amp;str {
   let my_string = "Oh no!".to_string();
@@ -603,7 +603,7 @@ to.</p>
 lettered label like <code>'a</code>, though if a lot of lifetimes are at play it's definitely better to use longer, clearer labels.</p>
 <p>We'll change the header of our function to include the lifetime <code>'a</code>. First we tell Rust we want to use a lifetime by
 putting it inside triangle brackets after the function name. Then we mark each reference with that lifetime.</p>
-<pre><pre class="playground"><code class="language-rust">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;'a str) -&gt; (&amp;'a str, &amp;'a str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;'a str) -&gt; (&amp;'a str, &amp;'a str) {
     // ...
 <span class="boring">  if let Some(found_at) = input.find(sub_string) {
 </span><span class="boring">    (&amp;input[..found_at], &amp;input[found_at + sub_string.len()..])
@@ -623,7 +623,7 @@ putting it inside triangle brackets after the function name. Then we mark each r
 </span><span class="boring">}</span></code></pre></pre>
 <p>You can run the above and see this example works just fine, however, it's not ideal. We've tied all the references to
 the same lifetime. The following shows that we can't compile code that we know should work.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;'a str) -&gt; (&amp;'a str, &amp;'a str) {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;'a str) -&gt; (&amp;'a str, &amp;'a str) {
 </span><span class="boring">    if let Some(found_at) = input.find(sub_string) {
 </span><span class="boring">        (&amp;input[..found_at], &amp;input[found_at + sub_string.len()..])
 </span><span class="boring">    } else {
@@ -649,7 +649,7 @@ Rust that it should tie all the lifetimes together. Since the sub string lasts t
 lifetime it used.</p>
 <p>To fix this problem we can just remove the lifetime annotation from the sub_string parameter. Now everything works
 as we'd expect:</p>
-<pre><pre class="playground"><code class="language-rust">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; (&amp;'a str, &amp;'a str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; (&amp;'a str, &amp;'a str) {
   // ...
 <span class="boring">  if let Some(found_at) = input.find(sub_string) {
 </span><span class="boring">    (&amp;input[..found_at], &amp;input[found_at + 1..])
@@ -683,7 +683,7 @@ that contains some data, for example it could be a serialized format like JSON o
 an Advent of Code input string. Lifetimes mean that you bring that String into your program, allocating the memory for
 it once, then turn it into a complex data structure. So long as the original String exists, the data structure need
 not allocate any further memory, which is incredibly efficient.</p>
-<pre><pre class="playground"><code class="language-rust">struct User&lt;'a&gt; {
+<pre><pre class="playground"><code class="language-rust edition2024">struct User&lt;'a&gt; {
   name: &amp;'a str,
   fur_color: &amp;'a str,
 }

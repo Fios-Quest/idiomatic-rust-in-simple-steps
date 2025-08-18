@@ -205,13 +205,13 @@ threads. Threads are scheduled by the operating system independently, allowing o
 effectively concurrently.</p>
 <h2 id="starting-a-thread"><a class="header" href="#starting-a-thread">Starting a thread</a></h2>
 <p>Your program always has at least one thread, even your basic hello-world program runs in a thread.</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     println!("Hello, I am in a thread!")
 }</code></pre></pre>
 <p>What we're interested in today is how we start more threads. This is a process called Spawning.</p>
 <p>To spawn a thread, we use <code>std::thread::spawn</code>... but, this will do little on its own. Run the code below, see what's
 missing in the output?</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::spawn;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 
 fn main() {
     println!("This is the main thread");
@@ -224,7 +224,7 @@ fn main() {
 it. When the join handler is dropped, the thread is orphaned. It may still run but, in this case, the process ends at
 the end of main, so our spawned thread never got a chance to do anything.</p>
 <p>We can tell our main thread to pause and wait for a running thread to end by using the join handler.</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::spawn;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 
 fn main() {
     println!("This is the main thread");
@@ -237,7 +237,7 @@ fn main() {
 <p>Note, we're using closures here, but functions work just as well and can be better for more complex programs. The only
 restriction is: it needs to be <code>FnOnce() -&gt; T + Send + 'static</code>. See
 <a href="https://doc.rust-lang.org/std/thread/fn.spawn.html">the documentation</a> for more details.</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::spawn;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 
 fn child() {
     println!("This is also a child thread");
@@ -252,7 +252,7 @@ fn main() {
 <p>Exactly <em>when</em> threads are allowed to execute code is controlled by a scheduler which we can't directly manage
 ourselves, but we can influence it. Putting one thread to sleep can allow another thread to run. Run this code, then
 uncomment the commented lines and run it again.</p>
-<pre><pre class="playground"><code class="language-rust editable">use std::thread::{sleep, spawn};
+<pre><pre class="playground"><code class="language-rust editable edition2024">use std::thread::{sleep, spawn};
 use std::time::Duration;
 
 fn main() {
@@ -276,7 +276,7 @@ the <a href="./traits.html">Traits</a> chapter, but to recap, data is <code>Send
 this trait is auto-implemented for all types that can be <code>Send</code> (though it is also possible to opt out of it).</p>
 <p>We can move data into the closure that will be sent to the thread using the <code>move</code> keyword.</p>
 <p>For example:</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::spawn;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 
 fn main() {
     let data = vec![1, 2, 3, 4, 5];
@@ -291,7 +291,7 @@ fn main() {
 }</code></pre></pre>
 <p>You can also return data via the join handler. This means you could pass hard work to a thread and do other work, coming
 back to check on the thread at a later time. We can check if the thread is finished with <code>.is_finished()</code>;</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::{sleep, spawn};
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::{sleep, spawn};
 use std::time::Duration;
 
 fn main() {
@@ -321,7 +321,7 @@ can send messages, and a single <code>Reciever</code> that can receive them. As 
 meaning that you can create them in one thread and send them to another.</p>
 <p>Let's create a bunch of threads and give each of them a <code>Sender</code> that points back to a single <code>Reciever</code>, we'll send
 that <code>Reciever</code> to a final thread that will collect the data from the other threads.</p>
-<pre><pre class="playground"><code class="language-rust">use std::sync::mpsc::channel;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::sync::mpsc::channel;
 use std::thread::spawn;
 
 fn main() {
@@ -366,7 +366,7 @@ references as we like, but we can only have one mutable reference. Furthermore, 
 reference... which is a little harder to confirm with threads. How do you know the thread referencing your data doesn't
 exist for longer than the data it's referenced?</p>
 <p>This is where <code>std::thread::scope</code> can help us, by providing scoped threads.</p>
-<pre><pre class="playground"><code class="language-rust">// We will create a scope and use that to spawn threads instead of spawning 
+<pre><pre class="playground"><code class="language-rust edition2024">// We will create a scope and use that to spawn threads instead of spawning 
 // them directly.
 use std::thread::scope;
 
@@ -397,7 +397,7 @@ fn main() {
 }</code></pre></pre>
 <p>This also works with mutable references but, bear in mind, only one thread can access the mutable reference, and it must
 end before we can access our data again.</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::scope;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::scope;
 
 fn main() {
     let mut data = String::from("This is owned by the main thread");
@@ -433,7 +433,7 @@ software abstraction concept called a "mutex" that makes access to the data MUTu
 through <code>std::sync::Mutex</code>.</p>
 <p>Once you place data inside a Mutex, to access it again, you need to "lock" the Mutex. If the Mutex is already locked,
 then the thread currently trying to access the data needs to wait for the existing lock to be released.</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::scope;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::scope;
 use std::sync::Mutex;
 
 fn main() {
@@ -482,7 +482,7 @@ than Rusts built in basic reference counting type <code>std::rc::Rc</code>, but 
 cover it in this book. If you need to pass data around wrapped in its own container its there to use</p>
 </blockquote>
 <p>So, armed with this knowledge, we can go back to unscoped threads!</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::spawn;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 use std::sync::{Arc, Mutex};
 
 fn main() {

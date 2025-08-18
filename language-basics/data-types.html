@@ -281,7 +281,7 @@ one hundred and one.</p>
 <p>Eight bits is a byte, and can represent the numbers from <code>0b0000_0000</code> (zero) to <code>0b1111_1111</code> (two hundred and
 fifty-five, again, I'm not expecting anyone to be able to <em>read</em> this). Btw, I'm using an underscore as a
 spacer between numbers to help legibility, this also works in Rust, as does the <code>0b</code> notation!</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let min_byte: u8 = 0b0000_0000;
 let max_byte: u8 = 0b1111_1111;
@@ -378,7 +378,7 @@ program may no longer be consistent on different machines!</p>
 <p>By default, when you write an integer and store it in a variable, Rust will play it safe and use an <code>i32</code> as it doesn't
 know what you might want to do with the number, an <code>i32</code> will fit inside most CPU architectures without needing extra
 work and allows negative numbers.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = 10; // i32
 <span class="boring">}</span></code></pre></pre>
@@ -391,13 +391,13 @@ in a small integer, and do I not care about consistency, in which case <code>usi
 <li>otherwise, if I'm ok potentially sacrificing speed, then an <code>i32</code> or <code>i64</code> is fine</li>
 </ul>
 <p>You can specify what type a number is either by annotating the variable you are putting it inside:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a: u64 = 10; // u64
 <span class="boring">}</span></code></pre></pre>
 <p>Or, if that's not possible because you are, for example, passing the number to a function that could take many number
 types, you can write the type at the end of a number:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::fmt::Display;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">use std::fmt::Display;
 </span><span class="boring">
 </span><span class="boring">fn print_value_and_type&lt;T: Display&gt;(v: T) {
 </span><span class="boring">    let type_name = std::any::type_name::&lt;T&gt;();
@@ -412,7 +412,7 @@ types, you can write the type at the end of a number:</p>
 over some code from the last chapter.</p>
 <p>In the bonus section of the last chapter, we got the number of milliseconds that had passed since midnight on the 1st
 of January 1970, and then immediately used <code>as usize</code>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let time = std::time::UNIX_EPOCH
     .elapsed()
@@ -427,7 +427,7 @@ number, whatever it is and tries to cram it into the size <code>as &lt;type&gt;<
 <p>When going from a larger size to a smaller size (in this case, from <code>u128</code> to the equivalent of <code>u32</code>) it simply cuts
 off the front of the data, leaving the least significant bits. You can see this in the following program (don't forget
 you can run this in place with the play button):</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let time = std::time::UNIX_EPOCH
     .elapsed()
     .expect("Call the Doctor, time went backwards")
@@ -455,7 +455,7 @@ actually this isn't the way to think about these numbers.</p>
 small numbers but not every number in between (after all, there are infinite numbers between 0.0 and 1.0).</p>
 <p>Imagine using a floating point number to represent money. Someone comes into a store to buy a $520.04 item, and they
 have a coupon for $520.02. The remainder that they need to pay is 2 cents, right? Try running the next bit of code:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>println!("520.04 - 520.02 should be 0.02");
 
 // Single Precision Floating Point
@@ -484,7 +484,7 @@ quotes.</p>
 <p>You can use any valid unicode character whether that's the upper or lowercase english letters A-Z, numbers 0-9, white
 space characters, word characters from languages like Chinese and Japanese, emoji, or anything else that's a "unicode
 scalar value".</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let i = 'I';
 let love = '💖';
 let yuki = '雪';
@@ -512,7 +512,7 @@ as a reference to a string slice <code>&amp;str</code>, which makes it unique am
 <p><code>str</code> should always be a UTF-8 string (see ⚠️ below), which means that the length of a string in bytes may not
 necessarily be the same as its length in characters.</p>
 <p>For example (don't worry about the code yet):</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let yuki = "雪";
 
@@ -525,7 +525,7 @@ println!("{yuki} length in characters: {char_length}"); // 1
 <p>Its also worth remembering that when you turn a string into characters, each of those characters will take up 4 bytes
 of memory, even though inside the string they might have only taken up one byte (again, don't worry about the code in
 the next example we'll talk about it soon):</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use std::mem::size_of_val;
 </span><span class="boring">
@@ -545,7 +545,7 @@ on the system architecture.</p>
 <p>Fun fact about that reference though: you might wonder if it's just a pointer and a length, does that mean you can
 have a reference to a string slice that exists inside a string slice, and the answer is: yes! Just be careful when
 taking a slice inside a slice to make sure that the sub slice is a valid UTF-8 string.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let hello = "hello";
 // hell is a reference to a substring, range 0..4 is exclusive so 0, 1, 2, 3 but not 4
@@ -564,14 +564,14 @@ string slice, you should be careful.</p>
 as a reference to another collection (also called an array slice).</p>
 <p>When sized, arrays are annotated with the type <code>[T; N]</code> where <code>T</code> is the type of every item in the array and <code>N</code> is its
 size. For example:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let hello: [char; 5] = ['H', 'e', 'l', 'l', 'o'];
 <span class="boring">}</span></code></pre></pre>
 <p>When referenced as an array slice, you do not need to specify the size because, just like with references to string
 slices, the reference not only contains a pointer to the underlying data, but also contains the size. We write this in
 the form <code>&amp;[T]</code> where <code>T</code> is the type of every item in the array.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">let hello: [char; 5] = ['H', 'e', 'l', 'l', 'o'];
 </span>// hell is a reference to a sub-array, range 0..=3 is inclusive so 0, 1, 2, and 3
@@ -582,7 +582,7 @@ print!("{:?}", hell); // ['H', 'e', 'l', 'l']
 <span class="boring">}</span></code></pre></pre>
 <p>You can access elements inside the array directly by using an index value between square brackets. In Rust, indexing
 starts at 0. So:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let hello: [char; 5] = ['H', 'e', 'l', 'l', 'o'];
 let h = hello[0]; // H
@@ -595,7 +595,7 @@ different type. This adds some flexibility but also some restrictions. For examp
 an array, but not a tuple.</p>
 <p>Tuples are written between brackets, and are only considered the same type if the types inside the tuple match.</p>
 <p>For example:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let char_int_1: (char, i32) = ('a', 1);
 let char_int_2: (char, i32) = ('b', 2); // This type is the same as the previous one.
@@ -603,7 +603,7 @@ let int_char_1: (i32, char) = (3, 'c'); // This type is different
 <span class="boring">}</span></code></pre></pre>
 <p>Another difference from arrays is how you access a single item in the tuple, which you do with a dot <code>.</code>, followed by
 the number element you want. Again, this starts from 0.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let char_int: (char, i32) = ('a', 1);
 let a = char_int.0; // 'a'
@@ -623,7 +623,7 @@ are three types of structs, structs with named fields, tuple structs and unit st
 <h4 id="tuple-struct"><a class="header" href="#tuple-struct">Tuple Struct</a></h4>
 <p>As we just covered tuples, lets quickly talk about tuple structs. They look a bit like they're simply "named" tuples,
 and indeed they can be accessed the same way:</p>
-<pre><pre class="playground"><code class="language-rust">struct Vector3(f64, f64, f64);
+<pre><pre class="playground"><code class="language-rust edition2024">struct Vector3(f64, f64, f64);
 
 fn main() {
     let vec = Vector3(10.0, 2.0, 3.33);
@@ -634,7 +634,7 @@ fn main() {
 structs have a concept of "visibility". Unless explicitly marked as public the fields of a struct are only accessible
 in the module in which it is defined, or its descendents. We'll talk more about modules later, however, to make the
 fields of a struct public, you can simply mark them as <code>pub</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>struct Vector3(pub f64, pub f64, pub f64);
 <span class="boring">}</span></code></pre></pre>
@@ -643,7 +643,7 @@ private.</p>
 <h4 id="named-fields"><a class="header" href="#named-fields">Named Fields</a></h4>
 <p>Named fields work pretty much the same as tuple structs except instead of having a numbered field, its named. You
 can access the named field with a <code>.</code> and the name.</p>
-<pre><pre class="playground"><code class="language-rust">struct Cell {
+<pre><pre class="playground"><code class="language-rust edition2024">struct Cell {
     x: u64,
     y: u64,
     alive: bool,
@@ -661,7 +661,7 @@ fn main() {
 <h4 id="unit-structs"><a class="header" href="#unit-structs">Unit Structs</a></h4>
 <p>Unit structs are an interesting case that you probably won't find much use for until we get into more advanced Rust and
 some of the cooler patterns and idioms that we use. A Unit struct has no value, it only represents a type.</p>
-<pre><pre class="playground"><code class="language-rust">struct ExampleUnitStruct;
+<pre><pre class="playground"><code class="language-rust edition2024">struct ExampleUnitStruct;
 
 fn main() {
     let unit_struct = ExampleUnitStruct;
@@ -670,7 +670,7 @@ fn main() {
 through Traits, or be used as markers.</p>
 <h3 id="enums"><a class="header" href="#enums">Enums</a></h3>
 <p>Enums are for when you want to represent one of a finite number of possible values. For example</p>
-<pre><pre class="playground"><code class="language-rust">enum TrafficLightState {
+<pre><pre class="playground"><code class="language-rust edition2024">enum TrafficLightState {
     Red,
     Amber,
     Green,
@@ -684,7 +684,7 @@ fn main() {
 can additionally contain values. We've already talked about two such enums <code>Option</code> and <code>Result</code> which are two of the
 most important and widely used types in the entire ecosystem, and we'll talk more about them in the Generic Types
 section below. As an example though, enums variants can be structured in either a tuple stype or a struct style:</p>
-<pre><pre class="playground"><code class="language-rust">enum ContrivedEnum {
+<pre><pre class="playground"><code class="language-rust edition2024">enum ContrivedEnum {
     SimpleVariantNoData,
     TupleStyleData(u64, i32),
     NamedFields {
@@ -707,7 +707,7 @@ variant it actually is.</p>
 <p>Generics in Rust allow the creation of entirely new types at compile time by combining types together. We've talked
 a bit about Option and how Rust uses it to represent Some value or None. Option is an enum with two variants, it is
 literally just this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>enum Option&lt;T&gt; {
     None,
@@ -717,7 +717,7 @@ literally just this:</p>
 <p>Note that after the name of the enum we have <code>&lt;T&gt;</code>. The triangle brackets express that this enum has a type (or types)
 that can be decided later, the <code>T</code> is a marker for that type. For example, say we want to create a type that represents
 either a single character, or nothing.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// The type of possible_character is inferred to be Option&lt;char&gt;
 let possible_character = Some('r');
@@ -730,7 +730,7 @@ however Option and Result are so ubiquitous that their variants are globally acc
 <p>Another generic we've covered before is Result which usually represents either the success or failure of a function. It
 has two types that can be decided later <code>T</code>, which should represent what type of data you expected to get back, and <code>E</code>,
 which will be the type of the Error.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>enum Result&lt;T, E&gt; {
     Ok(T),
@@ -741,7 +741,7 @@ which will be the type of the Error.</p>
 shows the fully described Result type as the return type of the function, which is how we'd typically use this enum,
 though, you wouldn't typically use a String as an Error type, and we'll talk more about that when we get to Error
 handling later.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn function_that_fails_half_the_time() -&gt; Result&lt;u128, String&gt; { // Note the return type for a function comes after -&gt;
     let time = std::time::UNIX_EPOCH

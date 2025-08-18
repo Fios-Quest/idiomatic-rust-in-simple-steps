@@ -203,7 +203,7 @@ way.</p>
 <p>You can see that cargo has created some files for us. We're going to talk about the cargo files later but for now,
 head into the <code>src</code> directory and open main.rs</p>
 <p>You can see the file has already been created with the following code:</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     println!("Hello, world!");
 }</code></pre></pre>
 <p>Before we dive into this further, lets run the program.</p>
@@ -232,14 +232,14 @@ won't be creating our own until much later. We will be using pre-written macros 
 learn incredibly quickly.</p>
 <p>First let's make a quick change to our program, by adding a variable with our name, and then saying hello to ourselves
 instead of the whole world</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     let name = "Daniel";
     println!("Hello, {name}!");
 }</code></pre></pre>
 <blockquote>
 <p>Fun fact, Rust uses utf-8 strings when written like this, so don't worry if your name can not be properly represented in
 American English characters. For example, I might naively write my cats name like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let name = "ユキ";
 <span class="boring">}</span></code></pre></pre>

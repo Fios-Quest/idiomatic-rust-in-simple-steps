@@ -190,7 +190,7 @@ way.</p>
 that they can exist on the stack, which further means they can be <code>Copy</code> (so long as the type stored in the array is
 also <code>Copy</code>).</p>
 <p>We can create arrays in two ways, either by defining a list of expressions, or by using an expression and a length:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let a1 = [0, 1, 2, 3, 4, 5]; // A list of values
 let a2 = [1 - 1, 1 * 1, 1 + 1, 9 / 3]; // A list of expressions
 let a3 = [1 + 2; 5]; // Fill an array with the result of a single expression, evaluated once
@@ -201,7 +201,7 @@ assert_eq!(a3, [3, 3, 3, 3, 3]);
 <span class="boring">}</span></code></pre></pre>
 <p>You can access arrays using square brackets and the index of the entry you want to edit, however, if the index doesn't
 exist, your code will panic.</p>
-<pre><pre class="playground"><code class="language-rust should_panic"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust should_panic edition2024"><span class="boring">fn main() {
 </span>let arr = [0, 1, 2, 3, 4];
 for i in 0..=5 {
     println!("{}", arr[i]);
@@ -209,13 +209,13 @@ for i in 0..=5 {
 <span class="boring">}</span></code></pre></pre>
 <p>That said, because Arrays are sized, Rust is smart enough to know that you've hardcoded an index out of bounds, so this
 won't even compile!</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn main() {
 </span>let arr = [0, 1, 2, 3, 4];
 let _ = arr[5];
 <span class="boring">}</span></code></pre></pre>
 <p>You can pass arrays into functions so long as you know the exact length of the array. If the contents of the array is
 <code>Copy</code> then the array will also be <code>Copy</code> and will be passed with Copy Semantics instead of Move Semantics.</p>
-<pre><pre class="playground"><code class="language-rust">fn demonstrate_some_mutation(mut arr: [usize; 5]) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn demonstrate_some_mutation(mut arr: [usize; 5]) {
     // Because the array is passed using copy semantics, it doesn't matter if the original variable was mutable.
     // Also, because we know the array _must_ have five elements, it's safe to directly access elements we know exist
     arr[0] = 100;
@@ -235,7 +235,7 @@ demonstrate_some_mutation(a1);
 assert_eq!(a1, [1, 1, 1, 1, 1]);
 <span class="boring">}</span></code></pre></pre>
 <p>Note: This won't compile because the a2 is the wrong size</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">fn demonstrate_some_mutation(mut arr: [usize; 5]) {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">fn demonstrate_some_mutation(mut arr: [usize; 5]) {
     // ...
 <span class="boring">    arr[0] = 100;
 </span><span class="boring">    assert_eq!(arr, [100, 1, 1, 1, 1]);
@@ -250,7 +250,7 @@ dynamically sized collection we should talk about is the "slice".</p>
 <p>You can think of a slice as a view or window into a series of contiguous data. The fact that it's a view of some
 other type hopefully indicates to you that this is a reference type, i.e. <code>&amp;[T]</code> or <code>&amp;mut [T]</code> for mutable slices.</p>
 <p>The simplest way to get a slice is to reference an array (though some other collections also allow you to take a slice).</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let arr: [u32; 5] = [0, 1, 2, 3, 4];
 let slice: &amp;[u32] = &amp;arr;
 
@@ -265,7 +265,7 @@ we didn't discuss at the time. The way to think about this is, where <code>X..Y<
 <li>if Y is preceded by an equals, the slice ends after the <code>Y</code>th element</li>
 <li>if Y is not specified, the slice ends at the end of the collection being sliced</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let array: [u32; 5] = [0, 1, 2, 3, 4];
 
@@ -292,7 +292,7 @@ and <code>right</code>.</li>
 that starts at <code>input.len()</code> is a zero length slice that starts before the element that <em>would</em> be after the final
 element (i.e. it starts after the final element) and runs to the end (i.e. the same place as it starts).</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; (&amp;'a str, &amp;'a str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; (&amp;'a str, &amp;'a str) {
     if let Some(found_at) = input.find(sub_string) {
       (&amp;input[..found_at], &amp;input[found_at + sub_string.len()..])
     } else {
@@ -334,7 +334,7 @@ do anything. This process however is expensive, and you should do what you can t
 using the <code>::with_capacity(capacity: usize)</code> constructor. This will construct an empty <code>Vec</code> with at least (but possibly
 not exactly) the capacity you requested. Note that capacity and length are not the same thing in Rust. You can get the
 number of items of data currently in the vector with <code>.len()</code> and its capacity with <code>.capacity()</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let example: Vec&lt;i32&gt; = Vec::with_capacity(10);
 assert_eq!(example.len(), 0);
 assert!(example.capacity() &gt;= 10);
@@ -347,7 +347,7 @@ increase the capacity after the <code>Vec</code> has been instantiated with mini
 </blockquote>
 <p>If you're not worried about the potential costs of resizing your vector, and you already have some data that you want to
 instantiate, you can use the <code>vec!</code> macro.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let example = vec![0, 1, 2, 3];
 assert_eq!(example.len(), 4);
 <span class="boring">}</span></code></pre></pre>
@@ -355,7 +355,7 @@ assert_eq!(example.len(), 4);
 of the basics.</p>
 <p>To add elements to the end of a vector we use the <code>.push(t: T)</code> method, and to remove them from the end of the vector
 we use the <code>.pop()</code> method which returns an <code>Option&lt;T&gt;</code>, since the vector may be empty.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let mut v = Vec::with_capacity(2);
 v.push("Hello");
 v.push("World!");
@@ -372,7 +372,7 @@ assert_eq!(v, vec!["Hello"]);
 <p>If you're used to arrays and vectors in other languages, you <em>can</em> index directly into an array in Rust in the same way
 that you can in other languages <em>but</em> you generally shouldn't. If you try to access an element out of bounds (eg, if you
 have 3 items in your vector, and try to access the fifth), your program will panic.</p>
-<pre><pre class="playground"><code class="language-rust should_panic"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust should_panic edition2024"><span class="boring">fn main() {
 </span>let v = vec!["Hello", "World!"];
 assert_eq!(v[0], "Hello");
 assert_eq!(v[1], "World!");
@@ -381,7 +381,7 @@ let _ = v[2]; // ❗️Panics❗️
 <p>Instead, Vec provides <code>.get()</code> and <code>.get_mut()</code> which allow return an <code>Option</code> containing either an immutable or mutable
 reference to an item inside the vector. This is much safer as the program will not halt if there is no item at the given
 index, you'll simply get a <code>None</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let v = vec!["Hello", "World!"];
 assert_eq!(v.get(0), Some(&amp;"Hello"));
 assert_eq!(v.get(1), Some(&amp;"World!"));
@@ -389,7 +389,7 @@ assert_eq!(v.get(2), None);
 <span class="boring">}</span></code></pre></pre>
 <p><code>.get_mut()</code> will return a mutable reference to the element inside the Vec, <em>but</em> the way we use it... is a little
 weird:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let mut v = vec!["Hello".to_string()];
 if let Some(hello) = v.get_mut(0) {
     assert_eq!(hello, &amp;mut "Hello".to_string());
@@ -398,7 +398,7 @@ if let Some(hello) = v.get_mut(0) {
 assert_eq!(v, vec!["Hello, World!".to_string()]);
 <span class="boring">}</span></code></pre></pre>
 <p><code>.get()</code> and <code>.get_mut()</code> will also allow you to create an array slice if you give it a <code>Range</code> instead.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let mut v = vec![0, 1, 2, 3, 4, 5];
 
 // Note the weird syntax as `get` returns an array slice, not an array
@@ -414,7 +414,7 @@ if let Some(mut inner) = v.get_mut(2..) {
 assert_eq!(v, vec![0, 1, 12, 3, 4, 5]);
 <span class="boring">}</span></code></pre></pre>
 <p>Finally, we can also create slice using square brackets and this actually works without panicking:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let v = vec![0, 1, 2, 3, 4, 5];
 
 // This would panic:
@@ -430,7 +430,7 @@ the element from the collection, like <code>pop</code> in <code>Vec</code>. We'l
 <h3 id="vecdequeue"><a class="header" href="#vecdequeue">VecDequeue</a></h3>
 <p><code>VecDeque</code> is very similar to <code>Vec</code> however, where in <code>Vec</code> you can only add and remove items from the end, <code>VecDeque</code>
 also allows you to add and remove items to and from the front!</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::VecDeque;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::VecDeque;
 
 <span class="boring">fn main() {
 </span>let mut v = VecDeque::from([0, 1, 2, 3, 4, 5]);
@@ -450,7 +450,7 @@ possible. <code>Vec</code> and <code>VecDeque</code> will almost always beat <co
 to do is add items to the end of a list (or, in the case of <code>VecDeque</code> to the front).</p>
 <p>Where <code>LinkedList</code>s are useful though, is when splitting and merging your collection is a core feature you will be
 heavily reliant on.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>use std::collections::LinkedList;
 
 let mut list = LinkedList::new();
@@ -479,7 +479,7 @@ assert_eq!(v, &amp;[1, 2, 3, 4, 5]);
 <h3 id="binaryheap"><a class="header" href="#binaryheap">BinaryHeap</a></h3>
 <p><code>BinaryHeap</code>s allow you to add items to a heap in any order, but the first item off the heap is always the largest item
 according to <code>Ord</code>.</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::BinaryHeap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::BinaryHeap;
 
 <span class="boring">fn main() {
 </span>let mut heap = BinaryHeap::new();
@@ -495,7 +495,7 @@ assert_eq!(heap.pop(), None);
 <span class="boring">}</span></code></pre></pre>
 <p>The obvious limitation here though is, what do you do if you need to know the smallest value in the stack?</p>
 <p>In the standard library there's a cool little newtype that can wrap other types and inverts their ordering:</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::BinaryHeap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::BinaryHeap;
 use std::cmp::Reverse;
 
 <span class="boring">fn main() {
@@ -517,7 +517,7 @@ create the lookup table. There's more details on how hashing works in the
 <a href="https://doc.rust-lang.org/std/collections/struct.HashMap.html">official book</a>, including how to create a <code>HashMap</code>
 with a different hashing algorithm, but that's beyond the scope of IRISS.</p>
 <p>Similar to <code>Vec</code>s, <code>HashMap</code>s can be initialised in a few ways, the main three you're likely to use are:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>use std::collections::HashMap;
 
 // Create an empty hashmap with some arbitrary capacity
@@ -544,7 +544,7 @@ let mut hashmap_from_array = HashMap::from([
 <ol>
 <li>
 <p><code>.get(key: &amp;K)</code> and <code>.get_mut(key: &amp;K)</code> will get references to data if it exists using <code>Option</code>s</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::HashMap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::HashMap;
 
 <span class="boring">fn main() {
 </span>let mut map = HashMap::from([
@@ -564,7 +564,7 @@ assert_eq!(map.get("Key"), Some(&amp;"Value Changed".to_string()));
 <li>
 <p><code>.entry(key: &amp;K)</code> returns a special <a href="https://doc.rust-lang.org/std/collections/hash_map/enum.Entry.html"><code>Entry</code></a>
 enum that allows you to modify and existing value if it exists, or insert a value if it doesn't</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::HashMap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::HashMap;
 
 <span class="boring">fn main() {
 </span>let mut map = HashMap::from([
@@ -586,7 +586,7 @@ assert_eq!(map.get("Nonexistent Key"), Some(&amp;"Inserted Value".to_string()));
 <li>
 <p><code>.remove(key: &amp;K)</code> takes a value out of the HashMap (if it exists), allowing you to take ownership of it, and
 <code>.remove_entry(key: &amp;K)</code> can be used to gain ownership of both the value <em>and</em> the key as you remove it from the map</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::HashMap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::HashMap;
 
 <span class="boring">fn main() {
 </span>let key = "Key".to_string();
@@ -617,7 +617,7 @@ assert_eq!(map.get("Key"), None);
 <p><code>BTreeMap</code> is a Binary Search Tree version of <code>HashMap</code>. For storing arbitrary data it's a touch slower than <code>HashMap</code>,
 but it internally sorts keys so that you can easily get the values at the largest and smallest keys, a little bit like a
 <code>VecDeque</code>:</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::BTreeMap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::BTreeMap;
 
 <span class="boring">fn main() {
 </span>let mut map = BTreeMap::from([

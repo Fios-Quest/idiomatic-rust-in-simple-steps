@@ -192,7 +192,7 @@ function style macros we'll be making with <code>macro_rules!</code> but can unl
 <p><code>macro_rules!</code> is, itself, a macro, providing its own DSL that allows you to create more macros. This lets things get
 very powerful and, honestly, very weird. Let's take it slow.</p>
 <p>The general layout of <code>macro_rules!</code> looks like this:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// We invoke the `macro_rules!` macro usually at the module level rather than in
 // a function
@@ -223,7 +223,7 @@ does.</p>
 <p>This makes it much safer and more fully featured than a copy-paste.</p>
 <h2 id="hello-macro"><a class="header" href="#hello-macro">Hello, macro!</a></h2>
 <p>We'll start by making a hello world macro that produces a string.</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { String::from("Hello, world") };
 }
 
@@ -238,7 +238,7 @@ case inside an <code>assert_eq!</code> macro).</p>
 <p>This type of macro <em>could</em> be useful if you have a block of code you need to repeat but don't want to put it in a
 function, but let's be honest, that's not very likely.</p>
 <p>Let's upgrade our macro to match a pattern.</p>
-<pre><pre class="playground"><code class="language-rust editable">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust editable edition2024">macro_rules! hello {
     (this must be present) =&gt; { String::from("Hello, world") };
 }
 
@@ -252,7 +252,7 @@ start of each rule is a pattern, and that pattern can be <em>almost</em> anythin
 broken up into something called a token tree, which we'll talk about in the next section. Here, <code>this must be present</code>
 is considered a token tree made of the tokens: <code>this</code>, <code>must</code>, <code>be</code>, <code>present</code>.</p>
 <p>We can invoke different rules based on the matched pattern.</p>
-<pre><pre class="playground"><code class="language-rust editable">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust editable edition2024">macro_rules! hello {
     (world) =&gt; { String::from("Hello, world") };
     (yuki) =&gt; { String::from("Hello, yuki") };
 }
@@ -264,7 +264,7 @@ fn main() {
 }</code></pre></pre>
 <p>We obviously can't write out every possible thing that we might want to match on (what if we want to be able to say
 "hello" to lots of different people), so we can capture tokens into metavariables.</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     ($name:literal) =&gt; { 
         { 
             let mut output = String::from("Hello, ");
@@ -293,7 +293,7 @@ later in the section.</p>
 <p>The reason for this is that when we invoke the macro, Rust generates code at the point that you place the macro. If we
 didn't have the extra brackets, when we use the macro in our <code>assert_eq!</code>, our code would look to Rust as if it were
 this:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn main() {
 </span>assert_eq!(
     let mut output = String::from("Hello, ");
     output.push_str("Yuki");
@@ -309,7 +309,7 @@ because they have a value, even if the value is the unit type <code>()</code>. W
 have the output as the final line, our code block becomes a single expression the value of which is the <code>output</code>.</p>
 <p>This means that when we add those extra curly brackets to our macro, the generate code now looks like this, which is
 valid!</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>    assert_eq!(
         {
             let mut output = String::from("Hello, ");
@@ -322,7 +322,7 @@ valid!</p>
 <p>Expressions in Rust are particularly useful as they have a type and a value, just like variables, allowing you to use
 them inside other expressions.</p>
 <p>Let's go deeper and add another rule. Let's bring back our original behaviour for an empty <code>hello!</code> macro:</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { String::from("Hello, world") };
     ($name:literal) =&gt; { 
         { 
@@ -339,7 +339,7 @@ fn main() {
 }</code></pre></pre>
 <p>This is fine, but we're repeating ourselves a little bit. In case we might want to change our greeting later, lets not
 have <code>"Hello, "</code> twice. To maintain consistency, we can call our macro from inside our macro!</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { hello!("world") };
     ($name:literal) =&gt; { 
         { 
@@ -370,7 +370,7 @@ are all fine, but its worth noting things get a <em>little</em> weird using sepa
 metavariable. When the repeat pattern is used in code generation, it will repeat for each combination of metavariables
 used within it.</p>
 <p>We already have zero and one metavariable dealt with, so we want a rule in our macro that takes two or more inputs:</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { hello!("world") };
     ($name:literal) =&gt; { 
         { 
@@ -408,7 +408,7 @@ calling the hello macro with the first metavariable. We then have another repeat
 metavariable. Because we have a repeated metavariable inside a repeated block, this block will be repeated for every
 <code>literal</code> that <code>$rest</code> matched to.</p>
 <p>If we were to unwrap the code generated for the final test, it would look something like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>    assert_eq!(
     {
@@ -428,7 +428,7 @@ and we're really only making a quick toy macro to demonstrate the power they pro
 <p>You might be wondering if we can use repeats to reduce the number of rules we have. We unfortunately can't do things
 like treat the first or last element of a repeat differently using macro repeats <em>cough</em>foreshadowing<em>cough</em>, but we
 can merge the second and third arms using a <code>*</code>.</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { hello!("world") };
     ($name:literal $(, $rest:literal)*) =&gt; {
         {
@@ -455,7 +455,7 @@ we'd <em>have</em> to use the comma after the first literal so <code>hello!("Yuk
 metavariables too.</p>
 <p>I wasn't quite lying about not being able to treat the first and last differently with macro repeats. We can't do it
 with <em>just</em> macro repeats, BUT we can work around that with very low-cost language features like slices.</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     ($($names:literal),*) =&gt; {
         {
             // We split the names out directly into an array. This is done at
@@ -568,7 +568,7 @@ the chat of my <a href="https://www.youtube.com/playlist?list=PLW2L8KbM0O7Z2KroH
 into composing my types using Traits to form common behaviour.</p>
 <p>For example, at time of writing, I allow the user to create <code>Company</code>s, <code>Role</code>s, and <code>Flag</code>s. <code>Role</code>s and <code>Flag</code>s
 belong to <code>Company</code>s so those types implement the following trait:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait HasCompany {
     fn get_company_id(&amp;self) -&gt; u128;
@@ -576,7 +576,7 @@ belong to <code>Company</code>s so those types implement the following trait:</p
 <span class="boring">}</span></code></pre></pre>
 <p>The trait itself does not provide any code, so each item that implements this code must decide on its behaviour. I'm
 a big believer in unit tests, so let's look at how that works with a test using <code>Role</code> as an example.:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">pub trait HasCompany {
 </span><span class="boring">fn get_company_id(&amp;self) -&gt; u128;
@@ -614,7 +614,7 @@ implementation of every other trait. Every time we add a new storable item, we'l
 implementation.</p>
 <p>The way I worked around this was, first I created a trait allowing me to create test instances of the types I want to
 test, then I created macros that use that trait to run the test:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// This trait exists in a central location
 pub trait TestHelper: Sized {
@@ -636,7 +636,7 @@ macro_rules! test_has_company_id {
 }
 <span class="boring">}</span></code></pre></pre>
 <p>By implementing the trait for each type that I want to test, I can add tests trivially like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">pub trait TestHelper: Sized {
 </span><span class="boring">    fn new_test() -&gt; Result&lt;Self, String&gt;;
@@ -729,7 +729,7 @@ position is checked, and the loop is then skipped if the value is 0.</li>
 <p>Don't panic! For now, we'll just trust that this is the Hello World program, we'll implement the instructions and see
 what happens when we run it.</p>
 <p>We're going to use two macros. First, let's create a macro that initialises the program.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>macro_rules! brain_fudge {
     ($($token:tt)+) =&gt; {
@@ -765,7 +765,7 @@ considering each byte to be a character. Again, this won't be appropriate for ev
 <p>So now we need to handle the token stream, but before we do that, let's write some tests. We'll keep it simple for now,
 while <code>++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.</code>
 outputs "Hello, world!\n", so does the following, with only three of the eight possible instructions:</p>
-<pre><pre class="playground"><code class="language-rust should_panic"><span class="boring">macro_rules! brain_fudge {
+<pre><pre class="playground"><code class="language-rust should_panic edition2024"><span class="boring">macro_rules! brain_fudge {
 </span><span class="boring">    ($($token:tt)+) =&gt; {
 </span><span class="boring">        {
 </span><span class="boring">            let mut memory = vec![0u8];
@@ -824,7 +824,7 @@ problem with matching, even if the first character of your Brain Fudge program i
 position relative to the other commas. But we <em>can</em> use semicolons as separators in our macro, which aren't part of the
 Brain Fudge language, and it <em>will</em> help readability when we get to the final part of this chapter.</p>
 <p>Each arm will also expect the memory, the pointer, and the output buffer before matching on the specific token:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>macro_rules! brain_fudge_helper {
     // This arm matches +, it adds 1 to the value at the current position We'll
@@ -858,7 +858,7 @@ Brain Fudge language, and it <em>will</em> help readability when we get to the f
 }
 <span class="boring">}</span></code></pre></pre>
 <p>And update our <code>brain_fudge!</code> macro to call the helper, passing in the program state.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">macro_rules! brain_fudge_helper {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">macro_rules! brain_fudge_helper {
 </span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) =&gt; {
 </span><span class="boring">        $memory[$pointer] = $memory[$pointer].wrapping_add(1);
 </span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
@@ -936,7 +936,7 @@ maximum number of times we can do this is 128. Our macro, using our silly Hello 
 won't work for loops when we come to them. For now, we're going to play a dangerous game and manually tell Rust
 it's fine for it to recurse 2048 times.</p>
 <p>The <code>recursion_limit</code> attribute applies at the crate level so be careful with this one!</p>
-<pre><pre class="playground"><code class="language-rust">#![recursion_limit = "2048"]
+<pre><pre class="playground"><code class="language-rust edition2024">#![recursion_limit = "2048"]
 
 macro_rules! brain_fudge_helper {
     // ... snip ...
@@ -1015,7 +1015,7 @@ with the final <code>]</code> rather than the first <code>]</code>.</p>
 <p>This means to make our loop arm work, we can match against any token tree that starts with a <code>[</code>, contains more tokens
 which may include more <code>[]</code> pairs, matches its ending <code>]</code> and is followed by yet more tokens! How cool is that!?</p>
 <p>Let's write up the missing arms and run our test against the original Hello World program:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">#![recursion_limit = "2048"]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">#![recursion_limit = "2048"]
 
 macro_rules! brain_fudge_helper {
     // ... Snip previous arms ...
@@ -1141,7 +1141,7 @@ each language:</p>
 <p>We need to take care of these special cases, unfortunately. Luckily, while <code>&gt;&gt;</code> is a right shift token, <code>&gt; &gt;</code> <em>is</em> two
 greater than tokens. Tokens can be seperated by whitespace and will still match the <code>tt</code> fragment-specifier, all we need
 to do is split the token and pass it back into the macro</p>
-<pre><pre class="playground"><code class="language-rust">#![recursion_limit = "2048"]
+<pre><pre class="playground"><code class="language-rust edition2024">#![recursion_limit = "2048"]
 
 macro_rules! brain_fudge {
     // snip
@@ -1259,7 +1259,7 @@ macro_rules! brain_fudge_helper {
 <p>I stopped setting homework, but I thought I'd set a little challenge for anyone who wants to do it.</p>
 <p>Can you edit our <code>brain_fudge!</code> macro to work with programs that take input via the <code>,</code> token? To achieve this, I
 recommend making the following change to the <code>brain_fudge!</code> macro:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>macro_rules! brain_fudge {
      ($input:ident, $output:ident, $($token:tt)+) =&gt; {
@@ -1271,7 +1271,7 @@ recommend making the following change to the <code>brain_fudge!</code> macro:</p
 <span class="boring">}</span></code></pre></pre>
 <p>If you need help, the code below shows the test for a ROT13 Brain Fudge program and has the answer to the homework
 hidden if you want to reveal it</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![recursion_limit = "2048"]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![recursion_limit = "2048"]
 </span><span class="boring">
 </span><span class="boring">macro_rules! brain_fudge {
 </span><span class="boring">    ($input:ident; $output:ident; $($token:tt)+) =&gt; {

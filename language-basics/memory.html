@@ -191,7 +191,7 @@ in the last chapter, then we'll create a new project with:</p>
 <pre><code class="language-shell">cargo new guessing-game
 </code></pre>
 <p>Open the project in your editor and open the file <code>src/main.rs</code>. As before we'll see the same "hello, world" program:</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     println!("Hello, world!");
 }</code></pre></pre>
 <p>As we step through this tutorial, if you mouse over the code examples, you can see some buttons that will let you</p>
@@ -201,11 +201,11 @@ in the last chapter, then we'll create a new project with:</p>
 <li>👁 Show any code I've opted to hide for clarity, try this on the next block</li>
 </ol>
 <p>Let's quickly change our hello world message to something that welcomes us to the game.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>    println!("Welcome to the guessing game!");
 <span class="boring">}</span></code></pre></pre>
 <p>And ask the user to do something:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span><span class="boring">    println!("Welcome to the guessing game!");
 </span>    println!("I have chosen a color red, green or blue, can you guess which?");
 <span class="boring">}</span></code></pre></pre>
@@ -214,7 +214,7 @@ in the last chapter, then we'll create a new project with:</p>
 (no "ln"). Try it out and see what else you might need to change!</p>
 <p>Let's pick a color that the user has to guess. To begin with we'll just hard code one value, later we'll make it choose
 randomly. I'm going to choose blue, but you can choose whatever you like:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>    let actual = "blue";
 <span class="boring">    println!("Welcome to the guessing game!");
 </span><span class="boring">    println!("I have chosen a color red, green or blue, can you guess which?");
@@ -238,7 +238,7 @@ uses a <code>u64</code> instead. (Yes, Rust has many different types for represe
 <p><img src="memory/inferred-vs-annotated.png" alt="inferred-vs-annotated.png" /></p>
 <p>Anyway, back to the program: let's output the color. This will end up being the last thing in the program, but we can
 use this to check everything is working ok:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span><span class="boring">    let actual = "blue";
 </span><span class="boring">    println!("Welcome to the guessing game!");
 </span><span class="boring">    println!("I have chosen a color red, green or blue?");
@@ -417,7 +417,7 @@ reference cleaned up, but memory is returned to the operating systems control, f
 <p>It's important to note though that <code>&amp;str</code> and <code>String</code> are different types. The data they reference is formatted the
 same way in memory, but they are not interchangeable. Later, when we discuss functions, you'll see that if a function
 requires a <code>String</code> you can not pass it a <code>&amp;str</code> and vice versa. You can, however, trivially go from one to another.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let name = "Daniel";                   // This is a &amp;str pointing at a sequence of bytes in the executable
 let name_on_heap = String::from(name); // This requests memory from the operating system then copies "Daniel" into it
 let name_ref = name_on_heap.as_str();  // This is a &amp;str pointing to a sequence of bytes on the heap

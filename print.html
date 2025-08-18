@@ -424,7 +424,7 @@ way.</p>
 <p>You can see that cargo has created some files for us. We're going to talk about the cargo files later but for now,
 head into the <code>src</code> directory and open main.rs</p>
 <p>You can see the file has already been created with the following code:</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     println!("Hello, world!");
 }</code></pre></pre>
 <p>Before we dive into this further, lets run the program.</p>
@@ -453,14 +453,14 @@ won't be creating our own until much later. We will be using pre-written macros 
 learn incredibly quickly.</p>
 <p>First let's make a quick change to our program, by adding a variable with our name, and then saying hello to ourselves
 instead of the whole world</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     let name = "Daniel";
     println!("Hello, {name}!");
 }</code></pre></pre>
 <blockquote>
 <p>Fun fact, Rust uses utf-8 strings when written like this, so don't worry if your name can not be properly represented in
 American English characters. For example, I might naively write my cats name like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let name = "ユキ";
 <span class="boring">}</span></code></pre></pre>
@@ -502,7 +502,7 @@ in the last chapter, then we'll create a new project with:</p>
 <pre><code class="language-shell">cargo new guessing-game
 </code></pre>
 <p>Open the project in your editor and open the file <code>src/main.rs</code>. As before we'll see the same "hello, world" program:</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     println!("Hello, world!");
 }</code></pre></pre>
 <p>As we step through this tutorial, if you mouse over the code examples, you can see some buttons that will let you</p>
@@ -512,11 +512,11 @@ in the last chapter, then we'll create a new project with:</p>
 <li>👁 Show any code I've opted to hide for clarity, try this on the next block</li>
 </ol>
 <p>Let's quickly change our hello world message to something that welcomes us to the game.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>    println!("Welcome to the guessing game!");
 <span class="boring">}</span></code></pre></pre>
 <p>And ask the user to do something:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span><span class="boring">    println!("Welcome to the guessing game!");
 </span>    println!("I have chosen a color red, green or blue, can you guess which?");
 <span class="boring">}</span></code></pre></pre>
@@ -525,7 +525,7 @@ in the last chapter, then we'll create a new project with:</p>
 (no "ln"). Try it out and see what else you might need to change!</p>
 <p>Let's pick a color that the user has to guess. To begin with we'll just hard code one value, later we'll make it choose
 randomly. I'm going to choose blue, but you can choose whatever you like:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>    let actual = "blue";
 <span class="boring">    println!("Welcome to the guessing game!");
 </span><span class="boring">    println!("I have chosen a color red, green or blue, can you guess which?");
@@ -549,7 +549,7 @@ uses a <code>u64</code> instead. (Yes, Rust has many different types for represe
 <p><img src="language-basics/memory/inferred-vs-annotated.png" alt="inferred-vs-annotated.png" /></p>
 <p>Anyway, back to the program: let's output the color. This will end up being the last thing in the program, but we can
 use this to check everything is working ok:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span><span class="boring">    let actual = "blue";
 </span><span class="boring">    println!("Welcome to the guessing game!");
 </span><span class="boring">    println!("I have chosen a color red, green or blue?");
@@ -728,7 +728,7 @@ reference cleaned up, but memory is returned to the operating systems control, f
 <p>It's important to note though that <code>&amp;str</code> and <code>String</code> are different types. The data they reference is formatted the
 same way in memory, but they are not interchangeable. Later, when we discuss functions, you'll see that if a function
 requires a <code>String</code> you can not pass it a <code>&amp;str</code> and vice versa. You can, however, trivially go from one to another.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let name = "Daniel";                   // This is a &amp;str pointing at a sequence of bytes in the executable
 let name_on_heap = String::from(name); // This requests memory from the operating system then copies "Daniel" into it
 let name_ref = name_on_heap.as_str();  // This is a &amp;str pointing to a sequence of bytes on the heap
@@ -941,7 +941,7 @@ one hundred and one.</p>
 <p>Eight bits is a byte, and can represent the numbers from <code>0b0000_0000</code> (zero) to <code>0b1111_1111</code> (two hundred and
 fifty-five, again, I'm not expecting anyone to be able to <em>read</em> this). Btw, I'm using an underscore as a
 spacer between numbers to help legibility, this also works in Rust, as does the <code>0b</code> notation!</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let min_byte: u8 = 0b0000_0000;
 let max_byte: u8 = 0b1111_1111;
@@ -1038,7 +1038,7 @@ program may no longer be consistent on different machines!</p>
 <p>By default, when you write an integer and store it in a variable, Rust will play it safe and use an <code>i32</code> as it doesn't
 know what you might want to do with the number, an <code>i32</code> will fit inside most CPU architectures without needing extra
 work and allows negative numbers.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = 10; // i32
 <span class="boring">}</span></code></pre></pre>
@@ -1051,13 +1051,13 @@ in a small integer, and do I not care about consistency, in which case <code>usi
 <li>otherwise, if I'm ok potentially sacrificing speed, then an <code>i32</code> or <code>i64</code> is fine</li>
 </ul>
 <p>You can specify what type a number is either by annotating the variable you are putting it inside:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a: u64 = 10; // u64
 <span class="boring">}</span></code></pre></pre>
 <p>Or, if that's not possible because you are, for example, passing the number to a function that could take many number
 types, you can write the type at the end of a number:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::fmt::Display;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">use std::fmt::Display;
 </span><span class="boring">
 </span><span class="boring">fn print_value_and_type&lt;T: Display&gt;(v: T) {
 </span><span class="boring">    let type_name = std::any::type_name::&lt;T&gt;();
@@ -1072,7 +1072,7 @@ types, you can write the type at the end of a number:</p>
 over some code from the last chapter.</p>
 <p>In the bonus section of the last chapter, we got the number of milliseconds that had passed since midnight on the 1st
 of January 1970, and then immediately used <code>as usize</code>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let time = std::time::UNIX_EPOCH
     .elapsed()
@@ -1087,7 +1087,7 @@ number, whatever it is and tries to cram it into the size <code>as &lt;type&gt;<
 <p>When going from a larger size to a smaller size (in this case, from <code>u128</code> to the equivalent of <code>u32</code>) it simply cuts
 off the front of the data, leaving the least significant bits. You can see this in the following program (don't forget
 you can run this in place with the play button):</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let time = std::time::UNIX_EPOCH
     .elapsed()
     .expect("Call the Doctor, time went backwards")
@@ -1115,7 +1115,7 @@ actually this isn't the way to think about these numbers.</p>
 small numbers but not every number in between (after all, there are infinite numbers between 0.0 and 1.0).</p>
 <p>Imagine using a floating point number to represent money. Someone comes into a store to buy a $520.04 item, and they
 have a coupon for $520.02. The remainder that they need to pay is 2 cents, right? Try running the next bit of code:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>println!("520.04 - 520.02 should be 0.02");
 
 // Single Precision Floating Point
@@ -1144,7 +1144,7 @@ quotes.</p>
 <p>You can use any valid unicode character whether that's the upper or lowercase english letters A-Z, numbers 0-9, white
 space characters, word characters from languages like Chinese and Japanese, emoji, or anything else that's a "unicode
 scalar value".</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let i = 'I';
 let love = '💖';
 let yuki = '雪';
@@ -1172,7 +1172,7 @@ as a reference to a string slice <code>&amp;str</code>, which makes it unique am
 <p><code>str</code> should always be a UTF-8 string (see ⚠️ below), which means that the length of a string in bytes may not
 necessarily be the same as its length in characters.</p>
 <p>For example (don't worry about the code yet):</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let yuki = "雪";
 
@@ -1185,7 +1185,7 @@ println!("{yuki} length in characters: {char_length}"); // 1
 <p>Its also worth remembering that when you turn a string into characters, each of those characters will take up 4 bytes
 of memory, even though inside the string they might have only taken up one byte (again, don't worry about the code in
 the next example we'll talk about it soon):</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use std::mem::size_of_val;
 </span><span class="boring">
@@ -1205,7 +1205,7 @@ on the system architecture.</p>
 <p>Fun fact about that reference though: you might wonder if it's just a pointer and a length, does that mean you can
 have a reference to a string slice that exists inside a string slice, and the answer is: yes! Just be careful when
 taking a slice inside a slice to make sure that the sub slice is a valid UTF-8 string.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let hello = "hello";
 // hell is a reference to a substring, range 0..4 is exclusive so 0, 1, 2, 3 but not 4
@@ -1224,14 +1224,14 @@ string slice, you should be careful.</p>
 as a reference to another collection (also called an array slice).</p>
 <p>When sized, arrays are annotated with the type <code>[T; N]</code> where <code>T</code> is the type of every item in the array and <code>N</code> is its
 size. For example:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let hello: [char; 5] = ['H', 'e', 'l', 'l', 'o'];
 <span class="boring">}</span></code></pre></pre>
 <p>When referenced as an array slice, you do not need to specify the size because, just like with references to string
 slices, the reference not only contains a pointer to the underlying data, but also contains the size. We write this in
 the form <code>&amp;[T]</code> where <code>T</code> is the type of every item in the array.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">let hello: [char; 5] = ['H', 'e', 'l', 'l', 'o'];
 </span>// hell is a reference to a sub-array, range 0..=3 is inclusive so 0, 1, 2, and 3
@@ -1242,7 +1242,7 @@ print!("{:?}", hell); // ['H', 'e', 'l', 'l']
 <span class="boring">}</span></code></pre></pre>
 <p>You can access elements inside the array directly by using an index value between square brackets. In Rust, indexing
 starts at 0. So:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let hello: [char; 5] = ['H', 'e', 'l', 'l', 'o'];
 let h = hello[0]; // H
@@ -1255,7 +1255,7 @@ different type. This adds some flexibility but also some restrictions. For examp
 an array, but not a tuple.</p>
 <p>Tuples are written between brackets, and are only considered the same type if the types inside the tuple match.</p>
 <p>For example:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let char_int_1: (char, i32) = ('a', 1);
 let char_int_2: (char, i32) = ('b', 2); // This type is the same as the previous one.
@@ -1263,7 +1263,7 @@ let int_char_1: (i32, char) = (3, 'c'); // This type is different
 <span class="boring">}</span></code></pre></pre>
 <p>Another difference from arrays is how you access a single item in the tuple, which you do with a dot <code>.</code>, followed by
 the number element you want. Again, this starts from 0.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let char_int: (char, i32) = ('a', 1);
 let a = char_int.0; // 'a'
@@ -1283,7 +1283,7 @@ are three types of structs, structs with named fields, tuple structs and unit st
 <h4 id="tuple-struct"><a class="header" href="#tuple-struct">Tuple Struct</a></h4>
 <p>As we just covered tuples, lets quickly talk about tuple structs. They look a bit like they're simply "named" tuples,
 and indeed they can be accessed the same way:</p>
-<pre><pre class="playground"><code class="language-rust">struct Vector3(f64, f64, f64);
+<pre><pre class="playground"><code class="language-rust edition2024">struct Vector3(f64, f64, f64);
 
 fn main() {
     let vec = Vector3(10.0, 2.0, 3.33);
@@ -1294,7 +1294,7 @@ fn main() {
 structs have a concept of "visibility". Unless explicitly marked as public the fields of a struct are only accessible
 in the module in which it is defined, or its descendents. We'll talk more about modules later, however, to make the
 fields of a struct public, you can simply mark them as <code>pub</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>struct Vector3(pub f64, pub f64, pub f64);
 <span class="boring">}</span></code></pre></pre>
@@ -1303,7 +1303,7 @@ private.</p>
 <h4 id="named-fields"><a class="header" href="#named-fields">Named Fields</a></h4>
 <p>Named fields work pretty much the same as tuple structs except instead of having a numbered field, its named. You
 can access the named field with a <code>.</code> and the name.</p>
-<pre><pre class="playground"><code class="language-rust">struct Cell {
+<pre><pre class="playground"><code class="language-rust edition2024">struct Cell {
     x: u64,
     y: u64,
     alive: bool,
@@ -1321,7 +1321,7 @@ fn main() {
 <h4 id="unit-structs"><a class="header" href="#unit-structs">Unit Structs</a></h4>
 <p>Unit structs are an interesting case that you probably won't find much use for until we get into more advanced Rust and
 some of the cooler patterns and idioms that we use. A Unit struct has no value, it only represents a type.</p>
-<pre><pre class="playground"><code class="language-rust">struct ExampleUnitStruct;
+<pre><pre class="playground"><code class="language-rust edition2024">struct ExampleUnitStruct;
 
 fn main() {
     let unit_struct = ExampleUnitStruct;
@@ -1330,7 +1330,7 @@ fn main() {
 through Traits, or be used as markers.</p>
 <h3 id="enums"><a class="header" href="#enums">Enums</a></h3>
 <p>Enums are for when you want to represent one of a finite number of possible values. For example</p>
-<pre><pre class="playground"><code class="language-rust">enum TrafficLightState {
+<pre><pre class="playground"><code class="language-rust edition2024">enum TrafficLightState {
     Red,
     Amber,
     Green,
@@ -1344,7 +1344,7 @@ fn main() {
 can additionally contain values. We've already talked about two such enums <code>Option</code> and <code>Result</code> which are two of the
 most important and widely used types in the entire ecosystem, and we'll talk more about them in the Generic Types
 section below. As an example though, enums variants can be structured in either a tuple stype or a struct style:</p>
-<pre><pre class="playground"><code class="language-rust">enum ContrivedEnum {
+<pre><pre class="playground"><code class="language-rust edition2024">enum ContrivedEnum {
     SimpleVariantNoData,
     TupleStyleData(u64, i32),
     NamedFields {
@@ -1367,7 +1367,7 @@ variant it actually is.</p>
 <p>Generics in Rust allow the creation of entirely new types at compile time by combining types together. We've talked
 a bit about Option and how Rust uses it to represent Some value or None. Option is an enum with two variants, it is
 literally just this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>enum Option&lt;T&gt; {
     None,
@@ -1377,7 +1377,7 @@ literally just this:</p>
 <p>Note that after the name of the enum we have <code>&lt;T&gt;</code>. The triangle brackets express that this enum has a type (or types)
 that can be decided later, the <code>T</code> is a marker for that type. For example, say we want to create a type that represents
 either a single character, or nothing.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// The type of possible_character is inferred to be Option&lt;char&gt;
 let possible_character = Some('r');
@@ -1390,7 +1390,7 @@ however Option and Result are so ubiquitous that their variants are globally acc
 <p>Another generic we've covered before is Result which usually represents either the success or failure of a function. It
 has two types that can be decided later <code>T</code>, which should represent what type of data you expected to get back, and <code>E</code>,
 which will be the type of the Error.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>enum Result&lt;T, E&gt; {
     Ok(T),
@@ -1401,7 +1401,7 @@ which will be the type of the Error.</p>
 shows the fully described Result type as the return type of the function, which is how we'd typically use this enum,
 though, you wouldn't typically use a String as an Error type, and we'll talk more about that when we get to Error
 handling later.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn function_that_fails_half_the_time() -&gt; Result&lt;u128, String&gt; { // Note the return type for a function comes after -&gt;
     let time = std::time::UNIX_EPOCH
@@ -1440,7 +1440,7 @@ control flow.</p>
 <p>In the last chapter we talked about compound types. Tuples, Structs, and Enums allow the construction of more complex
 data from less complex data. However, if we want to extract any of the component parts of that data we can do that!</p>
 <p>Patterns can be used to "destructure" compound data types like tuples fairly trivially:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let point = (123, 456);
 let (x, y) = point;
@@ -1448,7 +1448,7 @@ println!("The point was at x: {x} and y: {y}");
 <span class="boring">}</span></code></pre></pre>
 <blockquote>
 <p>It's important to note though, that the original data will no longer be accessible if it doesn't implement <code>Copy</code>:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// This code won't compile!
 let point = (123.to_string(), 456.to_string());
@@ -1460,7 +1460,7 @@ let this_wont_work = point.0;
 </blockquote>
 <p>Destructuring with patterns also works for Tuple Structs, however, you need to specify the name of the struct like
 you're doing a weird backwards struct instantiation.</p>
-<pre><pre class="playground"><code class="language-rust">struct Point (u64, u64);
+<pre><pre class="playground"><code class="language-rust edition2024">struct Point (u64, u64);
 
 fn main() {
     let point = Point(123, 456);
@@ -1470,7 +1470,7 @@ fn main() {
     println!("The point was at x: {x} and y: {y}");
 }</code></pre></pre>
 <p>The same thing also works for Structs with Named Fields:</p>
-<pre><pre class="playground"><code class="language-rust">struct Point {
+<pre><pre class="playground"><code class="language-rust edition2024">struct Point {
     x: u64,
     y: u64,
 }
@@ -1485,7 +1485,7 @@ fn main() {
 <p>In the above example we extract the structs named fields straight into variables of the same name as it's easy and the
 names were appropriate. However, it might be better in the context of your program to name them something else. Below
 we've renamed <code>x</code> to <code>width</code> and <code>y</code> to <code>height</code>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Point {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">struct Point {
 </span><span class="boring">   x: u64,
 </span><span class="boring">   y: u64,
 </span><span class="boring">}
@@ -1499,7 +1499,7 @@ println!("The rect was {width} wide and {height} high");
 <span class="boring">}</span></code></pre></pre>
 <p>Unfortunately, you can not extract data from Enums this way as the value of an Enum is one of a set of, not only values,
 but potentially subtypes or shapes or however you'd like to describe them. Take for example the humble Options:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let maybe_yuki: Option&lt;char&gt; = Some('雪');
 let maybe_not: Option&lt;char&gt; = None;
@@ -1515,7 +1515,7 @@ and <code>b</code> are the same, this results in a value of <code>true</code> or
 <code>if a == b { ... }</code>, however, Rust also allows you to use a block (code between <code>{</code> and <code>}</code>) as an expression <em>and</em> the
 final value of that block can itself be an expression.</p>
 <p>Here's a very contrived example:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let c = {
     let a = 3;
@@ -1545,7 +1545,7 @@ expression evaluates to <code>true</code>, then the code in the block will be ru
 </code></pre>
 <p>For example, we could create an expression that evaluates to a boolean by comparing if two numbers are the same, using
 double equals:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = 1;
 let b = 1;
@@ -1557,7 +1557,7 @@ println!("regardless of whether expression was true print this");
 <span class="boring">}</span></code></pre></pre>
 <p>If you want to run some code if the expression is <code>true</code>, but some different code if it's <code>false</code>, then you can extend
 <code>if</code> with <code>else</code>. Here we compare if the first number is greater than the second number.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = 1;
 let b = 1;
@@ -1569,7 +1569,7 @@ if a &gt; b {
 }
 <span class="boring">}</span></code></pre></pre>
 <p>You can chain <code>if</code>/<code>else</code> statements to create more complex branches.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = 1;
 let b = 1;
@@ -1584,7 +1584,7 @@ if a &gt; b {
 <span class="boring">}</span></code></pre></pre>
 <p>Remember though, code blocks, including those in <code>if</code> and <code>else</code> are themselves expressions. This means they can
 effectively return their own values</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = 1;
 let b = 1;
@@ -1610,7 +1610,7 @@ println!("{message}");
 <p>There is another way you can branch with <code>if</code> that doesn't require a boolean expression, pattern matching.</p>
 <p>There are two ways to do this <code>if let ...</code> and <code>let ... else</code>.</p>
 <p>Let's go back to that Option from earlier:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let maybe_yuki: Option&lt;char&gt; = Some('雪');
 let maybe_not: Option&lt;char&gt; = None;
@@ -1629,7 +1629,7 @@ if let Some(c) = maybe_not {
 <code>Some(&lt;variable&gt;)</code>, then we extract the contents of the <code>Some</code> into the <code>&lt;variable&gt;</code>. Within the block (and only within
 the block), the variable <code>c</code> has the value from inside the <code>Some</code> variant of the <code>Option</code>.</p>
 <p>This may be easier to observe with our own enum type. Imagine the following:</p>
-<pre><pre class="playground"><code class="language-rust">enum Vector {
+<pre><pre class="playground"><code class="language-rust edition2024">enum Vector {
     Two(f32, f32),
     Three(f32, f32, f32),
 }
@@ -1651,7 +1651,7 @@ fn main() {
 <p>You can also do the opposite, branch if the pattern does not match, using <code>let ... else</code>. The important thing to note
 here is that execution can not continue after the code block, you must exit the current flow, whether thats returning
 from a function or breaking from a loop</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn some_function() {
     let maybe_yuki: Option&lt;char&gt; = Some('雪');
@@ -1673,7 +1673,7 @@ from a function or breaking from a loop</p>
 <code>if</code>: it will match against multiple possibilities, allows match guards for fine grain control of pattern matching, and
 it's exhaustive, meaning that a match <em>must</em> deal with every possibility.</p>
 <p>Lets look at our Vector example again:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">enum Vector {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">enum Vector {
 </span><span class="boring">    Two(f32, f32),
 </span><span class="boring">    Three(f32, f32, f32),
 </span><span class="boring">}
@@ -1689,7 +1689,7 @@ match v {
 <p>First of all, you can see that this pattern is <em>much</em> cleaner than having a lot of <code>if let</code>s. We're matching against
 the variants of an enum, and can immediately extract the contents from each variant. We could also use match as an
 expression:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">enum Vector {
 </span><span class="boring">    Two(f32, f32),
@@ -1708,7 +1708,7 @@ println!("The vector has the magnitude '{}'", magnitude);
 <p>(This gets even more exciting when we get into functions)</p>
 <p>What happens if we add another variant to the enum though? Well, that <code>match</code> statement will see that not every case is
 handled, and cause an error.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">enum Vector {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">enum Vector {
     Two(f32, f32),
     Three(f32, f32, f32),
     Four(f32, f32, f32, f32),
@@ -1727,7 +1727,7 @@ fn main() {
 }</code></pre></pre>
 <p>We can deal with this by either adding the missing case, or using <code>_</code>, which is a special variable that immediately
 discards whatever is put into it and will match anything.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">enum Vector {
 </span><span class="boring">   Two(f32, f32),
@@ -1746,7 +1746,7 @@ discards whatever is put into it and will match anything.</p>
 <span class="boring">println!("The vector has the magnitude '{}'", magnitude);
 </span><span class="boring">}</span></code></pre></pre>
 <p>Patterns on match arms are tested from top to bottom, and you can also match on more specific patterns, like values:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">enum Vector {
 </span><span class="boring">    Two(f32, f32),
@@ -1775,7 +1775,7 @@ let magnitude = match v {
 <p>There's one more trick up <code>match</code>'s sleeve which is match guards. Say we want to do something similar to the above, but
 instead of matching on exactly zero, we want to match on values less than 10. We could make an arm for every variant, or
 we could use a match guard which is like a mini if statement:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">enum Vector {
 </span><span class="boring">   Two(f32, f32),
@@ -1805,7 +1805,7 @@ let magnitude = match v {
 <h3 id="loop"><a class="header" href="#loop">Loop</a></h3>
 <p>The most basic loop is, well, <code>loop</code>.</p>
 <p>When you enter a loop, the code inside it will run until it's explicitly told to stop. For example:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">let mut protect_the_loop: u8 = 0;
 </span>loop {
@@ -1826,7 +1826,7 @@ work, and once the work is done, break with the value we want to take from the l
 <p>In the example below, we run a loop until we find some cool number (note the use of <code>if let</code>), then break with that
 value. The Type of found is an <code>u64</code> (don't forget you can expand the code in the example if you're curious), and by
 breaking with that value, the Type of the whole loop becomes <code>u64</code> too!</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::time::*;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">use std::time::*;
 </span><span class="boring">use std::thread::*;
 </span><span class="boring">fn prep() {
 </span><span class="boring">    loop {    
@@ -1864,7 +1864,7 @@ println!("The number we found was {some_cool_number}");
 you can skip over <em>some</em> of those things.</p>
 <p>The following example will continuously get images, and run a time-consuming <code>process_image</code> function, unless the image
 is an SVG, in which case it will skip it.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::{
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">use std::{
 </span><span class="boring">    io::{stdout, Write},
 </span><span class="boring">    thread::sleep,
 </span><span class="boring">    time::{Duration, UNIX_EPOCH}
@@ -1911,7 +1911,7 @@ with things like <code>break</code> and <code>continue</code> it also supports l
 <p>Labels start with a single quote <code>'</code> and mark the loop they are for with a colon.</p>
 <p>This very contrived example steps through a set of instructions. See if you can guess what will happen (see below
 for the answer).</p>
-<pre><pre class="playground"><code class="language-rust">enum LoopInstructions {
+<pre><pre class="playground"><code class="language-rust edition2024">enum LoopInstructions {
     DoNothing,
     ContinueInner,
     ContinueOuter,
@@ -1973,7 +1973,7 @@ the program</li>
 conditions), we often only want to loop over something <code>while</code> something is true. The <code>while</code> loop takes an expression
 that evaluates to true or false. The expression is checked at the start of each iteration through the loop; if it's
 true, the loop will execute.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let mut counter = 0;
 while counter &lt; 10 {
     println!("The counter is at {counter}");
@@ -1983,7 +1983,7 @@ println!("The loop has finished");
 <span class="boring">}</span></code></pre></pre>
 <p>The above is actually not a great way to loop over numbers, imagine if we forgot to add to counter!</p>
 <p>Here's a different example where we call a function until we're happy with the result.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn get_seconds() -&gt; u64 {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn get_seconds() -&gt; u64 {
 </span><span class="boring">    std::time::UNIX_EPOCH
 </span><span class="boring">        .elapsed()
 </span><span class="boring">        .expect("Call the Doctor, time went backwards")
@@ -1998,7 +1998,7 @@ println!("The time was successfully divided by 3!");
 <span class="boring">}</span></code></pre></pre>
 <p>What's really cool though is that you can do all the tricks we've learned above, including pattern matching with
 <code>while let</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span><span class="boring">let mut messages = "The quick brown fox jumped over the lazy dog".split(" ");
 </span><span class="boring">let mut get_message = move || messages.next();
 </span>while let Some(message) = get_message() {
@@ -2014,7 +2014,7 @@ same set of instructions for each. This is where <code>for ... in ...</code> com
 more about in a later chapter. Simply put though, this lets us step over each item in a collection, stream or series of
 data, even series' that might be infinite!</p>
 <p>Often times you might want to do this with a collection such as an <a href="language-basics/data-types.html#arrays">Array</a>. For example:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let messages: [&amp;str;2] = ["Hello", "world"];
 for message in messages {
     println!("Message received: {message}")
@@ -2033,7 +2033,7 @@ out. We'll talk more about PartialEq and PartialOrd in a later chapter.</p>
 <p>We write Ranges in the form <code>start..end</code> where <code>start</code> is inclusive and <code>end</code> is <code>exclusive</code>. This means that <code>2..5</code>
 includes 2 but not 5. If you want to create a range that includes the final number, prefix that number with <code>=</code>, e.g.
 <code>2..=5</code>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let exclusive = 0..5;
 let inclusive = 0..=5;
     
@@ -2045,7 +2045,7 @@ println!("Does inclusive range contain end: {}", inclusive.contains(&amp;5));
 <span class="boring">}</span></code></pre></pre>
 <p>As mentioned, Range's can be "half open" which means you can get away with specifying only the start or the end. This is
 where the Type of the start and end really start to matter though.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let u8_range = 0u8..; // this Range is explicitly defined with a u8
 let i8_range = ..0i8; // this Range is defined with an i8
 <span class="boring">}</span></code></pre></pre>
@@ -2053,7 +2053,7 @@ let i8_range = ..0i8; // this Range is defined with an i8
 can't be used at all, and Ranges with no end will continue to try to produce numbers beyond the upper limits of the
 type being used at which point your program will crash.</p>
 <p>They're great though, if we just want to do something 10 times.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>for i in 0..10 {
     println!("Loop: {i}");
 }
@@ -2094,7 +2094,7 @@ does.</p>
 <p>Up to now, we haven't needed to change any data once it's been created. By default, all variables in Rust are implicitly
 "immutable", meaning that the values inside of them can not be changed.</p>
 <p>This, for example, won't compile (try to run it to see the compiler output)</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn main() {
 </span>let one = 1;
 one = one + 1;
 <span class="boring">println!("one = {one}");
@@ -2103,7 +2103,7 @@ one = one + 1;
 the above example, is obviously what's happened here (ie, it seems like <code>one</code> should probably not contain <code>2</code>).</p>
 <p>It's good to use immutable variables as much as possible, but software needs to be able to process data. If we could
 never mutate values, we'd always have to depend on creating copies like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let one = 1;
 let two = one + 1;
 <span class="boring">println!("two = {two}");
@@ -2111,7 +2111,7 @@ let two = one + 1;
 <p>That's fine for small data but imagine we're processing large data like an image. Do we want to copy it every time we
 make a single pixel change?</p>
 <p>You can explicitly opt in to mutability by adding the word <code>mut</code> (pronounced "mute") in front of the variable name.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let mut message = "Hello".to_string();
 message.push_str(", world!"); // Modify message by adding this data to the end
@@ -2124,7 +2124,7 @@ the return type is the Unit Type <code>()</code>, see the <a href="language-basi
 function is called the "function header". The function is completed by a code block, code between curly brackets, which
 is also called the function body.</p>
 <p>So lets create the simplest possible function:</p>
-<pre><pre class="playground"><code class="language-rust">fn say_hello() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn say_hello() {
     println!("Hello, world");
 }
 
@@ -2134,7 +2134,7 @@ is also called the function body.</p>
 <p>This function is called <code>say_hello</code>, it has no parameters and does not return anything. Because it writes to the
 terminal, this function is considered to be impure.</p>
 <p>We can call the function using its name and empty brackets.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn say_hello() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn say_hello() {
 </span><span class="boring">    println!("Hello, world");
 </span><span class="boring">}
 </span><span class="boring">
@@ -2143,7 +2143,7 @@ terminal, this function is considered to be impure.</p>
 }</code></pre></pre>
 <p>You'll notice this function doesn't actually have any inputs or outputs. Let's start by providing an input.</p>
 <h2 id="passing-parameters"><a class="header" href="#passing-parameters">Passing Parameters</a></h2>
-<pre><pre class="playground"><code class="language-rust">fn say_hello(name: &amp;str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn say_hello(name: &amp;str) {
     println!("Hello, {name}");
 }
 
@@ -2154,7 +2154,7 @@ terminal, this function is considered to be impure.</p>
 for the parameter, in this case it's a string slice (<code>&amp;str</code>). The parameter can be used as a variable within the
 function, so we use it in our <code>println!</code>.</p>
 <p>To pass the data into the function we place it between the brackets:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn say_hello(name: &amp;str) {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn say_hello(name: &amp;str) {
 </span><span class="boring">    println!("Hello, {name}");
 </span><span class="boring">}
 </span><span class="boring">
@@ -2163,7 +2163,7 @@ function, so we use it in our <code>println!</code>.</p>
 }</code></pre></pre>
 <p>We can have multiple parameters too. Parameters are ordered so when you call the function, you need to match the order
 they're specified. For example:</p>
-<pre><pre class="playground"><code class="language-rust">fn say_hello_two(first_person: &amp;str, second_person: &amp;str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn say_hello_two(first_person: &amp;str, second_person: &amp;str) {
     println!("Hello, {first_person} and {second_person}");
 }
 
@@ -2183,7 +2183,7 @@ necessary, it's just for clarity)</li>
 write <code>return</code> (though we can), we just need to make the thing we want to return the last bit of the block and forgo
 the semicolon</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust">fn create_greeting(name: &amp;str) -&gt; String {
+<pre><pre class="playground"><code class="language-rust edition2024">fn create_greeting(name: &amp;str) -&gt; String {
     let message = format!("Hello, {name}");
     message
 }
@@ -2197,7 +2197,7 @@ fn main() {
 <p>In Rust, functions can call other functions, like how our <code>main()</code> function calls our <code>create_greeting(...)</code> function in
 the previous example. A function that calls itself is described as recursive. Take for example this method for finding
 the nth number in the fibonacci sequence</p>
-<pre><pre class="playground"><code class="language-rust">fn find_fibonacci(n: u128) -&gt; u128 {
+<pre><pre class="playground"><code class="language-rust edition2024">fn find_fibonacci(n: u128) -&gt; u128 {
     if n == 0 || n == 1 { // if n equals 0 or n equals 1
         n
     } else {
@@ -2271,7 +2271,7 @@ learn, but once you get your head around it, it makes a lot of sense.</p>
 <p>In Rust, all data is "owned". When the variable that "owns" the data goes out of scope, the data is dropped. This means
 that if the data was stored on the Heap, then that bit of memory is immediately freed.</p>
 <p>Let's have a play with this, first, lets look at the scope aspect of ownership:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">fn main() {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">fn main() {
   let a = 'a'; // We create `a` in the outer scope of "main"
 
   { // Start of a new block, starting a nested scope
@@ -2295,7 +2295,7 @@ a few other bits) gives you this message:</p>
 <p>Which tells us <em>exactly</em> what's wrong! Rust's compiler messages generally amazing, especially when it comes to working
 with ownership, so it's worth getting used to how Rust presents its errors.</p>
 <p>Next, lets look at how data can only be "owned" by one thing at a time:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn main() {
 </span>let a = "hello".to_string(); // We create some data and give it to `a`
 let b = a;                   // We give the data in `a` to `b`, transfering ownership
 println!("{b}");             // This would be fine as b owns "hello"
@@ -2308,7 +2308,7 @@ variables at once.</p>
 <p>You might have noticed that we swapped from <code>char</code>s in the first ownership example to a <code>String</code> in the second. This is
 because there are two mechanisms at play: "Move" and "Copy".</p>
 <p>Let's try the same code with chars:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let a = '雪';    // We create some data and give it to `a`
 let b = a;       // We set b to be equal to a
 println!("{b}"); // Prints 雪 
@@ -2324,14 +2324,14 @@ and resources.</p>
 that is Copy is implicit. Data that does not or can not implement Copy may still be duplicated if it implements the
 trait <code>Clone</code>, which provides the <code>.clone()</code> method. We'll talk more about implementing traits in the traits section,
 but <code>String</code> already implements this so here's how to use it:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let a = "hello".to_string(); // We create some data and give it to `a`
 let b = a.clone();           // Allocates memory on the heap and copies the data into it
 println!("{b}");             // Prints "hello"
 println!("{a}");             // Also prints "hello"
 <span class="boring">}</span></code></pre></pre>
 <p>You'll also note that we used a full fat <code>String</code> here, not a string slice reference. Here's what that would look like:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let a = "hello";   // `a` is a reference to data that exists in the binary's "data"
 let b = a;         // references are Copy so the reference is copied from a to b
 println!("{b}");   // Prints "hello"
@@ -2346,7 +2346,7 @@ references <em>are</em> Copy though.</p>
 <p>When we pass data into functions through the use of parameters, the data follows the rules of move semantics.</p>
 <p>Let's go back to our <code>create_greeting()</code> function. Instead of passing in a string slice reference, what would happen if
 we passed in a <code>String</code>?</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">fn create_greeting(name: String) -&gt; String {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">fn create_greeting(name: String) -&gt; String {
     let message = format!("Hello, {name}");
     message
 }
@@ -2361,7 +2361,7 @@ fn main() {
 function <code>create_greeting</code>. This means after the function the variable <code>yuki</code> can no longer be used.</p>
 <p>Because the <code>format!</code> macro does not take ownership of the data in <code>name</code>, we could return both the message <em>and</em> the
 original <code>String</code> data using a tuple.</p>
-<pre><pre class="playground"><code class="language-rust">fn create_greeting(name: String) -&gt; (String, String) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn create_greeting(name: String) -&gt; (String, String) {
     let message = format!("Hello, {name}");
     (message, name)
 }
@@ -2379,7 +2379,7 @@ we destructure the tuple (see <a href="language-basics/control-flow.html">destru
 taking a reference to a string slice instead. The <code>String</code> type can be "dereferenced" into a reference to a string slice
 (remember the internal representation of a String is the same as a string slice), so we can create a reference to our
 <code>yuki</code> <code>String</code> using an ampersand:</p>
-<pre><pre class="playground"><code class="language-rust">// Changed back to taking a &amp;str
+<pre><pre class="playground"><code class="language-rust edition2024">// Changed back to taking a &amp;str
 fn create_greeting(name: &amp;str) -&gt; String {
     let message = format!("Hello, {name}");
     message
@@ -2393,7 +2393,7 @@ fn main() {
 }</code></pre></pre>
 <p>Let's say we wanted our function to modify the string instead. Ideally we'd want to avoid modifying data that's passed
 to a function but sometimes that's not possible, if you need to do it you can pass a mutable reference.</p>
-<pre><pre class="playground"><code class="language-rust">// Change &amp;str to &amp;mut String
+<pre><pre class="playground"><code class="language-rust edition2024">// Change &amp;str to &amp;mut String
 fn create_greeting(greeting: &amp;mut String, name: &amp;str)  {
     greeting.push_str(", ");
     greeting.push_str(name);
@@ -2418,7 +2418,7 @@ mutable reference. Mutable references are not Copy.</p>
 <h3 id="lifetimes"><a class="header" href="#lifetimes">Lifetimes</a></h3>
 <p>So far so clear, but it turns out that keeping track of those references is actually quite hard.</p>
 <p>Let's create a function that takes a reference to a string and returns two parts to that string:</p>
-<pre><pre class="playground"><code class="language-rust">fn split(input: &amp;str, at: usize) -&gt; (&amp;str, &amp;str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn split(input: &amp;str, at: usize) -&gt; (&amp;str, &amp;str) {
   let up_to = std::cmp::min(at, input.len()); // Prevent out of bounds
   (&amp;input[..up_to], &amp;input[up_to..])
 }
@@ -2444,7 +2444,7 @@ split and everything on the right. The cool thing here is that the string isn't 
 <code>right</code> are references that point to the inside of our input string!</p>
 <p>How does Rust know that though? Let's confuse it a bit.</p>
 <p>Instead of splitting at a particular point, we'll find a sub string inside the input string, then split around that:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">fn split(input: &amp;str, sub_string: &amp;str) -&gt; (&amp;str, &amp;str) {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">fn split(input: &amp;str, sub_string: &amp;str) -&gt; (&amp;str, &amp;str) {
   if let Some(found_at) = input.find(sub_string) {
     (&amp;input[..found_at], &amp;input[found_at + sub_string.len()..])
   } else {
@@ -2480,7 +2480,7 @@ relationship must be understood at compile time.</p>
 the string itself. This would mean that when the function comes to an end, the variable <code>my_string</code> goes out of scope,
 so the data that it owns on the Heap is freed... what would our reference point at now? Luckily Rust won't let us do
 this:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn bad() -&gt; &amp;str {
   let my_string = "Oh no!".to_string();
@@ -2499,7 +2499,7 @@ to.</p>
 lettered label like <code>'a</code>, though if a lot of lifetimes are at play it's definitely better to use longer, clearer labels.</p>
 <p>We'll change the header of our function to include the lifetime <code>'a</code>. First we tell Rust we want to use a lifetime by
 putting it inside triangle brackets after the function name. Then we mark each reference with that lifetime.</p>
-<pre><pre class="playground"><code class="language-rust">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;'a str) -&gt; (&amp;'a str, &amp;'a str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;'a str) -&gt; (&amp;'a str, &amp;'a str) {
     // ...
 <span class="boring">  if let Some(found_at) = input.find(sub_string) {
 </span><span class="boring">    (&amp;input[..found_at], &amp;input[found_at + sub_string.len()..])
@@ -2519,7 +2519,7 @@ putting it inside triangle brackets after the function name. Then we mark each r
 </span><span class="boring">}</span></code></pre></pre>
 <p>You can run the above and see this example works just fine, however, it's not ideal. We've tied all the references to
 the same lifetime. The following shows that we can't compile code that we know should work.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;'a str) -&gt; (&amp;'a str, &amp;'a str) {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;'a str) -&gt; (&amp;'a str, &amp;'a str) {
 </span><span class="boring">    if let Some(found_at) = input.find(sub_string) {
 </span><span class="boring">        (&amp;input[..found_at], &amp;input[found_at + sub_string.len()..])
 </span><span class="boring">    } else {
@@ -2545,7 +2545,7 @@ Rust that it should tie all the lifetimes together. Since the sub string lasts t
 lifetime it used.</p>
 <p>To fix this problem we can just remove the lifetime annotation from the sub_string parameter. Now everything works
 as we'd expect:</p>
-<pre><pre class="playground"><code class="language-rust">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; (&amp;'a str, &amp;'a str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; (&amp;'a str, &amp;'a str) {
   // ...
 <span class="boring">  if let Some(found_at) = input.find(sub_string) {
 </span><span class="boring">    (&amp;input[..found_at], &amp;input[found_at + 1..])
@@ -2579,7 +2579,7 @@ that contains some data, for example it could be a serialized format like JSON o
 an Advent of Code input string. Lifetimes mean that you bring that String into your program, allocating the memory for
 it once, then turn it into a complex data structure. So long as the original String exists, the data structure need
 not allocate any further memory, which is incredibly efficient.</p>
-<pre><pre class="playground"><code class="language-rust">struct User&lt;'a&gt; {
+<pre><pre class="playground"><code class="language-rust edition2024">struct User&lt;'a&gt; {
   name: &amp;'a str,
   fur_color: &amp;'a str,
 }
@@ -3306,7 +3306,7 @@ be the unit type <code>()</code>).</li>
 <p>As I mentioned, after this chapter we will be talking about Rust differently. This will primarily be by using the assert
 macros to state what a value <em>should</em> be.</p>
 <p>For example, one of our earlier code examples looks like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let min_byte: u8 = 0b0000_0000;
 let max_byte: u8 = 0b1111_1111;
@@ -3314,7 +3314,7 @@ println!("min_byte: {min_byte}"); // 0
 println!("max_byte: {max_byte}"); // 255
 <span class="boring">}</span></code></pre></pre>
 <p>But from here on out it'll look like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let min_byte: u8 = 0b0000_0000;
 let max_byte: u8 = 0b1111_1111;
@@ -3345,7 +3345,7 @@ language, we can leverage the power of libraries for things like code reuse with
 <p>Let's try it out. First, let's make a normal program, remember you can do this with something like:
 <code>cargo new iriss-documentation</code></p>
 <p>In <code>main.rs</code>, we'll make a single function and our main program will just check it works.</p>
-<pre><pre class="playground"><code class="language-rust">fn add(a: usize, b: usize) -&gt; usize {
+<pre><pre class="playground"><code class="language-rust edition2024">fn add(a: usize, b: usize) -&gt; usize {
     a + b
 }
 
@@ -3915,14 +3915,14 @@ work is always the best we can make it!</p>
 code to look. For example:</p>
 <ul>
 <li>Do you like opening curly brakets on the end of a line, like this:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn example() {
     // ...
 }
 <span class="boring">}</span></code></pre></pre>
 or on a new line like this:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn example()
 {
@@ -3931,14 +3931,14 @@ or on a new line like this:
 <span class="boring">}</span></code></pre></pre>
 </li>
 <li>Do you indent with four spaces:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn hello() {
     println!("Hello");  
 }
 <span class="boring">}</span></code></pre></pre>
 or two:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn hello() {
   println!("Hello");  
@@ -3946,7 +3946,7 @@ or two:
 <span class="boring">}</span></code></pre></pre>
 </li>
 <li>Does the last item in a list across multiple lines have a trailing comma:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let list = [
     "one",
@@ -3954,7 +3954,7 @@ or two:
 ];
 <span class="boring">}</span></code></pre></pre>
 or not:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let list = [
     "one",
@@ -4005,7 +4005,7 @@ clippy which means you don't get told if there is a potential issue).</p>
 <ul>
 <li>run: <code>cargo clippy -- -W clippy::pedantic</code></li>
 <li>in your entry file to my project (eg, <code>main.rs</code>, or <code>lib.rs</code>) you can add the line:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span>#![warn(clippy::pedantic)]
 <span class="boring">fn main() {
 </span><span class="boring">}</span></code></pre></pre>
@@ -4150,7 +4150,7 @@ products like RustRover it's <code>Alt</code>/<code>⌥</code> + <code>enter</co
 <code>src</code> folder.</p>
 <p>Inside our <code>cat.rs</code> file lets create a structure to hold a cat, we'll make it public by putting the word <code>pub</code> in front
 of the struct.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4160,7 +4160,7 @@ pub struct Cat {
 <span class="boring">}</span></code></pre></pre>
 <p>We can access the <code>Cat</code> struct back in our <code>main</code> function either by giving a full reference to the <code>Cat</code> struct in its
 module, <code>cat::Cat</code> or by using the <code>use</code> keyword. However, you'll find we can't actually <em>create</em> the structure.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail no_run"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
+<pre><pre class="playground"><code class="language-rust compile_fail no_run edition2024"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
 </span><span class="boring">mod cat {
 </span><span class="boring">  pub struct Cat {
 </span><span class="boring">    name: String,
@@ -4197,7 +4197,7 @@ instantiated <code>Cat</code> with the given name. One nice thing about <code>im
 referring to the type that is being implemented called <code>Self</code>. This means that while we <em>could</em> specifically return
 the <code>Cat</code> type, we could also use <code>Self</code>. There are a lot of benefits to the latter in more advanced code, so we'll
 use that here.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4223,7 +4223,7 @@ type, to show that it is a reference.</p>
 Similarly, <code>&amp;mut self</code> translates to <code>self: &amp;mut Self</code>.</p>
 <p>We don't need to take ownership, or have a mutable reference, so for our function we'll use <code>&amp;self</code> to get an immutable
 reference.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4250,7 +4250,7 @@ is goes out of scope.</p>
 <p>Any implementation function where the first parameter is some form of <code>self</code> may be referred to as a "method", and is
 available on the instantiated type. Any other function in the implementation is called a "static method".</p>
 <p>We can finally create a working program, so returning to <code>main</code>, let's use our new implementation:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">// This would be in your `cat.rs`, I need to put it here to make the code work in mdbook
 </span><span class="boring">mod cat {
 </span><span class="boring">    pub struct Cat {
 </span><span class="boring">        name: String,
@@ -4280,7 +4280,7 @@ fn main() {
 way.</p>
 <p>A naive approach to this could use an <code>enum</code> to represent the states, and then we could have methods that change the
 state.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4330,7 +4330,7 @@ won't.</p>
 <p>Instead, we could use a pattern called a State Machine. In a State Machine we transition fully between different states,
 and those states have different functionality.</p>
 <p>Let's make our states unit structs instead of an enum</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4339,7 +4339,7 @@ pub struct Hangry;
 pub struct Eepy;
 <span class="boring">}</span></code></pre></pre>
 <p>We can then apply the functionality to each struct in turn:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4368,7 +4368,7 @@ impl Eepy {
 that your cat states are being used correctly.</p>
 <p>At this point, we don't have any data about our cat though. There are a few ways we could deal with this. We could
 extend our states to be the cat like this:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4419,7 +4419,7 @@ impl Eepy {
 allocations and makes sure that you don't have an "old" state hanging around.</p>
 </blockquote>
 <p>This is fine... but it's not very flexible. Instead, we're going to put the <em>whole</em> cat inside the state.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4452,7 +4452,7 @@ generic parameters. Very often you might see a single letter generic name, parti
 <code>Result&lt;T, E&gt;</code>.</p>
 <p>You can even use whole words, though this is seen less.</p>
 <p>For our purposes, we'll use the letter <code>A</code> to represent "Animal".</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4478,7 +4478,7 @@ as the type is being used consistently. So, our <code>new</code> functions can u
 linked to our state's generic <code>A</code>, and our state changes can use <code>A</code> to show that when the state changes, the generic
 type will remain the same.</p>
 <p>I'm also going to add a quick extra function, <code>describe</code>, to each implementation for use at the end.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4537,7 +4537,7 @@ impl&lt;A&gt; Eepy&lt;A&gt; {
 }
 <span class="boring">}</span></code></pre></pre>
 <p>Finally, lets update our cat implementation to return a concrete <code>Mischievous&lt;Cat&gt;</code> type:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: cat.rs
 
@@ -4562,7 +4562,7 @@ impl&lt;A&gt; Eepy&lt;A&gt; {
 }
 <span class="boring">}</span></code></pre></pre>
 <p>We can now play with all of this in our main function:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">mod cat { // Everything here should be in `cat.rs`, I can't do that and have runnable code though ;) 
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">mod cat { // Everything here should be in `cat.rs`, I can't do that and have runnable code though ;) 
 </span><span class="boring">    pub struct Cat {
 </span><span class="boring">        name: String,
 </span><span class="boring">    }
@@ -4682,7 +4682,7 @@ lots of types have a method called <code>to_string()</code>, including numbers, 
 because there is a trait called <code>ToString</code> that describes the function header for a method called <code>to_string()</code> and all
 of these types implement that trait.</p>
 <p>This is what ToString looks like in the Rust standard library (sans comments and annotations):</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait ToString {
    fn to_string(&amp;self) -&gt; String;
@@ -4697,7 +4697,7 @@ those that implement the <code>ToString</code> trait.</p>
 it's safe to rely on it being there. If it doesn't implement <code>ToString</code> you'll get a compiler error (this should show
 up in your IDE before you get as far as compiling though). AS it happens, a <em>lot</em> of built-in types already implement
 <code>ToString</code>.</p>
-<pre><pre class="playground"><code class="language-rust">fn say_hello&lt;S: ToString&gt;(could_be_anything: S) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn say_hello&lt;S: ToString&gt;(could_be_anything: S) {
     println!("Hello {}!", could_be_anything.to_string());
 }
 
@@ -4711,7 +4711,7 @@ fn main() {
 <a href="https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/">poorly designed</a> Person type with a
 first and last name. We can implement <code>ToString</code> to turn the user into a string which combines their name. You can
 run this example to see that it works with our previous function</p>
-<pre><pre class="playground"><code class="language-rust">struct Person {
+<pre><pre class="playground"><code class="language-rust edition2024">struct Person {
    first: String,
    last: String,
 }
@@ -4756,7 +4756,7 @@ other traits available to you in the future. For now though, we're going to buil
 to <code>animal/mod.rs</code> and to update your use statement in <code>main.rs</code> to <code>animal::cat::Cat</code>.</p>
 <p>We're now ready to make our trait.</p>
 <p>In <code>animal/mod.rs</code>, underneath <code>pub mod cat;</code>, let our new <code>Animal</code> trait:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// File: animal/mod.rs
 pub trait Animal {
@@ -4770,7 +4770,7 @@ Rust's equivalent of Interfaces, everything listed is assumed to be public.</p>
 <p>So, let's implement this for <code>Cat</code>.</p>
 <p>In <code>cat.rs</code> we'll add the implementation. As with implementations for types we start with <code>impl &lt;TRAIT_NAME&gt;</code> but with
 traits we follow it up with <code>for &lt;TYPE&gt;</code>. So our impl block should look like this:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">// Prevent mdbook wrapping everything in a main function
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">// Prevent mdbook wrapping everything in a main function
 </span><span class="boring">fn main() {}
 </span><span class="boring">
 </span><span class="boring">// This should be in your mod/animal.rs
@@ -4814,7 +4814,7 @@ languages, can infer the value of <code>self</code> (or <code>this</code> in som
 <code>Animal::get_name</code> we could call the <code>Cat</code> method of the same name, manually passing in <code>self</code>. This lets Rust know that
 it should call the <code>Cat</code> implementation of <code>get_name</code>. Now the behaviour of <code>Animal::get_name</code> for <code>Cat</code> will always be
 the same as <code>Cat::get_name</code> even if we change the later method in the future.</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">// Prevent mdbook wrapping everything in a main function
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">// Prevent mdbook wrapping everything in a main function
 </span><span class="boring">fn main() {}
 </span><span class="boring">
 </span><span class="boring">// This should be in your mod/animal.rs
@@ -4849,7 +4849,7 @@ impl Animal for Cat {
 <p>For each state (<code>Mischievous</code>, <code>Hangry</code>, <code>Eepy</code>), we can add a Trait Bound so that the generic <code>A</code> must be a type that
 has implemented the <code>Animal</code> trait. We can do this in the generics list as we did before. For example, <code>Mischievous</code>
 would look like this:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">fn main() {}
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">fn main() {}
 </span><span class="boring">trait Animal {
 </span><span class="boring">    fn get_name(&amp;self) -&gt; &amp;str;
 </span><span class="boring">}
@@ -4861,7 +4861,7 @@ would look like this:</p>
 such in any implementation code for those states. Just remember that for generic <code>impl</code>s, it is the <code>impl</code> that
 specifies the generic, so we need to make sure we add the Trait Bound there, then we can update our describe to use the
 trait (here I've used the <code>format!</code> macro which is like <code>println!</code> but produces a <code>String</code>):</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">fn main() {}
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">fn main() {}
 </span><span class="boring">trait Animal {
 </span><span class="boring">    fn get_name(&amp;self) -&gt; &amp;str;
 </span><span class="boring">}
@@ -4881,7 +4881,7 @@ impl&lt;A: Animal&gt; Mischievous&lt;A&gt; {
 }</code></pre></pre>
 <p>Update all of your States to use <code>self.animal.get_name()</code> and, assuming your <code>main.rs</code> still looks like the below, you
 should get your output with your cats name!</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">pub mod animal {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">pub mod animal {
 </span><span class="boring">   // animal/mod.rs
 </span><span class="boring">   pub trait Animal {
 </span><span class="boring">      fn get_name(&amp;self) -&gt; &amp;str;
@@ -5029,7 +5029,7 @@ fn main() {
 functionality out to other types of animals... starting with the most dangerous of animal.</p>
 <p>Start by adding <code>pub mod human;</code> to <code>animal.mod</code>.</p>
 <p>Then create <code>animal/human.rs</code> and pop this inside:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">// Prevent mdbook wrapping everything in a main function
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">// Prevent mdbook wrapping everything in a main function
 </span><span class="boring">fn main() {}
 </span><span class="boring">pub mod animal {
 </span><span class="boring">    // animal/mod.rs
@@ -5079,7 +5079,7 @@ impl Animal for Human {
 pub mod cat;
 pub mod human;</code></pre>
 <p>Finally, lets update our main function, and run the program to make sure everything is working.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">pub mod animal {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">pub mod animal {
 </span><span class="boring">   // animal/mod.rs
 </span><span class="boring">   pub trait Animal {
 </span><span class="boring">      fn get_name(&amp;self) -&gt; &amp;str;
@@ -5250,7 +5250,7 @@ will need to:</p>
 <p>If you get stuck, I've implemented the code below, just hit the eye icon. Please note that a limitation of this book
 means all the code is in one place, you should split your modules into files so that it's easier to manage and work
 with.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">pub mod animal {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">pub mod animal {
 </span><span class="boring">   // animal/mod.rs
 </span><span class="boring">   pub trait Animal {
 </span><span class="boring">      fn get_name(&amp;self) -&gt; &amp;str;
@@ -5472,7 +5472,7 @@ with.</p>
 internal types I mentioned (numbers, string slices, strings, etc) implement <code>ToString</code> but do in fact implement
 <code>Display</code>.</p>
 <p>Let's start looking at the trait itself:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use std::fmt::{Formatter, Result};
 </span><span class="boring">
@@ -5487,7 +5487,7 @@ internal types I mentioned (numbers, string slices, strings, etc) implement <cod
 it all for us.</p>
 <p>To change our <code>ToString</code> implementation for <code>Person</code> to <code>Display</code>, in addition to changing the trait name and method,
 we can simply swap the <code>format!</code> macro for <code>write!</code> and pass the formatter as the first part of the macro.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {}
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {}
 </span><span class="boring">
 </span><span class="boring">struct Person {
 </span><span class="boring">   first: String,
@@ -5554,7 +5554,7 @@ the header for methods you need to provide yourself, but they can also define me
 can optionally override. We call the methods you need to write <strong>Required</strong> and the ones you can optionally override
 as <strong>Provided</strong>.</p>
 <p>For example, in the last chapter we defined the trait <code>Animal</code> like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait Animal {
     fn get_name(&amp;self) -&gt; &amp;str;
@@ -5564,7 +5564,7 @@ as <strong>Provided</strong>.</p>
 a Required method.</p>
 <p>If, instead, we were to write some default functionality, this becomes a Provided method which implementors of the
 Animal trait can choose to override if they want to:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait Animal {
     fn get_name(&amp;self) -&gt; &amp;str {
@@ -5621,7 +5621,7 @@ won't move ownership, and will use what are called "Copy Semantics" instead of "
 normal, when you reassign a variable, or pass it to a function, if the variable has the <code>Copy</code> trait, you can still
 use the original variable after.</p>
 <p>So ordinarily we can't do something like this, you'll get a compile time error. Try running this:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let x = "String is not Copy".to_string();
 let y = x;
@@ -5629,7 +5629,7 @@ print!("y owns the str {y}");
 print!("x no longer owns the str {x}");
 <span class="boring">}</span></code></pre></pre>
 <p>However, for types that do implement <code>Copy</code> that does still work thanks to Copy Semantics:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let mut x = 42;
 let y = x;
@@ -5691,7 +5691,7 @@ provide custom derive macros for traits provided in their own libraries.</p>
 <p><code>Debug</code> is an extremely useful utility Trait that creates a default way to write out types to things like stdout/stderr.</p>
 <p>When printing a <code>Debug</code> value, we use <code>{:?}</code> for a positional marker, or you can put it after the name of a variable,
 eg <code>{name:?}</code>.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Debug)]
 struct Cat {
     name: String,
     age: u8,
@@ -5738,7 +5738,7 @@ can get there in different ways? Probably not.</p>
 <p>For the most part in Rust, we're only concerned with Partial Equivalence <code>PartialEq</code>, this is what allows us to compare
 values with the <code>==</code> operator. Given what we've just discussed, consider the code below before you run it, what do you
 think the output will be?</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main () {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main () {
 </span>if 0.0 == -0.0 {
     println!("0.0 IS equivalent to -0.0");
 } else {
@@ -5758,7 +5758,7 @@ want this kind of behaviour for aliased user information or something similar.</
 <p><code>PartialEq</code> has two methods, <code>eq</code> and <code>ne</code>. <code>ne</code> has a default behaviour so you don't need to define it, but you can see
 how in the previous example, being able to make the logic for <code>ne</code> different from simple <code>!x.eq(y)</code> could be handy.</p>
 <p>Lets implement it ourselves below:</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Debug)]
 struct User {
     id: u64,
     email: String,
@@ -5786,7 +5786,7 @@ assert_eq!(yuki, alias);
 "right hand side" or RHS. This generic parameter defaults to being the same type, but we can write code that allows us
 to compare the equivalence of different types too!</p>
 <p>Taking that User alias example again, what if we had a "root" user type, and an aliased User type.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Debug)]
 struct User {
     id: u64,
     email: String,
@@ -5824,7 +5824,7 @@ of.</p>
 equivalence, this wouldn't make sense).</p>
 <p>Earlier we chose to make that <code>User</code> type partially equivalent if the id matched. If we instead checked the entire
 object, it could be considered to be exactly equivalent:</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Debug)]
 struct User {
     id: u64,
     email: String,
@@ -5850,7 +5850,7 @@ assert_eq!(yuki, other_yuki);
 <span class="boring">}</span></code></pre></pre>
 <p>Of course, in this case, it'd be far easier <em>and safer</em> to use the derived version, which protects us making mistakes in
 complex code, or forgetting to check changes we make in our type later:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(PartialEq, Eq)]
 struct User {
@@ -5868,7 +5868,7 @@ indeed:</p>
 </ul>
 <p>Both <code>PartialOrd</code> and <code>Ord</code> have a required method each (<code>partial_cmp</code> and <code>cmp</code> respectively) as well as some methods
 with default behaviour. The required methods of each trait use the <code>Ordering</code> type which looks roughly like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub enum Ordering {
     Less = -1,
@@ -5883,7 +5883,7 @@ methods are implemented, their default behaviour relies on <code>partial_cmp</co
 is it greater than, less than, or equal to <code>NaN</code>? We can't determine that, so we use the <code>None</code> variant to represent
 that.</p>
 <p>But how does that affect ordering? What do you think the output of the following code will be:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>// Using the Debug output, see above!
 println!("{:?}", f32::NAN.partial_cmp(&amp;f32::NAN));
 
@@ -5897,7 +5897,7 @@ println!("NaN == NaN  = {:?}", f32::NAN == f32::NAN);
 type implement <code>PartialOrd</code>, when derived on structs, it will first check the ordering of the first field, and only move
 on to the next field if the first field is equal.</p>
 <p>Eg:</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(PartialEq, PartialOrd)] // Remember PartialEq is required for PartialOrd
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(PartialEq, PartialOrd)] // Remember PartialEq is required for PartialOrd
 struct Rect {
     width: u64,
     height: u64,
@@ -5918,7 +5918,7 @@ let test_two_rhs = Rect { width: 2, height: 1000 };
 <span class="boring">}</span></code></pre></pre>
 <p>For this reason, it's quite likely that you'd want to implement <code>PartialOrd</code> yourself, depending on how you think types
 should be compared.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(PartialEq)] // Remember PartialEq is required for PartialOrd
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(PartialEq)] // Remember PartialEq is required for PartialOrd
 struct Rect {
     width: u64,
     height: u64,
@@ -5961,7 +5961,7 @@ only need to implement <code>cmp</code>, and the other methods can use that for 
 implementing both <code>PartialOrd</code> <em>and</em> <code>Ord</code>, the result of <code>partial_cmp</code> <em>must</em> match <code>cmp</code>, though the compiler has no
 way of confirming this for you. The easiest way to handle this is if you need to manually implement <code>PartialOrd</code>, simply
 call <code>cmp</code> and wrap it in an <code>Option</code>. Let's do that with our Rect type.</p>
-<pre><pre class="playground"><code class="language-rust">use std::cmp::Ordering;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::cmp::Ordering;
 
 // Remember PartialEq is required for PartialOrd, Eq is required for Ord
 #[derive(Debug, Eq, PartialEq)]
@@ -6018,7 +6018,7 @@ location, and create a new smart pointer on the stack to point to it.</p>
 you can use, so it's really handy to differentiate <code>Clone</code> from <code>Copy</code>.</p>
 <p>Luckily, you don't have to do all of this memory allocation stuff yourself. For any type that is built from other types
 that already implement <code>Clone</code> you can derive <code>Clone</code>.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Clone, PartialEq, Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Clone, PartialEq, Debug)]
 struct MyNewType(String); // String already implements Clone, PartialEq and Debug
 
 <span class="boring">fn main() {
@@ -6042,7 +6042,7 @@ implementation built into the trait itself but, again, allows you to override it
 provide more efficient memory allocation.</p>
 <p>In order to derive <code>Copy</code>, not only must your type be made from only other types that implement <code>Copy</code>, but your type
 must also implement <code>Clone</code>.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Copy, Clone, PartialEq, Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Copy, Clone, PartialEq, Debug)]
 struct MyNewType(u32); // This tuple struct uses a u32 which implements Copy and Clone
 
 // --- Testing copy ---
@@ -6058,7 +6058,7 @@ assert_eq!(a, b);
 other collections default to being empty. If your type is built from only types that implement <code>Default</code> then you can
 derive the behaviour of <code>Default</code> for your type to be, essentially, the instantiation of your type with all values set
 to <em>their</em> default.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Default, Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Default, Debug)]
 struct Person {
     name: String,
     age: u8,
@@ -6073,7 +6073,7 @@ assert_eq!(person.age, 0);
 println!("Default persons name is '{}' and their age is '{}'", person.name, person.age);
 <span class="boring">}</span></code></pre></pre>
 <p>Obviously, this may not always be the desired result, so you can obviously implement the trait directly:</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Debug)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Debug)]
 struct Person {
     name: String,
     age: u8,
@@ -6098,7 +6098,7 @@ println!("Default persons name is '{}' and their age is '{}'", person.name, pers
 <span class="boring">}</span></code></pre></pre>
 <p>You might be wondering if you can derive <code>Default</code> for Enums, or if you have to implement it directly, and you actually
 can, using an additional attribute that you apply to the value you want to be the default.</p>
-<pre><pre class="playground"><code class="language-rust">#[derive(Default, Debug, PartialEq)]
+<pre><pre class="playground"><code class="language-rust edition2024">#[derive(Default, Debug, PartialEq)]
 enum SomeEnum {
     Variant1,
     #[default]
@@ -6113,7 +6113,7 @@ assert_eq!(choice, SomeEnum::Variant2);
 <span class="boring">}</span></code></pre></pre>
 <p>Unfortunately the <code>default</code> attribute only works when deriving <code>Default</code> for unit enums, which means if your enum
 contains nested types, you <em>will</em> have to implement <code>Default</code> manually:</p>
-<pre><pre class="playground"><code class="language-rust">// The nested types here mean we can't derive default
+<pre><pre class="playground"><code class="language-rust edition2024">// The nested types here mean we can't derive default
 #[derive(Debug, PartialEq)]
 enum SomeEnum {
     Variant1(u32),
@@ -6148,7 +6148,7 @@ want to skip over types inside your compound type that can't be hashed <em>BUT</
 behaves correctly. See if you can spot them and the associated tests!</p>
 </blockquote>
 <p>To derive it yourself simply use the derive attribute, and you'll be good to use it in a <code>HashMap</code>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Hash)]
 struct Email(String);
@@ -6163,7 +6163,7 @@ related to the type that implements it. Once you implement it, if you pass a val
 returns a <code>fmt::Result</code> which is a type alias for <code>Result&lt;(), fmt::Error&gt;</code>. The easiest way to implement it is with the
 <code>write!</code> macro which returns this same type, and to <code>use std::fmt</code> so that you can reference things in the module
 namespace rather than contaminating your own.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use std::fmt;
 
@@ -6185,7 +6185,7 @@ worth doing as error types with the <code>Error</code> trait provide a lot of ut
 alter the provided behaviour of the <code>Error</code> trait which means the only thing you need to do is make sure that your
 error type <em>also</em> implements <code>Debug</code> and <code>Display</code>. As we know, <code>Debug</code> is usually derivable, so that just leaves
 <code>Display</code>. Let's create a custom Error for a fridge to demonstrate how we <em>might</em> do this.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use std::{fmt, error};
 
@@ -6217,7 +6217,7 @@ Error libraries that might change the way you work with errors. We will cover th
 from one type, and move it to another type. <code>From</code> and <code>Into</code> are the easiest ways to do this, providing the <code>from</code> and
 <code>into</code> methods respectively. For example, you'll regularly see people turning a string slice into a string in one of
 these two ways:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let first = String::from("first");
 let second: String = "second".into();
 println!("{first}, {second}");
@@ -6262,7 +6262,7 @@ of the current function.</p>
 it's called, however, if there is a <code>From</code> implementation that can convert them, then the <code>?</code> operator will use that
 to propagate the error.</p>
 <p>Here's an example of a job we need to run that will get a user from a store, and then do something with them.</p>
-<pre><pre class="playground"><code class="language-rust">// A lot of boilerplate code hidden here, use the 👁️ icon if you want to see it. -&gt;
+<pre><pre class="playground"><code class="language-rust edition2024">// A lot of boilerplate code hidden here, use the 👁️ icon if you want to see it. -&gt;
 
 <span class="boring">use std::fmt;
 </span><span class="boring">use std::error::Error;
@@ -6354,7 +6354,7 @@ fn main() {
 <code>TryFrom</code> and <code>TryInto</code> can help you with possible errors using another feature of traits we haven't discussed,
 associated types.</p>
 <p>To oversimplify things a little, let's say you're talking to an external system that thinks about pets like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>enum PetType {
     Cat,
@@ -6368,7 +6368,7 @@ struct Pet {
 }
 <span class="boring">}</span></code></pre></pre>
 <p>but your system <em>only</em> cares about Cats:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>struct Cat {
     name: String
@@ -6388,7 +6388,7 @@ calling the generic code.</p>
 <li>The trait is easier to use for the caller (less or no generics)</li>
 <li>Relatedly, you are reducing the risk area of making mistakes.</li>
 </ol>
-<pre><pre class="playground"><code class="language-rust">use std::convert::TryFrom; // You do not need to do this since Rust 2021, including for backwards compatability
+<pre><pre class="playground"><code class="language-rust edition2024">use std::convert::TryFrom; // You do not need to do this since Rust 2021, including for backwards compatability
 
 <span class="boring">#[derive(Debug,PartialEq)]
 </span><span class="boring">enum PetType {
@@ -6439,7 +6439,7 @@ println!("Result: {lassie_cat_result:?}");
 <p>And yes, <code>TryInto</code> is automatically provided by Rust for any types that already provide the reverse <code>TryFrom</code>
 implementation. One thing to note though is, like <code>into</code>, you still need to type hint to Rust what the generic parts
 are, but because they're now inside a result its a little more verbose:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::convert::{TryFrom, TryInto}; // You do not need to do this since Rust 2021, including for backwards compatability
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">use std::convert::{TryFrom, TryInto}; // You do not need to do this since Rust 2021, including for backwards compatability
 </span><span class="boring">
 </span><span class="boring">#[derive(Debug,PartialEq)]
 </span><span class="boring">enum PetType {
@@ -6510,7 +6510,7 @@ can be mutably borrowed as itself, <code>&amp;mut T</code>.</p>
 same.</p>
 <p>One type that does this is <code>String</code>. As I mentioned above, <code>String</code> is a smart pointer to a string slice stored on the
 heap, and it implements <code>Borrow&lt;str&gt;</code> to allow us to borrow the data as if it were a string slice type.</p>
-<pre><pre class="playground"><code class="language-rust">// We need to bring the trait in scope
+<pre><pre class="playground"><code class="language-rust edition2024">// We need to bring the trait in scope
 use std::borrow::Borrow;
 
 fn say_hello(who: &amp;str) {
@@ -6533,7 +6533,7 @@ hash <code>v.borrow()</code>.</p>
 pattern. Imagine you have a type that represents an email address. Obviously a sensible type to store that data in might
 be <code>String</code>, however, there's no validation on creating a <code>String</code>, so how do we know if any given string contains a
 valid email. For that we can wrap the string in a "new type".</p>
-<pre><pre class="playground"><code class="language-rust">use std::borrow::Borrow;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::borrow::Borrow;
 <span class="boring">use std::error::Error;
 </span><span class="boring">use std::fmt;
 </span><span class="boring">use std::ops::Deref;
@@ -6648,7 +6648,7 @@ to another, making it less useful for compound types.</p>
 compound types. If we have a more complex object and want to internally reference</p>
 <p>Remember earlier we had our <code>Cat</code> type which only had a name. We could, if we wanted, implement <code>AsRef&lt;str&gt;</code> so that
 it can be used in the place of a <code>&amp;str</code>:</p>
-<pre><pre class="playground"><code class="language-rust">struct Cat {
+<pre><pre class="playground"><code class="language-rust edition2024">struct Cat {
     name: String,
     age: u8,
 }
@@ -6672,7 +6672,7 @@ fn main() {
 <p>Arguably, we could make this code even friendly by changing the <code>cuddle</code> to take a generic, and then calling <code>.as_ref()</code>
 in the function itself. This code looks a little scarier, but once you get used to seeing code like this, you can write
 far more flexible and easy to use code.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Cat {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">struct Cat {
 </span><span class="boring">    name: String,
 </span><span class="boring">}
 </span><span class="boring">
@@ -6713,7 +6713,7 @@ str                            String
 <em>but</em> you need to think carefully about when it's appropriate to do this.</p>
 <p>Let's return to our <code>Email</code> type, it makes sense to allow our <code>Email</code> to be used as an immutable String, so lets
 implement <code>Deref</code> for it:</p>
-<pre><pre class="playground"><code class="language-rust">use std::ops::Deref;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::ops::Deref;
 <span class="boring">use std::error::Error;
 </span><span class="boring">use std::fmt;
 </span><span class="boring">
@@ -6786,7 +6786,7 @@ fn main() {
 <p>Let's think about this differently though, what if instead of dereferencing to a str, we dereferenced to a <code>String</code>,
 <em>and</em> we allowed mutability. Our <code>Email</code> type here does some rudimentary validation, if we allowed mutability of the
 inner <code>String</code>, we allow people to change the email to be invalid, and lose the benefit of the <code>Email</code> type.</p>
-<pre><pre class="playground"><code class="language-rust">use std::ops::{Deref, DerefMut};
+<pre><pre class="playground"><code class="language-rust edition2024">use std::ops::{Deref, DerefMut};
 <span class="boring">use std::error::Error;
 </span><span class="boring">use std::fmt;
 </span><span class="boring">use std::hash::{DefaultHasher, Hash, Hasher};
@@ -6880,7 +6880,7 @@ match Email::is_valid(&amp;email) {
 </ul>
 <p>The Rust standard library is achieving this with the <code>Drop</code> trait.</p>
 <p>You can implement the drop trait yourself:</p>
-<pre><pre class="playground"><code class="language-rust">struct UnitStruct;
+<pre><pre class="playground"><code class="language-rust edition2024">struct UnitStruct;
 
 impl Drop for UnitStruct {
     fn drop(&amp;mut self) {
@@ -6909,7 +6909,7 @@ things to go out of scope, and be aware of what any library code you're consumin
 <p>Most of the time this isn't worth worrying too much about, however, if you do find you want to very precisely control
 <em>when</em> variables are dropped, then let me introduce you to my all-time favourite function <code>std::mem::drop</code>.</p>
 <p>Here it is in full:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub fn drop&lt;T&gt;(_x: T) {}
 <span class="boring">}</span></code></pre></pre>
@@ -6938,7 +6938,7 @@ way.</p>
 that they can exist on the stack, which further means they can be <code>Copy</code> (so long as the type stored in the array is
 also <code>Copy</code>).</p>
 <p>We can create arrays in two ways, either by defining a list of expressions, or by using an expression and a length:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let a1 = [0, 1, 2, 3, 4, 5]; // A list of values
 let a2 = [1 - 1, 1 * 1, 1 + 1, 9 / 3]; // A list of expressions
 let a3 = [1 + 2; 5]; // Fill an array with the result of a single expression, evaluated once
@@ -6949,7 +6949,7 @@ assert_eq!(a3, [3, 3, 3, 3, 3]);
 <span class="boring">}</span></code></pre></pre>
 <p>You can access arrays using square brackets and the index of the entry you want to edit, however, if the index doesn't
 exist, your code will panic.</p>
-<pre><pre class="playground"><code class="language-rust should_panic"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust should_panic edition2024"><span class="boring">fn main() {
 </span>let arr = [0, 1, 2, 3, 4];
 for i in 0..=5 {
     println!("{}", arr[i]);
@@ -6957,13 +6957,13 @@ for i in 0..=5 {
 <span class="boring">}</span></code></pre></pre>
 <p>That said, because Arrays are sized, Rust is smart enough to know that you've hardcoded an index out of bounds, so this
 won't even compile!</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn main() {
 </span>let arr = [0, 1, 2, 3, 4];
 let _ = arr[5];
 <span class="boring">}</span></code></pre></pre>
 <p>You can pass arrays into functions so long as you know the exact length of the array. If the contents of the array is
 <code>Copy</code> then the array will also be <code>Copy</code> and will be passed with Copy Semantics instead of Move Semantics.</p>
-<pre><pre class="playground"><code class="language-rust">fn demonstrate_some_mutation(mut arr: [usize; 5]) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn demonstrate_some_mutation(mut arr: [usize; 5]) {
     // Because the array is passed using copy semantics, it doesn't matter if the original variable was mutable.
     // Also, because we know the array _must_ have five elements, it's safe to directly access elements we know exist
     arr[0] = 100;
@@ -6983,7 +6983,7 @@ demonstrate_some_mutation(a1);
 assert_eq!(a1, [1, 1, 1, 1, 1]);
 <span class="boring">}</span></code></pre></pre>
 <p>Note: This won't compile because the a2 is the wrong size</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">fn demonstrate_some_mutation(mut arr: [usize; 5]) {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">fn demonstrate_some_mutation(mut arr: [usize; 5]) {
     // ...
 <span class="boring">    arr[0] = 100;
 </span><span class="boring">    assert_eq!(arr, [100, 1, 1, 1, 1]);
@@ -6998,7 +6998,7 @@ dynamically sized collection we should talk about is the "slice".</p>
 <p>You can think of a slice as a view or window into a series of contiguous data. The fact that it's a view of some
 other type hopefully indicates to you that this is a reference type, i.e. <code>&amp;[T]</code> or <code>&amp;mut [T]</code> for mutable slices.</p>
 <p>The simplest way to get a slice is to reference an array (though some other collections also allow you to take a slice).</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let arr: [u32; 5] = [0, 1, 2, 3, 4];
 let slice: &amp;[u32] = &amp;arr;
 
@@ -7013,7 +7013,7 @@ we didn't discuss at the time. The way to think about this is, where <code>X..Y<
 <li>if Y is preceded by an equals, the slice ends after the <code>Y</code>th element</li>
 <li>if Y is not specified, the slice ends at the end of the collection being sliced</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let array: [u32; 5] = [0, 1, 2, 3, 4];
 
@@ -7040,7 +7040,7 @@ and <code>right</code>.</li>
 that starts at <code>input.len()</code> is a zero length slice that starts before the element that <em>would</em> be after the final
 element (i.e. it starts after the final element) and runs to the end (i.e. the same place as it starts).</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; (&amp;'a str, &amp;'a str) {
+<pre><pre class="playground"><code class="language-rust edition2024">fn split&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str) -&gt; (&amp;'a str, &amp;'a str) {
     if let Some(found_at) = input.find(sub_string) {
       (&amp;input[..found_at], &amp;input[found_at + sub_string.len()..])
     } else {
@@ -7082,7 +7082,7 @@ do anything. This process however is expensive, and you should do what you can t
 using the <code>::with_capacity(capacity: usize)</code> constructor. This will construct an empty <code>Vec</code> with at least (but possibly
 not exactly) the capacity you requested. Note that capacity and length are not the same thing in Rust. You can get the
 number of items of data currently in the vector with <code>.len()</code> and its capacity with <code>.capacity()</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let example: Vec&lt;i32&gt; = Vec::with_capacity(10);
 assert_eq!(example.len(), 0);
 assert!(example.capacity() &gt;= 10);
@@ -7095,7 +7095,7 @@ increase the capacity after the <code>Vec</code> has been instantiated with mini
 </blockquote>
 <p>If you're not worried about the potential costs of resizing your vector, and you already have some data that you want to
 instantiate, you can use the <code>vec!</code> macro.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let example = vec![0, 1, 2, 3];
 assert_eq!(example.len(), 4);
 <span class="boring">}</span></code></pre></pre>
@@ -7103,7 +7103,7 @@ assert_eq!(example.len(), 4);
 of the basics.</p>
 <p>To add elements to the end of a vector we use the <code>.push(t: T)</code> method, and to remove them from the end of the vector
 we use the <code>.pop()</code> method which returns an <code>Option&lt;T&gt;</code>, since the vector may be empty.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let mut v = Vec::with_capacity(2);
 v.push("Hello");
 v.push("World!");
@@ -7120,7 +7120,7 @@ assert_eq!(v, vec!["Hello"]);
 <p>If you're used to arrays and vectors in other languages, you <em>can</em> index directly into an array in Rust in the same way
 that you can in other languages <em>but</em> you generally shouldn't. If you try to access an element out of bounds (eg, if you
 have 3 items in your vector, and try to access the fifth), your program will panic.</p>
-<pre><pre class="playground"><code class="language-rust should_panic"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust should_panic edition2024"><span class="boring">fn main() {
 </span>let v = vec!["Hello", "World!"];
 assert_eq!(v[0], "Hello");
 assert_eq!(v[1], "World!");
@@ -7129,7 +7129,7 @@ let _ = v[2]; // ❗️Panics❗️
 <p>Instead, Vec provides <code>.get()</code> and <code>.get_mut()</code> which allow return an <code>Option</code> containing either an immutable or mutable
 reference to an item inside the vector. This is much safer as the program will not halt if there is no item at the given
 index, you'll simply get a <code>None</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let v = vec!["Hello", "World!"];
 assert_eq!(v.get(0), Some(&amp;"Hello"));
 assert_eq!(v.get(1), Some(&amp;"World!"));
@@ -7137,7 +7137,7 @@ assert_eq!(v.get(2), None);
 <span class="boring">}</span></code></pre></pre>
 <p><code>.get_mut()</code> will return a mutable reference to the element inside the Vec, <em>but</em> the way we use it... is a little
 weird:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let mut v = vec!["Hello".to_string()];
 if let Some(hello) = v.get_mut(0) {
     assert_eq!(hello, &amp;mut "Hello".to_string());
@@ -7146,7 +7146,7 @@ if let Some(hello) = v.get_mut(0) {
 assert_eq!(v, vec!["Hello, World!".to_string()]);
 <span class="boring">}</span></code></pre></pre>
 <p><code>.get()</code> and <code>.get_mut()</code> will also allow you to create an array slice if you give it a <code>Range</code> instead.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let mut v = vec![0, 1, 2, 3, 4, 5];
 
 // Note the weird syntax as `get` returns an array slice, not an array
@@ -7162,7 +7162,7 @@ if let Some(mut inner) = v.get_mut(2..) {
 assert_eq!(v, vec![0, 1, 12, 3, 4, 5]);
 <span class="boring">}</span></code></pre></pre>
 <p>Finally, we can also create slice using square brackets and this actually works without panicking:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let v = vec![0, 1, 2, 3, 4, 5];
 
 // This would panic:
@@ -7178,7 +7178,7 @@ the element from the collection, like <code>pop</code> in <code>Vec</code>. We'l
 <h3 id="vecdequeue"><a class="header" href="#vecdequeue">VecDequeue</a></h3>
 <p><code>VecDeque</code> is very similar to <code>Vec</code> however, where in <code>Vec</code> you can only add and remove items from the end, <code>VecDeque</code>
 also allows you to add and remove items to and from the front!</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::VecDeque;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::VecDeque;
 
 <span class="boring">fn main() {
 </span>let mut v = VecDeque::from([0, 1, 2, 3, 4, 5]);
@@ -7198,7 +7198,7 @@ possible. <code>Vec</code> and <code>VecDeque</code> will almost always beat <co
 to do is add items to the end of a list (or, in the case of <code>VecDeque</code> to the front).</p>
 <p>Where <code>LinkedList</code>s are useful though, is when splitting and merging your collection is a core feature you will be
 heavily reliant on.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>use std::collections::LinkedList;
 
 let mut list = LinkedList::new();
@@ -7227,7 +7227,7 @@ assert_eq!(v, &amp;[1, 2, 3, 4, 5]);
 <h3 id="binaryheap"><a class="header" href="#binaryheap">BinaryHeap</a></h3>
 <p><code>BinaryHeap</code>s allow you to add items to a heap in any order, but the first item off the heap is always the largest item
 according to <code>Ord</code>.</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::BinaryHeap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::BinaryHeap;
 
 <span class="boring">fn main() {
 </span>let mut heap = BinaryHeap::new();
@@ -7243,7 +7243,7 @@ assert_eq!(heap.pop(), None);
 <span class="boring">}</span></code></pre></pre>
 <p>The obvious limitation here though is, what do you do if you need to know the smallest value in the stack?</p>
 <p>In the standard library there's a cool little newtype that can wrap other types and inverts their ordering:</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::BinaryHeap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::BinaryHeap;
 use std::cmp::Reverse;
 
 <span class="boring">fn main() {
@@ -7265,7 +7265,7 @@ create the lookup table. There's more details on how hashing works in the
 <a href="https://doc.rust-lang.org/std/collections/struct.HashMap.html">official book</a>, including how to create a <code>HashMap</code>
 with a different hashing algorithm, but that's beyond the scope of IRISS.</p>
 <p>Similar to <code>Vec</code>s, <code>HashMap</code>s can be initialised in a few ways, the main three you're likely to use are:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>use std::collections::HashMap;
 
 // Create an empty hashmap with some arbitrary capacity
@@ -7292,7 +7292,7 @@ let mut hashmap_from_array = HashMap::from([
 <ol>
 <li>
 <p><code>.get(key: &amp;K)</code> and <code>.get_mut(key: &amp;K)</code> will get references to data if it exists using <code>Option</code>s</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::HashMap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::HashMap;
 
 <span class="boring">fn main() {
 </span>let mut map = HashMap::from([
@@ -7312,7 +7312,7 @@ assert_eq!(map.get("Key"), Some(&amp;"Value Changed".to_string()));
 <li>
 <p><code>.entry(key: &amp;K)</code> returns a special <a href="https://doc.rust-lang.org/std/collections/hash_map/enum.Entry.html"><code>Entry</code></a>
 enum that allows you to modify and existing value if it exists, or insert a value if it doesn't</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::HashMap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::HashMap;
 
 <span class="boring">fn main() {
 </span>let mut map = HashMap::from([
@@ -7334,7 +7334,7 @@ assert_eq!(map.get("Nonexistent Key"), Some(&amp;"Inserted Value".to_string()));
 <li>
 <p><code>.remove(key: &amp;K)</code> takes a value out of the HashMap (if it exists), allowing you to take ownership of it, and
 <code>.remove_entry(key: &amp;K)</code> can be used to gain ownership of both the value <em>and</em> the key as you remove it from the map</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::HashMap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::HashMap;
 
 <span class="boring">fn main() {
 </span>let key = "Key".to_string();
@@ -7365,7 +7365,7 @@ assert_eq!(map.get("Key"), None);
 <p><code>BTreeMap</code> is a Binary Search Tree version of <code>HashMap</code>. For storing arbitrary data it's a touch slower than <code>HashMap</code>,
 but it internally sorts keys so that you can easily get the values at the largest and smallest keys, a little bit like a
 <code>VecDeque</code>:</p>
-<pre><pre class="playground"><code class="language-rust">use std::collections::BTreeMap;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::collections::BTreeMap;
 
 <span class="boring">fn main() {
 </span>let mut map = BTreeMap::from([
@@ -7406,7 +7406,7 @@ collection, or reduce a collection to a single value. They're also often used im
 our own.</p>
 <h2 id="the-iterator-trait"><a class="header" href="#the-iterator-trait">The Iterator Trait</a></h2>
 <p>The Iterator trait can be applied to any type and has a single required method:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait Iterator {
     type Item;
@@ -7428,7 +7428,7 @@ two added together.</p>
 <code>1, 1, ...</code>, some people start it <code>0, 1, ...</code>, although Fibonacci himself actually started it <code>1, 2, ...</code>. Making our
 code work for the sequence <code>1, 2, ...</code> is trivial, just changing the starting numbers, but as a challenge, can you
 make it work starting at <code>0, 1, ...</code> (one way to do it hidden below):</p>
-<pre><pre class="playground"><code class="language-rust">// Press ▶️ to see this code work, press 👁️ to reveal the method I used
+<pre><pre class="playground"><code class="language-rust edition2024">// Press ▶️ to see this code work, press 👁️ to reveal the method I used
 <span class="boring">struct Fibonacci {
 </span><span class="boring">    current: Option&lt;u8&gt;,
 </span><span class="boring">    next: Option&lt;u8&gt;,
@@ -7489,7 +7489,7 @@ of recursion, and can lead to follow up questions on things like memoization, bu
 a good software engineer. You're unlikely to ever use the Fibonacci sequence outside an interview. Even if you were
 asked to find the nth number, you'd simply look up a formula (see one way to do it below). You wouldn't solve it in
 this way you're expected to do in the interview.</p>
-<pre><pre class="playground"><code class="language-rust">// Press 👁️ to reveal a method of calculating the nth value of the sequence
+<pre><pre class="playground"><code class="language-rust edition2024">// Press 👁️ to reveal a method of calculating the nth value of the sequence
 // without having to use recursion of a loop!
 <span class="boring">const GOLDEN_RATIO: f64 = 1.618033988749894848204586834365638118;
 </span><span class="boring">const SQRT_FIVE: f64 = 2.23606797749979;
@@ -7581,7 +7581,7 @@ the right solution.</p>
 }
 <span class="boring">fn main() {}</span></code></pre>
 <p>So now we have our iterator type! We can now get each item off the iterator one at a time by calling the next function:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Fibonacci {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">struct Fibonacci {
 </span><span class="boring">    previous: u8,
 </span><span class="boring">    next: Option&lt;u8&gt;,
 </span><span class="boring">}
@@ -7628,7 +7628,7 @@ we've used.</p>
 all the Fibonacci values that fit inside a <code>u8</code>? You can give an Iterator to a <code>for ... in ...</code> loop, and it will
 automatically unwrap the <code>Option</code> for you. Once the loop hits a <code>None</code> the loop ends.</p>
 <p>This code will print out each number on a new line, try hitting the play button to see it in action!</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Fibonacci {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">struct Fibonacci {
 </span><span class="boring">    previous: u8,
 </span><span class="boring">    next: Option&lt;u8&gt;,
 </span><span class="boring">}
@@ -7668,7 +7668,7 @@ automatically unwrap the <code>Option</code> for you. Once the loop hits a <code
 tricks. For example, a list of Fibonacci numbers might be more useful if we knew what number in the sequence we're on.
 We can chain a method called <code>.enumerate</code> which will take the old iterator and give us a new one where each <code>next</code>
 now returns a tuple of <code>(position, T)</code> where <code>T</code> was the original piece of data.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Fibonacci {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">struct Fibonacci {
 </span><span class="boring">    previous: u8,
 </span><span class="boring">    next: Option&lt;u8&gt;,
 </span><span class="boring">}
@@ -7707,7 +7707,7 @@ now returns a tuple of <code>(position, T)</code> where <code>T</code> was the o
 in the iterator (a process in Rust we refer to as "consuming" the iterator), it merely takes ownership of it. Rust
 iterators are "lazy" meaning that they only call <code>next</code> when its necessary to get the next item in the list.</p>
 <p>For example, we can chain another method that only takes the first <code>n</code> items:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">struct Fibonacci {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">struct Fibonacci {
 </span><span class="boring">    previous: u8,
 </span><span class="boring">    next: Option&lt;u8&gt;,
 </span><span class="boring">}
@@ -7758,7 +7758,7 @@ and all the collections we discussed in <a href="language-basics/collections.htm
 <p>Often we don't actually need to <em>own</em> the data we're iterating over, it can be enough to just read it. All built in
 collections have a method called <code>.iter()</code> which returns an Iterator type where the items are references to the data
 held in the collection.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let hello = String::from("Hello");
 let world = String::from("World");
@@ -7788,7 +7788,7 @@ for each can be slightly different.</p>
 </blockquote>
 <p>One thing to bear in mind is that if the collection contains references, then <code>.iter()</code> will give you an Iterator that
 produces references to references.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let hello = String::from("Hello");
 let world = String::from("World");
@@ -7812,7 +7812,7 @@ an iterator and get new data from it, but in the event that you want to edit dat
 with an iterator of mutable references.</p>
 <p>All Rusts built in collections can give you a mutable iterator (if the underlying collection is mutable) using
 <code>.iter_mut()</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// The source data must be mutable, not just the iterator
 let mut v = vec![1, 2, 3, 4, 5];
@@ -7833,7 +7833,7 @@ underlying data without duplicating it.</p>
 themselves. This is almost always used with the <code>.collect()</code> iterator method, though you need to be explicit about what
 you're collecting into, either by typing the variable you're collecting into, or by using the turbofish operator that
 allows you to be explicit about the concrete types to fill in generics.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use std::collections::LinkedList;
 
@@ -7860,7 +7860,7 @@ assert_eq!(
 <span class="boring">}</span></code></pre></pre>
 <p>Sometimes you may not want to have an additional variable just to provide type information, that's when the turbofish
 operator comes in handy.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use std::collections::LinkedList;
 </span><span class="boring">
@@ -7887,7 +7887,7 @@ operator comes in handy.</p>
 <p>There are two methods on <code>Iterator</code> for this purpose: <code>.copied()</code> and <code>.cloned()</code>.</p>
 <p><code>.copied()</code> only works on Iterators where the item is <code>Copy</code> will take the iterator and return a new iterator which
 returns each Item copied.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v = vec![1, 2, 3, 4, 5];
 
@@ -7898,7 +7898,7 @@ assert_eq!(iter, vec![&amp;1, &amp;2, &amp;3, &amp;4, &amp;5]);
 assert_eq!(copied, vec![1, 2, 3, 4, 5]);
 <span class="boring">}</span></code></pre></pre>
 <p><code>.cloned()</code> does the same for types that are <code>Clone</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v = vec![String::from("Hello"), String::from("World")];
 
@@ -7911,7 +7911,7 @@ assert_eq!(cloned, vec![String::from("Hello"), String::from("World")]);
 <h2 id="other-ways-to-get-iterators"><a class="header" href="#other-ways-to-get-iterators">Other Ways to get Iterators</a></h2>
 <p>Beyond collections there are other things that can be iterated through.</p>
 <p>Ranges are iterators, it's why you often see them used in for loops:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>for n in 0..5 {
     println!("Number: {n}");
@@ -7921,7 +7921,7 @@ assert_eq!((0..5).collect::&lt;Vec&lt;_&gt;&gt;(), vec![0, 1, 2, 3, 4]);
 <span class="boring">}</span></code></pre></pre>
 <p>As previously highlighted, you can create an infinitely repeating iterator with the <code>repeat(T)</code> function. You can
 repeat any value of any type so long as that type implements the <code>Clone</code> trait.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use std::iter::repeat;
 
@@ -7934,13 +7934,13 @@ assert_eq!(repeater.next(), Some("Badger".to_string()));
 <span class="boring">// Mushroom Mushroom (no I don't know "what's wrong with me", why?)
 </span><span class="boring">}</span></code></pre></pre>
 <p>This can have benefits over using something like an open range which will eventually overflow and panic</p>
-<pre><pre class="playground"><code class="language-rust should_panic"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust should_panic edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// ‼️ This code panics because the iterator overflows u8 ‼️
 let iter = u8::MIN..;
 assert_eq!(iter.count(), 255);
 <span class="boring">}</span></code></pre></pre>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// This is fine though
 let iter = u8::MIN..u8::MAX;
@@ -7948,7 +7948,7 @@ assert_eq!(iter.count(), 255);
 <span class="boring">}</span></code></pre></pre>
 <p>Fun fact, if you want to take an existing finite Iterator and repeat that infinitely, there's a method for that too,
 though the Item type must implement <code>Clone</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let mut iter = vec![0, 1, 2].into_iter().cycle();
 
@@ -7962,7 +7962,7 @@ assert_eq!(iter.next(), Some(0)); // &lt;- Repeat
 // ...and so on
 <span class="boring">}</span></code></pre></pre>
 <p>Though don't forget, immutable references are <code>Clone</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, PartialEq)]
 struct NotCloneable;
@@ -7978,7 +7978,7 @@ assert_eq!(iter.next(), Some(&amp;NotCloneable {}));
 assert_eq!(iter.next(), Some(&amp;NotCloneable {}));
 <span class="boring">}</span></code></pre></pre>
 <p>You can also create iterators by combining other iterators, but they must be of the same type:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let mut i1 = vec![0, 1, 2].into_iter();
 let i2 = vec![3, 4, 5].into_iter(); // i2 does not need to be mutable as we're taking ownership
@@ -7992,7 +7992,7 @@ a <code>char</code> is not the same as a byte (<code>u8</code>) in Rust, and in 
 <h3 id="mathematics"><a class="header" href="#mathematics">Mathematics</a></h3>
 <p>A common use case for iterators over things like numbers is adding all the items together, or multiplying them together.</p>
 <p>For iterators of items that implement the <code>Sum</code> trait (eg, numbers) <code>.sum()</code> will add all the items in the iterator:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>assert_eq!(
     vec![1, 2, 3, 4].iter().sum::&lt;i32&gt;(), 
@@ -8001,7 +8001,7 @@ a <code>char</code> is not the same as a byte (<code>u8</code>) in Rust, and in 
 <span class="boring">}</span></code></pre></pre>
 <p>For iterators of items that implement the <code>Product</code> trait (eg, again, numbers) <code>.product()</code> will multiply all the items
 in the iterator, eg:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>assert_eq!(
     vec![1, 2, 3, 4].iter().product::&lt;i32&gt;(), 
@@ -8010,7 +8010,7 @@ in the iterator, eg:</p>
 <span class="boring">}</span></code></pre></pre>
 <p>Its worth noting that some surprising things implement <code>Sum</code> and <code>Product</code>, including blanket implementations for
 <code>Option&lt;T&gt;</code> and <code>Result&lt;T, E&gt;</code> where <code>T</code> already implements the trait.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v: Vec&lt;Option&lt;usize&gt;&gt; = vec![
     Some(10),
@@ -8024,7 +8024,7 @@ assert_eq!(total, Some(42));
 <span class="boring">}</span></code></pre></pre>
 <p>For iterators of items that implement <code>Ord</code> you can use <code>.min()</code> and <code>.max()</code> to find the largest and smallest values
 respectively:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v = vec!['H', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'];
 
@@ -8034,7 +8034,7 @@ assert_eq!(v.iter().max(), Some(&amp;'w'));
 <p>These methods are "consuming" methods, which means they will process every element in the iterator before giving a
 result.</p>
 <p>Another example of a consuming iterator is <code>.count()</code> which merely tells us how many items are in an iterator.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v = vec!['H', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'];
 
@@ -8044,7 +8044,7 @@ assert_eq!(iter.count(), v.len()); // iter has same number of items as v is long
 <span class="boring">}</span></code></pre></pre>
 <p>However, if the iterator implements <code>ExactSizeIterator</code>, which many of the built-in ones do, then you can use
 <code>.len()</code> without consuming the iterator to get the same result:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v = vec!['H', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'];
 
@@ -8059,7 +8059,7 @@ operation yourself using <code>fold</code> which is an iterator method we'll tal
 <p>Furthermore, methods like <code>sum</code>, <code>product</code>, <code>min</code>, <code>max</code> and anything else that "consumes" an iterator, expect that
 iterator to have an end to give you a final result, but it is possible to create infinite iterators. For example, the
 function <code>repeat("hi")</code> will just continue to produce a reference to the string slice <code>"hi"</code> forever.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use std::iter::repeat;
 
@@ -8082,7 +8082,7 @@ assert_eq!(banana_phone.next(), Some("ring"));
 the Iterator trait (that themselves return new Iterators) that are really helpful for this.</p>
 <p>You can take one iterator and exclude Items based on the result of a predicate using the <code>.filter(P)</code>. For example, we
 could take a range of numbers, and filter out all odd numbers like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// Many iterator methods return a new iterator which is great for chaining
 let mut iter = (1..=10).filter(|n| n % 2 == 0);
@@ -8095,7 +8095,7 @@ assert_eq!(iter.next(), Some(10));
 assert_eq!(iter.next(), None);
 <span class="boring">}</span></code></pre></pre>
 <p>If we were to look at the length of the iterators before and after this filter you'll see they've changed!</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let full_iter = (1..=10);
 let filtered_iter = full_iter.clone().filter(|n| n % 2 == 0);
@@ -8107,7 +8107,7 @@ assert_eq!(filtered_iter.count(), 5);
 <p>Another great way to process Iterators one Item at a time is to take that Item and transform it in some way. We can use
 pass a function into the <code>.map()</code> method that receives the item and returns a new value. If that value is of a different
 type, the Iterator you get back will also be of that new type:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let mut iter = (1..=3) // An Iterator where Item is i32
     .map(|n| format!("This is item number {n}")); // New Iterator where Item is String
@@ -8121,7 +8121,7 @@ assert_eq!(iter.next(), None);
 <code>Options</code> you may want to discard <code>None</code>s and unwrap the <code>Ok</code>, this is where <code>.filter_map()</code> is really handy.</p>
 <p>In the example below we use <code>.checked_add</code> which returns an <code>Option</code> with an <code>Ok</code> so long as the result is inbounds. By
 combining this with filter_map, we'll get only the items that were Some, and those items will be unwrapped.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let mut iter = (1..=u8::MAX)
     .filter_map(|n| n.checked_add(250u8));
@@ -8135,7 +8135,7 @@ assert_eq!(iter.next(), None);
 <span class="boring">}</span></code></pre></pre>
 <p>This not only saves us from having to deal with doubly wrapped options from <code>next</code> (eg <code>Some(Some(255))</code>) but entirely
 removes the items from the iterator. See this example comparing map and filter map:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>assert_eq!((1..=u8::MAX).map(|n| n.checked_add(250u8)).count(), 255);
 assert_eq!((1..=u8::MAX).filter_map(|n| n.checked_add(250u8)).count(), 5);
@@ -8143,7 +8143,7 @@ assert_eq!((1..=u8::MAX).filter_map(|n| n.checked_add(250u8)).count(), 5);
 <p>Another way to reduce how many items we want to deal with in an iterator is by using <code>.take(n)</code> and <code>.skip(n)</code>.</p>
 <p>We can end an iterator earlier by only taking a certain number of items from it with <code>.take(n)</code> or we can skip over a
 number of items with <code>.skip(n)</code> before resuming the iterator from that point.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v = vec![1, 2, 3, 4, 5, 6];
 
@@ -8154,7 +8154,7 @@ assert_eq!(iter_take.collect::&lt;Vec&lt;_&gt;&gt;(), vec![&amp;1, &amp;2, &amp;
 assert_eq!(iter_skip.collect::&lt;Vec&lt;_&gt;&gt;(), vec![&amp;4, &amp;5, &amp;6]);
 <span class="boring">}</span></code></pre></pre>
 <p>As with most iterators, you can chain them:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">let v = vec![1, 2, 3, 4, 5, 6];
 </span><span class="boring">
@@ -8164,7 +8164,7 @@ assert_eq!(iter_skip.collect::&lt;Vec&lt;_&gt;&gt;(), vec![&amp;4, &amp;5, &amp;
 the iterator <code>T</code> to a tuple: <code>(usize, T)</code>. This can be really handy in combination with other iterators when the
 position in an iterator is important. For example, lets say we want to filter every other item out of a <code>Vec</code>. We can
 do that by chaining together several of the Iterators we've just learned.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v1 = vec!["This", "sentence", "is", "not", "shorter"];
 
@@ -8178,7 +8178,7 @@ assert_eq!(v2, vec!["This", "is", "shorter"]);
 <span class="boring">}</span></code></pre></pre>
 <p>Any time you see a <code>filter</code> and a <code>map</code> next to each other, you might be able to abbreviate this. Booleans can
 be turned into <code>Option</code>s with <code>.then_some()</code>:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v1 = vec!["This", "sentence", "is", "not", "shorter"];
 
@@ -8196,7 +8196,7 @@ the returned value, <code>.reduce()</code> uses the first item in the iterator a
 the next item.</p>
 <p>Earlier we mentioned the risk of overflow in methods like <code>.sum()</code> and <code>.product()</code>. We can use these consuming methods
 to write safer (but slower) versions of those methods:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, PartialEq)]
 struct OverflowError;
@@ -8219,7 +8219,7 @@ assert_eq!(bad_sum, Err(OverflowError));
 <span class="boring">}</span></code></pre></pre>
 <p>That said, in this kind of case, once our fold function returns a <code>Err</code>, we can't process any more items, we can break
 out of this early with <code>.try_fold()</code> which will stop iterating immediately:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">#[derive(Debug, PartialEq)]
 </span><span class="boring">struct OverflowError;
@@ -8235,7 +8235,7 @@ assert_eq!(bad_sum, Err(OverflowError));
 <p>There's a few more traits you may want to be aware of when making your own iterators:</p>
 <p><code>IntoIterator</code> can be implemented on any type that can be turned into an <code>Iterator</code>. One place you may find yourself
 using it is on newtypes.</p>
-<pre><pre class="playground"><code class="language-rust">struct Album {
+<pre><pre class="playground"><code class="language-rust edition2024">struct Album {
     name: String,
     artist: String,
 }
@@ -8295,7 +8295,7 @@ fn main() {
     );
 }</code></pre></pre>
 <p><code>FromIterator</code> allows you to turn an Iterator into another type, usually through the <code>.collect()</code> method on <code>Iterator</code>s</p>
-<pre><pre class="playground"><code class="language-rust">struct Album {
+<pre><pre class="playground"><code class="language-rust edition2024">struct Album {
     name: String,
     artist: String,
 }
@@ -8356,7 +8356,7 @@ returned from collections are all both of these (to my surprise, even the <code>
 <code>BinaryHeap</code> are <code>DoubleEndedIterator</code>).</p>
 <p><code>ExactSizeIterator</code> can tell you the size of the iterator <em>without</em> consuming it, using the <code>.len()</code> method (if you need
 to see if the iterator is empty, you should us <code>.is_empty()</code> instead).</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v = vec![1, 2, 3, 4, 5];
 
@@ -8366,7 +8366,7 @@ assert_eq!(iter.len(), 5); // iter still exists after this
 assert_eq!(iter.count(), 5); // iter is consumed
 <span class="boring">}</span></code></pre></pre>
 <p><code>DoubleEndedIterator</code> allows you to reverse the order of an Iterator with <code>.rev()</code>.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v = vec![1, 2, 3];
 
@@ -8411,13 +8411,13 @@ threads. Threads are scheduled by the operating system independently, allowing o
 effectively concurrently.</p>
 <h2 id="starting-a-thread"><a class="header" href="#starting-a-thread">Starting a thread</a></h2>
 <p>Your program always has at least one thread, even your basic hello-world program runs in a thread.</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     println!("Hello, I am in a thread!")
 }</code></pre></pre>
 <p>What we're interested in today is how we start more threads. This is a process called Spawning.</p>
 <p>To spawn a thread, we use <code>std::thread::spawn</code>... but, this will do little on its own. Run the code below, see what's
 missing in the output?</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::spawn;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 
 fn main() {
     println!("This is the main thread");
@@ -8430,7 +8430,7 @@ fn main() {
 it. When the join handler is dropped, the thread is orphaned. It may still run but, in this case, the process ends at
 the end of main, so our spawned thread never got a chance to do anything.</p>
 <p>We can tell our main thread to pause and wait for a running thread to end by using the join handler.</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::spawn;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 
 fn main() {
     println!("This is the main thread");
@@ -8443,7 +8443,7 @@ fn main() {
 <p>Note, we're using closures here, but functions work just as well and can be better for more complex programs. The only
 restriction is: it needs to be <code>FnOnce() -&gt; T + Send + 'static</code>. See
 <a href="https://doc.rust-lang.org/std/thread/fn.spawn.html">the documentation</a> for more details.</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::spawn;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 
 fn child() {
     println!("This is also a child thread");
@@ -8458,7 +8458,7 @@ fn main() {
 <p>Exactly <em>when</em> threads are allowed to execute code is controlled by a scheduler which we can't directly manage
 ourselves, but we can influence it. Putting one thread to sleep can allow another thread to run. Run this code, then
 uncomment the commented lines and run it again.</p>
-<pre><pre class="playground"><code class="language-rust editable">use std::thread::{sleep, spawn};
+<pre><pre class="playground"><code class="language-rust editable edition2024">use std::thread::{sleep, spawn};
 use std::time::Duration;
 
 fn main() {
@@ -8482,7 +8482,7 @@ the <a href="language-basics/./traits.html">Traits</a> chapter, but to recap, da
 this trait is auto-implemented for all types that can be <code>Send</code> (though it is also possible to opt out of it).</p>
 <p>We can move data into the closure that will be sent to the thread using the <code>move</code> keyword.</p>
 <p>For example:</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::spawn;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 
 fn main() {
     let data = vec![1, 2, 3, 4, 5];
@@ -8497,7 +8497,7 @@ fn main() {
 }</code></pre></pre>
 <p>You can also return data via the join handler. This means you could pass hard work to a thread and do other work, coming
 back to check on the thread at a later time. We can check if the thread is finished with <code>.is_finished()</code>;</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::{sleep, spawn};
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::{sleep, spawn};
 use std::time::Duration;
 
 fn main() {
@@ -8527,7 +8527,7 @@ can send messages, and a single <code>Reciever</code> that can receive them. As 
 meaning that you can create them in one thread and send them to another.</p>
 <p>Let's create a bunch of threads and give each of them a <code>Sender</code> that points back to a single <code>Reciever</code>, we'll send
 that <code>Reciever</code> to a final thread that will collect the data from the other threads.</p>
-<pre><pre class="playground"><code class="language-rust">use std::sync::mpsc::channel;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::sync::mpsc::channel;
 use std::thread::spawn;
 
 fn main() {
@@ -8572,7 +8572,7 @@ references as we like, but we can only have one mutable reference. Furthermore, 
 reference... which is a little harder to confirm with threads. How do you know the thread referencing your data doesn't
 exist for longer than the data it's referenced?</p>
 <p>This is where <code>std::thread::scope</code> can help us, by providing scoped threads.</p>
-<pre><pre class="playground"><code class="language-rust">// We will create a scope and use that to spawn threads instead of spawning 
+<pre><pre class="playground"><code class="language-rust edition2024">// We will create a scope and use that to spawn threads instead of spawning 
 // them directly.
 use std::thread::scope;
 
@@ -8603,7 +8603,7 @@ fn main() {
 }</code></pre></pre>
 <p>This also works with mutable references but, bear in mind, only one thread can access the mutable reference, and it must
 end before we can access our data again.</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::scope;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::scope;
 
 fn main() {
     let mut data = String::from("This is owned by the main thread");
@@ -8639,7 +8639,7 @@ software abstraction concept called a "mutex" that makes access to the data MUTu
 through <code>std::sync::Mutex</code>.</p>
 <p>Once you place data inside a Mutex, to access it again, you need to "lock" the Mutex. If the Mutex is already locked,
 then the thread currently trying to access the data needs to wait for the existing lock to be released.</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::scope;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::scope;
 use std::sync::Mutex;
 
 fn main() {
@@ -8688,7 +8688,7 @@ than Rusts built in basic reference counting type <code>std::rc::Rc</code>, but 
 cover it in this book. If you need to pass data around wrapped in its own container its there to use</p>
 </blockquote>
 <p>So, armed with this knowledge, we can go back to unscoped threads!</p>
-<pre><pre class="playground"><code class="language-rust">use std::thread::spawn;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 use std::sync::{Arc, Mutex};
 
 fn main() {
@@ -8735,7 +8735,7 @@ function style macros we'll be making with <code>macro_rules!</code> but can unl
 <p><code>macro_rules!</code> is, itself, a macro, providing its own DSL that allows you to create more macros. This lets things get
 very powerful and, honestly, very weird. Let's take it slow.</p>
 <p>The general layout of <code>macro_rules!</code> looks like this:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// We invoke the `macro_rules!` macro usually at the module level rather than in
 // a function
@@ -8766,7 +8766,7 @@ does.</p>
 <p>This makes it much safer and more fully featured than a copy-paste.</p>
 <h2 id="hello-macro"><a class="header" href="#hello-macro">Hello, macro!</a></h2>
 <p>We'll start by making a hello world macro that produces a string.</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { String::from("Hello, world") };
 }
 
@@ -8781,7 +8781,7 @@ case inside an <code>assert_eq!</code> macro).</p>
 <p>This type of macro <em>could</em> be useful if you have a block of code you need to repeat but don't want to put it in a
 function, but let's be honest, that's not very likely.</p>
 <p>Let's upgrade our macro to match a pattern.</p>
-<pre><pre class="playground"><code class="language-rust editable">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust editable edition2024">macro_rules! hello {
     (this must be present) =&gt; { String::from("Hello, world") };
 }
 
@@ -8795,7 +8795,7 @@ start of each rule is a pattern, and that pattern can be <em>almost</em> anythin
 broken up into something called a token tree, which we'll talk about in the next section. Here, <code>this must be present</code>
 is considered a token tree made of the tokens: <code>this</code>, <code>must</code>, <code>be</code>, <code>present</code>.</p>
 <p>We can invoke different rules based on the matched pattern.</p>
-<pre><pre class="playground"><code class="language-rust editable">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust editable edition2024">macro_rules! hello {
     (world) =&gt; { String::from("Hello, world") };
     (yuki) =&gt; { String::from("Hello, yuki") };
 }
@@ -8807,7 +8807,7 @@ fn main() {
 }</code></pre></pre>
 <p>We obviously can't write out every possible thing that we might want to match on (what if we want to be able to say
 "hello" to lots of different people), so we can capture tokens into metavariables.</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     ($name:literal) =&gt; { 
         { 
             let mut output = String::from("Hello, ");
@@ -8836,7 +8836,7 @@ later in the section.</p>
 <p>The reason for this is that when we invoke the macro, Rust generates code at the point that you place the macro. If we
 didn't have the extra brackets, when we use the macro in our <code>assert_eq!</code>, our code would look to Rust as if it were
 this:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn main() {
 </span>assert_eq!(
     let mut output = String::from("Hello, ");
     output.push_str("Yuki");
@@ -8852,7 +8852,7 @@ because they have a value, even if the value is the unit type <code>()</code>. W
 have the output as the final line, our code block becomes a single expression the value of which is the <code>output</code>.</p>
 <p>This means that when we add those extra curly brackets to our macro, the generate code now looks like this, which is
 valid!</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>    assert_eq!(
         {
             let mut output = String::from("Hello, ");
@@ -8865,7 +8865,7 @@ valid!</p>
 <p>Expressions in Rust are particularly useful as they have a type and a value, just like variables, allowing you to use
 them inside other expressions.</p>
 <p>Let's go deeper and add another rule. Let's bring back our original behaviour for an empty <code>hello!</code> macro:</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { String::from("Hello, world") };
     ($name:literal) =&gt; { 
         { 
@@ -8882,7 +8882,7 @@ fn main() {
 }</code></pre></pre>
 <p>This is fine, but we're repeating ourselves a little bit. In case we might want to change our greeting later, lets not
 have <code>"Hello, "</code> twice. To maintain consistency, we can call our macro from inside our macro!</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { hello!("world") };
     ($name:literal) =&gt; { 
         { 
@@ -8913,7 +8913,7 @@ are all fine, but its worth noting things get a <em>little</em> weird using sepa
 metavariable. When the repeat pattern is used in code generation, it will repeat for each combination of metavariables
 used within it.</p>
 <p>We already have zero and one metavariable dealt with, so we want a rule in our macro that takes two or more inputs:</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { hello!("world") };
     ($name:literal) =&gt; { 
         { 
@@ -8951,7 +8951,7 @@ calling the hello macro with the first metavariable. We then have another repeat
 metavariable. Because we have a repeated metavariable inside a repeated block, this block will be repeated for every
 <code>literal</code> that <code>$rest</code> matched to.</p>
 <p>If we were to unwrap the code generated for the final test, it would look something like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>    assert_eq!(
     {
@@ -8971,7 +8971,7 @@ and we're really only making a quick toy macro to demonstrate the power they pro
 <p>You might be wondering if we can use repeats to reduce the number of rules we have. We unfortunately can't do things
 like treat the first or last element of a repeat differently using macro repeats <em>cough</em>foreshadowing<em>cough</em>, but we
 can merge the second and third arms using a <code>*</code>.</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { hello!("world") };
     ($name:literal $(, $rest:literal)*) =&gt; {
         {
@@ -8998,7 +8998,7 @@ we'd <em>have</em> to use the comma after the first literal so <code>hello!("Yuk
 metavariables too.</p>
 <p>I wasn't quite lying about not being able to treat the first and last differently with macro repeats. We can't do it
 with <em>just</em> macro repeats, BUT we can work around that with very low-cost language features like slices.</p>
-<pre><pre class="playground"><code class="language-rust">macro_rules! hello {
+<pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     ($($names:literal),*) =&gt; {
         {
             // We split the names out directly into an array. This is done at
@@ -9111,7 +9111,7 @@ the chat of my <a href="https://www.youtube.com/playlist?list=PLW2L8KbM0O7Z2KroH
 into composing my types using Traits to form common behaviour.</p>
 <p>For example, at time of writing, I allow the user to create <code>Company</code>s, <code>Role</code>s, and <code>Flag</code>s. <code>Role</code>s and <code>Flag</code>s
 belong to <code>Company</code>s so those types implement the following trait:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait HasCompany {
     fn get_company_id(&amp;self) -&gt; u128;
@@ -9119,7 +9119,7 @@ belong to <code>Company</code>s so those types implement the following trait:</p
 <span class="boring">}</span></code></pre></pre>
 <p>The trait itself does not provide any code, so each item that implements this code must decide on its behaviour. I'm
 a big believer in unit tests, so let's look at how that works with a test using <code>Role</code> as an example.:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">pub trait HasCompany {
 </span><span class="boring">fn get_company_id(&amp;self) -&gt; u128;
@@ -9157,7 +9157,7 @@ implementation of every other trait. Every time we add a new storable item, we'l
 implementation.</p>
 <p>The way I worked around this was, first I created a trait allowing me to create test instances of the types I want to
 test, then I created macros that use that trait to run the test:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// This trait exists in a central location
 pub trait TestHelper: Sized {
@@ -9179,7 +9179,7 @@ macro_rules! test_has_company_id {
 }
 <span class="boring">}</span></code></pre></pre>
 <p>By implementing the trait for each type that I want to test, I can add tests trivially like this:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">pub trait TestHelper: Sized {
 </span><span class="boring">    fn new_test() -&gt; Result&lt;Self, String&gt;;
@@ -9272,7 +9272,7 @@ position is checked, and the loop is then skipped if the value is 0.</li>
 <p>Don't panic! For now, we'll just trust that this is the Hello World program, we'll implement the instructions and see
 what happens when we run it.</p>
 <p>We're going to use two macros. First, let's create a macro that initialises the program.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>macro_rules! brain_fudge {
     ($($token:tt)+) =&gt; {
@@ -9308,7 +9308,7 @@ considering each byte to be a character. Again, this won't be appropriate for ev
 <p>So now we need to handle the token stream, but before we do that, let's write some tests. We'll keep it simple for now,
 while <code>++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.</code>
 outputs "Hello, world!\n", so does the following, with only three of the eight possible instructions:</p>
-<pre><pre class="playground"><code class="language-rust should_panic"><span class="boring">macro_rules! brain_fudge {
+<pre><pre class="playground"><code class="language-rust should_panic edition2024"><span class="boring">macro_rules! brain_fudge {
 </span><span class="boring">    ($($token:tt)+) =&gt; {
 </span><span class="boring">        {
 </span><span class="boring">            let mut memory = vec![0u8];
@@ -9367,7 +9367,7 @@ problem with matching, even if the first character of your Brain Fudge program i
 position relative to the other commas. But we <em>can</em> use semicolons as separators in our macro, which aren't part of the
 Brain Fudge language, and it <em>will</em> help readability when we get to the final part of this chapter.</p>
 <p>Each arm will also expect the memory, the pointer, and the output buffer before matching on the specific token:</p>
-<pre><pre class="playground"><code class="language-rust no_run"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>macro_rules! brain_fudge_helper {
     // This arm matches +, it adds 1 to the value at the current position We'll
@@ -9401,7 +9401,7 @@ Brain Fudge language, and it <em>will</em> help readability when we get to the f
 }
 <span class="boring">}</span></code></pre></pre>
 <p>And update our <code>brain_fudge!</code> macro to call the helper, passing in the program state.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">macro_rules! brain_fudge_helper {
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">macro_rules! brain_fudge_helper {
 </span><span class="boring">    ($memory:ident; $pointer:ident; $buffer:ident; + $($token:tt)*) =&gt; {
 </span><span class="boring">        $memory[$pointer] = $memory[$pointer].wrapping_add(1);
 </span><span class="boring">        brain_fudge_helper!($memory; $pointer; $buffer; $($token)*);
@@ -9479,7 +9479,7 @@ maximum number of times we can do this is 128. Our macro, using our silly Hello 
 won't work for loops when we come to them. For now, we're going to play a dangerous game and manually tell Rust
 it's fine for it to recurse 2048 times.</p>
 <p>The <code>recursion_limit</code> attribute applies at the crate level so be careful with this one!</p>
-<pre><pre class="playground"><code class="language-rust">#![recursion_limit = "2048"]
+<pre><pre class="playground"><code class="language-rust edition2024">#![recursion_limit = "2048"]
 
 macro_rules! brain_fudge_helper {
     // ... snip ...
@@ -9558,7 +9558,7 @@ with the final <code>]</code> rather than the first <code>]</code>.</p>
 <p>This means to make our loop arm work, we can match against any token tree that starts with a <code>[</code>, contains more tokens
 which may include more <code>[]</code> pairs, matches its ending <code>]</code> and is followed by yet more tokens! How cool is that!?</p>
 <p>Let's write up the missing arms and run our test against the original Hello World program:</p>
-<pre><pre class="playground"><code class="language-rust compile_fail">#![recursion_limit = "2048"]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024">#![recursion_limit = "2048"]
 
 macro_rules! brain_fudge_helper {
     // ... Snip previous arms ...
@@ -9684,7 +9684,7 @@ each language:</p>
 <p>We need to take care of these special cases, unfortunately. Luckily, while <code>&gt;&gt;</code> is a right shift token, <code>&gt; &gt;</code> <em>is</em> two
 greater than tokens. Tokens can be seperated by whitespace and will still match the <code>tt</code> fragment-specifier, all we need
 to do is split the token and pass it back into the macro</p>
-<pre><pre class="playground"><code class="language-rust">#![recursion_limit = "2048"]
+<pre><pre class="playground"><code class="language-rust edition2024">#![recursion_limit = "2048"]
 
 macro_rules! brain_fudge {
     // snip
@@ -9802,7 +9802,7 @@ macro_rules! brain_fudge_helper {
 <p>I stopped setting homework, but I thought I'd set a little challenge for anyone who wants to do it.</p>
 <p>Can you edit our <code>brain_fudge!</code> macro to work with programs that take input via the <code>,</code> token? To achieve this, I
 recommend making the following change to the <code>brain_fudge!</code> macro:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>macro_rules! brain_fudge {
      ($input:ident, $output:ident, $($token:tt)+) =&gt; {
@@ -9814,7 +9814,7 @@ recommend making the following change to the <code>brain_fudge!</code> macro:</p
 <span class="boring">}</span></code></pre></pre>
 <p>If you need help, the code below shows the test for a ROT13 Brain Fudge program and has the answer to the homework
 hidden if you want to reveal it</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![recursion_limit = "2048"]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![recursion_limit = "2048"]
 </span><span class="boring">
 </span><span class="boring">macro_rules! brain_fudge {
 </span><span class="boring">    ($input:ident; $output:ident; $($token:tt)+) =&gt; {
@@ -9946,7 +9946,7 @@ However, for this chapter, we really need to differentiate what is on the stack 
 <p>In the below code, <code>number_example</code> stores the actual number on the stack, since its of a known size, 32 bits unless
 otherwise specified. <code>string_example</code>, however, contains the location of the string data, not the data itself, which is
 stored on the heap. (We'll talk about how it gets to the heap shortly).</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     let number_example = 42;
     let string_example = String::from("This is string data too");
 }</code></pre></pre>
@@ -9967,7 +9967,7 @@ are pros and cons to this too, but it's far outside the scope of this guide.</p>
 <p>There's a third kind of memory we don't really talk about as much, but it might be the most important.</p>
 <p>Static Memory is where all values and data you write into your program are initially stored, though frequently it's
 subsequently moved somewhere else. For example, in the program:</p>
-<pre><pre class="playground"><code class="language-rust">const CONST_EXAMPLE: &amp;str = "This is string data";
+<pre><pre class="playground"><code class="language-rust edition2024">const CONST_EXAMPLE: &amp;str = "This is string data";
 
 fn main() {
     let number_example = 42;
@@ -9998,7 +9998,7 @@ thing. They're necessary tools that we need to do things that there is no other 
 function that is itself marked as <code>unsafe</code>. Because the function is marked as <code>unsafe</code> it can <em>only</em> be called within
 <code>unsafe</code> code, however, even within that function, code is treated as safe until you use another <code>unsafe</code> block. We'll
 talk about what it means to mark functions as <code>unsafe</code> further on.</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     // SAFETY: This function is a no-op
     unsafe {
         this_code_is_unsafe();
@@ -10023,51 +10023,11 @@ comments, to show that the code follows the guidelines laid out. We'll talk more
 this code isn't going to hurt us later. Documenting how we know this code is safe is crucial.</p>
 <p>You can read more about this practice in the official
 <a href="https://std-dev-guide.rust-lang.org/policy/safety-comments.html">Standard library developer's Guide</a></p>
-<h2 id="mutable-statics"><a class="header" href="#mutable-statics">Mutable Statics</a></h2>
-<p>There's a type of "variable" that can be read from anywhere, the static.</p>
-<pre><pre class="playground"><code class="language-rust">static HELLO_MESSAGE: &amp;str = "Hello!";
-
-fn main() {
-    println!("This function can read HELLO_MESSAGE without having ownership: {HELLO_MESSAGE}");
-    another_function();
-}
-
-fn another_function() {
-    println!("So can this one: {HELLO_MESSAGE}");
-}</code></pre></pre>
-<p>Static variables are a bit like global variables in other languages. They're really handy if you want to read data from
-anywhere in your application, you want to minimize stack/heap footprint and, importantly, you never want to change it.</p>
-<p>Rust allows you to mutate <code>static</code>s, but making the static mutable also makes it <code>unsafe</code>. Being able to access the
-static from anywhere means that it's visible to all threads. Mutating the static across threads would cause the exact
-problems we talked about in the <a href="language-basics/./threads.html#sharing-state">Threads</a> chapter.</p>
-<pre><pre class="playground"><code class="language-rust">static mut HELLO_MESSAGE: &amp;str = "Hello!";
-
-fn main() {
-    another_function();
-    
-    // SAFETY: We only ever modify this variable from the main thread, 
-    // HELLO_MESSAGE is never used by other threads
-    unsafe {
-        HELLO_MESSAGE = "CHANGED!";
-    }
-    
-    another_function();
-}
-
-fn another_function() {
-    // SAFETY: This function is only called in the main thread
-    unsafe {
-        println!("HELLO_MESSAGE is currently: {HELLO_MESSAGE}");
-    }
-}</code></pre></pre>
-<p>Notice that it's not just unsafe to write to the static, it's also considered unsafe to read from it. However, so long
-as we never modify this in a different thread, we know this behavior is safe.</p>
-<p>There's a catch to watch for here. Remember, <code>HELLO_MESSAGE</code> is a reference to some data that exists in static memory.
-What we've done here is change the reference itself to point to the location of <code>"CHANGED!"</code> which is also built into
-the program's static memory.</p>
 <h2 id="raw-pointers"><a class="header" href="#raw-pointers">Raw Pointers</a></h2>
-<p>Our previous example was pretty tame. We were using static data, so, although there was some risk with relation to
-threads, it was still on the safer side. Let's play with fire.</p>
+<p>One of the main reasons you might want to dip into unsafe Rust is to communicate with memory directly. Rust's
+abstractions around memory are powerful, usually free (or otherwise cheap) and very flexible, but they don't cover
+every possible need. You may have a use case where you need to talk to memory without going through Rust's abstractions,
+and Rust lets you do that by turning on its unsafe features to access raw pointers.</p>
 <p>We use References in Rust a bit like other languages use pointers to point to something that's actually stored
 elsewhere. But references have a number of features that make them safer to use. A pointer is essentially just a number
 that is an address to a location in memory. When you allocate heap data, even in Rust, the operating system amongst
@@ -10086,7 +10046,7 @@ pointer locations.</p>
 may even need to use pointers directly ourselves.</p>
 <p>You can actually get pointers in safe Rust. Try running this program multiple times, you should get a different number
 every time:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let the_answer = 42;
 let pointer = &amp;raw const the_answer;
 
@@ -10094,7 +10054,7 @@ println!("The variable at {pointer:p} contains the data '{the_answer}'");
 <span class="boring">}</span></code></pre></pre>
 <p>One cool thing worth pointing out is that Rust even types your pointers, making it harder to muddle them up later. A
 pointer to an <code>i32</code> has the type <code>*const i32</code></p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::any::type_name;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">use std::any::type_name;
 </span><span class="boring">
 </span><span class="boring">// Thanks to @DevinR528 https://github.com/DevinR528
 </span><span class="boring">// Source: https://users.rust-lang.org/t/how-check-type-of-variable/33845/2
@@ -10113,7 +10073,7 @@ println!("{}", type_of(pointer));
 Strings are a good example of this. The pointer to the variable does not point to the data, it points to metadata which
 itself contains a pointer to the data. We can access the pointer to the data via a method on the string itself (this is
 inherited from string slices). Again, there's nothing unsafe about doing this.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let hello = String::from("Hello, world!");
 let pointer_to_variable = &amp;raw const hello;
 let pointer_to_data = hello.as_ptr();
@@ -10126,7 +10086,7 @@ println!(
 <span class="boring">}</span></code></pre></pre>
 <p>Getting pointers is perfectly safe. What we can't do is use those pointers to get data in safe Rust. For that we need to
 dip into unsafe. Below we dereference the pointer to go back from the location to the data that's stored there.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let the_answer = 42;
 let pointer = &amp;raw const the_answer;
 
@@ -10147,7 +10107,7 @@ you can write unsafe code inside a function, as long as you write the function t
 meaning, for someone calling the function, it <em>is</em> safe.</p>
 <p>A good example of this is the <a href="https://doc.rust-lang.org/std/mem/fn.swap.html"><code>std::mem::swap</code></a> which swaps the values
 at two mutable locations:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">fn main() {
 </span>let mut left = "Left".to_string();
 let mut right = "Right".to_string();
 
@@ -10179,7 +10139,7 @@ free when the thing that originally created the data also wants to free it?</p>
 currently. Capacity is how much memory is available to contain potential data. Most types will cause a reallocation when
 the capacity is filled, causing us another problem to look out for!</p>
 <p>Luckily, by being aware of the problems ahead of time, we can still use this function safely.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">use std::ops::Deref;
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">use std::ops::Deref;
 </span><span class="boring">
 </span><span class="boring">fn main() {
 </span>// We'll manually make sure our string never exceeds 100 bytes
@@ -10206,7 +10166,7 @@ unsafe {
     // `original_string` is dropped later. We could equally prevent 
     // `original_string` being dropped instead, but, to me, it makes sense to
     // have this behavior in the inner code block. This also means if the
-    // capacity of `original_string` was larger than `capacity` it won't cause
+    // capacity of `original_string` was larger than `capacity`, it won't cause
     // unfreed memory.
     // 
     // The ManuallyDrop type is actually safe. Although it prevents the memory
@@ -10233,9 +10193,9 @@ the String is a slice, which also has the method <code>from_raw_parts</code> (th
 have capacity, just length). <code>slice::from_raw_parts_mut</code> is unsafe, but it's used inside the safe method
 <code>String::retain</code>.</p>
 <p>Creating safe abstractions might look something like this:</p>
-<pre><pre class="playground"><code class="language-rust">/// # SAFETY
+<pre><pre class="playground"><code class="language-rust edition2024">/// # SAFETY
 /// 
-/// To use this safely you... don't need to do anything because this function
+/// To use this safely, you... don't need to do anything because this function
 /// just returns true
 unsafe fn conceptually_dangerous_function() -&gt; bool {
     true
@@ -10261,7 +10221,7 @@ implementation. It's actually kind of rare to <em>have</em> to use this feature.
 abstraction, you could move the unsafe method to an unsafe function.</p>
 <p>For example, this trait has two provided methods, but we still can't implement it safely, even with the default
 implementations.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>unsafe trait NotSafe {
     /// # Safety
@@ -10284,7 +10244,7 @@ struct ExampleUnitType;
 impl NotSafe for ExampleUnitType {}
 <span class="boring">}</span></code></pre></pre>
 <p>We can implement it with the unsafe keyword though:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>unsafe trait NotSafe {
     // ...snip...
@@ -10308,7 +10268,7 @@ struct ExampleUnitType;
 unsafe impl NotSafe for ExampleUnitType {}
 <span class="boring">}</span></code></pre></pre>
 <p>However, if we don't need to ever override the unsafe method, we could just extract it from the trait entirely</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>/// # Safety 
 /// 
@@ -10339,7 +10299,7 @@ safe, so the traits themselves are <code>unsafe</code>.</p>
 <p>Unions, in software engineering, are a way of storing different types in the same section of memory. They're typically
 broken into two flavors, tagged and untagged. "Tagged" simply means the type is part of data, so you can only access the
 data <em>as</em> the type that it is. We use tagged unions in Rust all the time, and they're perfectly safe:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>enum ThisIsATaggedUnion {
     Number(u64),
@@ -10349,7 +10309,7 @@ data <em>as</em> the type that it is. We use tagged unions in Rust all the time,
 <p>Enums are tagged unions, they only ever take up as much memory as is taken by the largest data type representable inside
 them, plus a discrimination value which differentiates the variants at runtime (usually represented as an <code>isize</code> but
 Rust compilers <em>may</em> use smaller numeric types):</p>
-<pre><pre class="playground"><code class="language-rust">enum ThisIsATaggedUnion {
+<pre><pre class="playground"><code class="language-rust edition2024">enum ThisIsATaggedUnion {
     Number(u64),
     Character(char),
 }
@@ -10381,7 +10341,7 @@ that share multiple bytes of data, you <em>may</em> need to consider endianness.
 </blockquote>
 <p>In this example, we can interrogate characters as u32's (characters in Rust are four bytes, although most string types
 use a variable byte width encoding such as utf-8).</p>
-<pre><pre class="playground"><code class="language-rust">union CharOrNumber {
+<pre><pre class="playground"><code class="language-rust edition2024">union CharOrNumber {
     number: u32,
     character: char,
 }
@@ -10418,7 +10378,7 @@ speed and know <em>exactly</em> what you're doing with the <em>exact</em> hardwa
 versions of the function, one that works using the "x86_64" (most Windows and Linux machines and older Macs) and another
 that works using "aarch64" (all modern Macs but also some newer Windows and Linux machines). As you can see, apart from
 <code>mov</code>, the other instructions look very different but do the same things.</p>
-<pre><pre class="playground"><code class="language-rust">use std::arch::asm;
+<pre><pre class="playground"><code class="language-rust edition2024">use std::arch::asm;
 
 #[cfg(target_arch = "x86_64")]
 fn multiply_by_six(input: u64) -&gt; u64 {
@@ -10477,7 +10437,7 @@ of the function has to be known.</p>
 know its name, so we need to prevent the mangling, but that means there's a risk of collision. Pre Rust-2024 preventing
 mangling was done with the <code>#[no_mangle]</code> attribute, but as of Rust 2024, we need to explicitly tell Rust that we
 understand the dangers.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// SAFETY: No other global function will use this name, this does not need to
 // be part of the documentation though.
@@ -10495,7 +10455,7 @@ your code.</p>
 <p>Everything about this is unsafe. If there's no dynamic library on the target system that shares a name with the linked
 library, the program will panic. If the function names do not match, the program will panic. If the function names match
 but the signature doesn't, you'll get undefined behavior.</p>
-<pre><pre class="playground"><code class="language-rust compile_fail"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">struct SomeErrorType;
 </span><span class="boring">
@@ -10520,6 +10480,21 @@ fn safe_abstraction(x: i32) -&gt; Result&lt;bool, SomeErrorType&gt; {
     }
 }
 <span class="boring">}</span></code></pre></pre>
+<h2 id="mutable-statics"><a class="header" href="#mutable-statics">Mutable Statics</a></h2>
+<p>In older editions of Rust, it was possible to have mutable statics via unsafe Rust. This would allow you to have mutable
+global variables that were safe to use so long as they weren't shared between threads. As of Rust 2024, this is no
+longer the case.</p>
+<p>If you don't mind sacrificing a tiny bit of speed, the same thing can be achieved through safe abstractions and tools
+like atomic types or interior mutability. If you really need the speed, then you can still fall back on raw pointers.</p>
+<p>To find out more about the change, you can read
+<a href="https://doc.rust-lang.org/edition-guide/rust-2024/static-mut-references.html">this chapter</a> of the Rust Editions Guide.</p>
+<p>At the end of the day, though, mutable globals are a bit of a crutch and should generally be avoided where possible, and
+I think there's a lesson here. Any time you find yourself reaching for unsafe code, you want to be sure that there's no
+other acceptable way to do the same thing. Unsafe Rust <em>can</em> speed up your code and <em>can</em> let you do things there's no
+other way of doing, but you should assess the various possibilities and trade-offs before commiting to unsafe.</p>
+<p>Even if you have to use unsafe code, are there safe abstractions for what you're attempting in the standard library or
+well-tested crates? You shouldn't be afraid of unsafe, but you should understand that it is going to turn on features
+that <em>can</em> behave in surprised ways.</p>
 <h2 id="summary-1"><a class="header" href="#summary-1">Summary</a></h2>
 <p>Outside of specialist use cases, you're unlikely to have to write much, if any, unsafe code yourself. Nonetheless,
 hopefully after this chapter you see that it's not as scary as it seems. You still have all the normal safety checks

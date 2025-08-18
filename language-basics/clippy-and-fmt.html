@@ -191,14 +191,14 @@ work is always the best we can make it!</p>
 code to look. For example:</p>
 <ul>
 <li>Do you like opening curly brakets on the end of a line, like this:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn example() {
     // ...
 }
 <span class="boring">}</span></code></pre></pre>
 or on a new line like this:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn example()
 {
@@ -207,14 +207,14 @@ or on a new line like this:
 <span class="boring">}</span></code></pre></pre>
 </li>
 <li>Do you indent with four spaces:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn hello() {
     println!("Hello");  
 }
 <span class="boring">}</span></code></pre></pre>
 or two:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn hello() {
   println!("Hello");  
@@ -222,7 +222,7 @@ or two:
 <span class="boring">}</span></code></pre></pre>
 </li>
 <li>Does the last item in a list across multiple lines have a trailing comma:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let list = [
     "one",
@@ -230,7 +230,7 @@ or two:
 ];
 <span class="boring">}</span></code></pre></pre>
 or not:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let list = [
     "one",
@@ -281,7 +281,7 @@ clippy which means you don't get told if there is a potential issue).</p>
 <ul>
 <li>run: <code>cargo clippy -- -W clippy::pedantic</code></li>
 <li>in your entry file to my project (eg, <code>main.rs</code>, or <code>lib.rs</code>) you can add the line:
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span>#![warn(clippy::pedantic)]
 <span class="boring">fn main() {
 </span><span class="boring">}</span></code></pre></pre>
