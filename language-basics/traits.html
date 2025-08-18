@@ -245,7 +245,7 @@ impl ToString for Person {
 </span><span class="boring">}</span></code></pre></pre>
 <blockquote>
 <p>⚠️ <strong>Important:</strong> You actually <em>shouldn't</em> implement <code>ToString</code>. I use it here because it's very slightly easier to
-understand that what you <em>should</em> do, which is implement the trait <code>Display</code>. We'll cover this at the end of the
+understand than what you <em>should</em> do, which is implement the trait <code>Display</code>. We'll cover this at the end of the
 chapter when the reason why is easier to understand.</p>
 </blockquote>
 <p>It's worth noting that in order to use methods associated with a trait, the trait must be in scope. We don't have to do
@@ -261,7 +261,7 @@ other traits available to you in the future. For now though, we're going to buil
 <p>We're going to make an <code>Animal</code> trait to represent the behaviour of any animal.</p>
 <p>We'll also do a little reorganising while we're at it.</p>
 <p>The idea here is that all animals will implement the <code>Animal</code> trait, then we'll have some known behaviour.</p>
-<p>First lets create an animal module. In <code>main.rs</code> add <code>mod animal</code> and then create the file <code>animal/mod.rs</code>.</p>
+<p>First let's create an animal module. In <code>main.rs</code> add <code>mod animal</code> and then create the file <code>animal/mod.rs</code>.</p>
 <p>Let's move <code>cat.rs</code> to <code>animal/cat.rs</code> so that it's a submodule of <code>animal</code>. Finally, don't forget to add <code>pub mod cat;</code>
 to <code>animal/mod.rs</code> and to update your use statement in <code>main.rs</code> to <code>animal::cat::Cat</code>.</p>
 <p>We're now ready to make our trait.</p>
@@ -366,7 +366,7 @@ would look like this:</p>
 </span>pub struct Mischievous&lt;A: Animal&gt; {
     animal: A,
 }</code></pre></pre>
-<p>Update all of you other states (<code>Hangry</code>, and <code>Eepy</code>) to match.</p>
+<p>Update all of your other states (<code>Hangry</code>, and <code>Eepy</code>) to match.</p>
 <p>Now that we know that whatever is in each state's <code>animal</code> field must implement the <code>Animal</code> trait, we can treat it as
 such in any implementation code for those states. Just remember that for generic <code>impl</code>s, it is the <code>impl</code> that
 specifies the generic, so we need to make sure we add the Trait Bound there, then we can update our describe to use the
@@ -535,7 +535,7 @@ fn main() {
 }</code></pre></pre>
 <p>So that's our first problem solved! We can now access the <code>Cat</code>'s data through the <code>Animal</code> trait.</p>
 <h2 id="making-more-flexible-animals"><a class="header" href="#making-more-flexible-animals">Making more flexible <code>Animal</code>s</a></h2>
-<p>Now that we can read details from the underlying <code>Cat</code> object, lets start to think about how we can expand this
+<p>Now that we can read details from the underlying <code>Cat</code> object, let's start to think about how we can expand this
 functionality out to other types of animals... starting with the most dangerous of animal.</p>
 <p>Start by adding <code>pub mod human;</code> to <code>animal.mod</code>.</p>
 <p>Then create <code>animal/human.rs</code> and pop this inside:</p>
@@ -588,7 +588,7 @@ impl Animal for Human {
 
 pub mod cat;
 pub mod human;</code></pre>
-<p>Finally, lets update our main function, and run the program to make sure everything is working.</p>
+<p>Finally, let's update our main function, and run the program to make sure everything is working.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">pub mod animal {
 </span><span class="boring">   // animal/mod.rs
 </span><span class="boring">   pub trait Animal {
@@ -746,11 +746,11 @@ fn main() {
 }</code></pre></pre>
 <p>Notice that we barely had to change anything to add humans to our code, how cool is that!</p>
 <p>But there's still an issue... my mischievous state doesn't tend to have me breaking into wardrobes by pulling on exposed
-clothing... I have a opposable thumb.</p>
+clothing... I have an opposable thumb.</p>
 <p>In fact, when I'm in a mischievous mood, I probably don't behave the same as other humans, I probably don't behave the
 same as you when you're feeling mischievous.</p>
 <h2 id="optional-homework"><a class="header" href="#optional-homework">Optional Homework</a></h2>
-<p>Can you change the code so that each states behaviours are defined when the structs are instantiated? To do this you
+<p>Can you change the code so that each state's behaviours are defined when the structs are instantiated? To do this you
 will need to:</p>
 <ul>
 <li>modify the <code>Human</code> and <code>Cat</code> structs</li>
@@ -1031,7 +1031,7 @@ code) it looks like this:</p>
 <p>Having gone through the rest of the chapter this hopefully makes some sense. We're implementing <code>ToString</code> for the
 generic <code>T</code> where <code>T</code> already has <code>Display</code>. We can then create the string using the display method of that type.</p>
 <p>Because those built in types already have <code>Display</code>, they get <code>ToString</code> for free. Once you've implemented <code>Display</code> for
-<code>Person</code> to, you not only won't need <code>ToString</code> any more, you'll find that <code>ToString</code> if you leave you're <code>ToString</code>
+<code>Person</code>, you not only won't need <code>ToString</code> any more, you'll find that if you leave you're <code>ToString</code>
 implementation in, you can't compile your code because it now conflicts with this other implementation.</p>
 <p>So why do both <code>Display</code> and <code>ToString</code> exist, especially if everything with <code>Display</code> gets a free <code>ToString</code>
 implementation? The answer might surprise you! ... But it's non-trivial so I'll save it for much further into the book,
