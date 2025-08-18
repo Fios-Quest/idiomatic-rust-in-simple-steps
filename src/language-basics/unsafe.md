@@ -120,12 +120,54 @@ Some of these tools exist in other commonly used low-level languages that have b
 rightly, very popular today. In these languages, these tools are available at any time. Having the tools is not a bad
 thing. They're necessary tools that we need to do things that there is no other way to do.
 
+How to use unsafe
+-----------------
+
+Any time we use unsafe code we need to wrap it inside an `unsafe` block. The code below uses an `unsafe` block to call a
+function that is itself marked as `unsafe`. Because the function is marked as `unsafe` it can _only_ be called within
+`unsafe` code, however, even within that function, code is treated as safe until you use another `unsafe` block. We'll
+talk about what it means to mark functions as `unsafe` further on.
+
+```rust
+fn main() {
+    // SAFETY: This function is a no-op
+    unsafe {
+        this_code_is_unsafe();
+    }
+}
+
+/// # Safety
+/// 
+/// This function doesn't do anything, therefore, you don't need to do anything
+/// in particular to use it safely.
+unsafe fn this_code_is_unsafe() {}
+```
+
+What's with all the comments?
+
+This is not necessarily a widely used practice, however, the Rust Standard Library team, who have to work with `unsafe`
+a lot, have standardized around making safety communication almost contractual.
+
+Prior to the `unsafe` block, the first thing we see is a `SAFETY:` comment. This tells the reader how the author made
+sure this code was safe. This may seem odd. If the code is provably safe, why do we need `unsafe` at all? `unsafe` turns
+on language features that can't be proven safe by the compiler, but that's no excuse for writing `unsafe` code unsafely.
+
+The `# Safety` section of the doc comment on the function `this_code_is_unsafe` should be used to tell consumers of that
+function how to use the function safely. What you'll often find is that `SAFETY:` comments should mirror `# Safety` doc
+comments, to show that the code follows the guidelines laid out. We'll talk more about unsafe functions later.
+
+The practice of writing a `SAFETY:` comment ensures that when we write `unsafe` code, we think hard about how we know
+this code isn't going to hurt us later. Documenting how we know this code is safe is crucial.
+
+You can read more about this practice in the official
+[Standard library developer's Guide](https://std-dev-guide.rust-lang.org/policy/safety-comments.html)
+
 Raw Pointers
 ------------
 
-One of the main reasons you might want to dip into unsafe Rust is to communicate with memory on its terms. Rust's
+One of the main reasons you might want to dip into unsafe Rust is to communicate with memory directly. Rust's
 abstractions around memory are powerful, usually free (or otherwise cheap) and very flexible, but they don't cover
-everything. You may have a use case where you need to talk to memory directly without going through Rust's abstractions,
+every possible need. You may have a use case where you need to talk to memory without going through Rust's abstractions,
 and Rust lets you do that by turning on its unsafe features to access raw pointers.
 
 We use References in Rust a bit like other languages use pointers to point to something that's actually stored 
@@ -665,15 +707,14 @@ Mutable Statics
 ---------------
 
 In older editions of Rust, it was possible to have mutable statics via unsafe Rust. This would allow you to have mutable
-global variables that were effectively safe so long as they weren't shared between threads. As of Rust 2024, this is no
+global variables that were safe to use so long as they weren't shared between threads. As of Rust 2024, this is no
 longer the case.
 
-If you don't need mind sacrificing a tiny bit of speed, the same thing can be achieved through safe abstractions and
-tools like atomic types or interior mutability. If you really need the speed, then you can still fall back on raw
-pointers.
+If you don't mind sacrificing a tiny bit of speed, the same thing can be achieved through safe abstractions and tools
+like atomic types or interior mutability. If you really need the speed, then you can still fall back on raw pointers.
 
 To find out more about the change, you can read 
-[this section](https://doc.rust-lang.org/edition-guide/rust-2024/static-mut-references.html) of the Rust Editions Guide.
+[this chapter](https://doc.rust-lang.org/edition-guide/rust-2024/static-mut-references.html) of the Rust Editions Guide.
 
 At the end of the day, though, mutable globals are a bit of a crutch and should generally be avoided where possible, and
 I think there's a lesson here. Any time you find yourself reaching for unsafe code, you want to be sure that there's no
