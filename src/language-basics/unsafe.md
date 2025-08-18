@@ -661,6 +661,22 @@ fn safe_abstraction(x: i32) -> Result<bool, SomeErrorType> {
 }
 ```
 
+Mutable Statics
+---------------
+
+In older editions of Rust, it was possible to have mutable statics via unsafe Rust. This would allow you to have mutable
+global variables that were effectively safe so long as they weren't shared between threads. As of Rust 2024, this is no
+longer the case.
+
+If you don't need mind sacrificing a tiny bit of speed, the same thing can be achieved through safe abstractions and
+tools like atomic types or interior mutability. If you really need the speed, then you can still fall back on raw
+pointers.
+
+At the end of the day though, mutable globals are a bit of a crutch and should generally be avoided where possible. 
+
+To find out more about the change you can read 
+[this section](https://doc.rust-lang.org/edition-guide/rust-2024/static-mut-references.html) of the Rust Editions Guide.
+
 Summary
 -------
 
