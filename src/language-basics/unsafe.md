@@ -120,108 +120,13 @@ Some of these tools exist in other commonly used low-level languages that have b
 rightly, very popular today. In these languages, these tools are available at any time. Having the tools is not a bad
 thing. They're necessary tools that we need to do things that there is no other way to do.
 
-How to use unsafe
------------------
-
-Any time we use unsafe code we need to wrap it inside an `unsafe` block. The code below uses an `unsafe` block to call a
-function that is itself marked as `unsafe`. Because the function is marked as `unsafe` it can _only_ be called within
-`unsafe` code, however, even within that function, code is treated as safe until you use another `unsafe` block. We'll
-talk about what it means to mark functions as `unsafe` further on.
-
-```rust
-fn main() {
-    // SAFETY: This function is a no-op
-    unsafe {
-        this_code_is_unsafe();
-    }
-}
-
-/// # Safety
-/// 
-/// This function doesn't do anything, therefore, you don't need to do anything
-/// in particular to use it safely.
-unsafe fn this_code_is_unsafe() {}
-```
-
-What's with all the comments?
-
-This is not necessarily a widely used practice, however, the Rust Standard Library team, who have to work with `unsafe`
-a lot, have standardized around making safety communication almost contractual.
-
-Prior to the `unsafe` block, the first thing we see is a `SAFETY:` comment. This tells the reader how the author made
-sure this code was safe. This may seem odd. If the code is provably safe, why do we need `unsafe` at all? `unsafe` turns
-on language features that can't be proven safe by the compiler, but that's no excuse for writing `unsafe` code unsafely.
-
-The `# Safety` section of the doc comment on the function `this_code_is_unsafe` should be used to tell consumers of that
-function how to use the function safely. What you'll often find is that `SAFETY:` comments should mirror `# Safety` doc
-comments, to show that the code follows the guidelines laid out. We'll talk more about unsafe functions later.
-
-The practice of writing a `SAFETY:` comment ensures that when we write `unsafe` code, we think hard about how we know
-this code isn't going to hurt us later. Documenting how we know this code is safe is crucial.
-
-You can read more about this practice in the official 
-[Standard library developer's Guide](https://std-dev-guide.rust-lang.org/policy/safety-comments.html)
-
-Mutable Statics
----------------
-
-There's a type of "variable" that can be read from anywhere, the static.
-
-```rust
-static HELLO_MESSAGE: &str = "Hello!";
-
-fn main() {
-    println!("This function can read HELLO_MESSAGE without having ownership: {HELLO_MESSAGE}");
-    another_function();
-}
-
-fn another_function() {
-    println!("So can this one: {HELLO_MESSAGE}");
-}
-```
-
-Static variables are a bit like global variables in other languages. They're really handy if you want to read data from
-anywhere in your application, you want to minimize stack/heap footprint and, importantly, you never want to change it.
-
-Rust allows you to mutate `static`s, but making the static mutable also makes it `unsafe`. Being able to access the
-static from anywhere means that it's visible to all threads. Mutating the static across threads would cause the exact
-problems we talked about in the [Threads](./threads.md#sharing-state) chapter.
-
-```rust
-static mut HELLO_MESSAGE: &str = "Hello!";
-
-fn main() {
-    another_function();
-    
-    // SAFETY: We only ever modify this variable from the main thread, 
-    // HELLO_MESSAGE is never used by other threads
-    unsafe {
-        HELLO_MESSAGE = "CHANGED!";
-    }
-    
-    another_function();
-}
-
-fn another_function() {
-    // SAFETY: This function is only called in the main thread
-    unsafe {
-        println!("HELLO_MESSAGE is currently: {HELLO_MESSAGE}");
-    }
-}
-```
-
-Notice that it's not just unsafe to write to the static, it's also considered unsafe to read from it. However, so long
-as we never modify this in a different thread, we know this behavior is safe.
-
-There's a catch to watch for here. Remember, `HELLO_MESSAGE` is a reference to some data that exists in static memory.
-What we've done here is change the reference itself to point to the location of `"CHANGED!"` which is also built into
-the program's static memory.
-
 Raw Pointers
 ------------
 
-Our previous example was pretty tame. We were using static data, so, although there was some risk with relation to
-threads, it was still on the safer side. Let's play with fire.
+One of the main reasons you might want to dip into unsafe Rust is to communicate with memory on its terms. Rust's
+abstractions around memory are powerful, usually free (or otherwise cheap) and very flexible, but they don't cover
+everything. You may have a use case where you need to talk to memory directly without going through Rust's abstractions
+and Rust lets you do that by turning on its unsafe features to access raw pointers.
 
 We use References in Rust a bit like other languages use pointers to point to something that's actually stored 
 elsewhere. But references have a number of features that make them safer to use. A pointer is essentially just a number
