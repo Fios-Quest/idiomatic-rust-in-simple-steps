@@ -1356,7 +1356,8 @@ Official Documentation: [`Borrow`][Borrow], [`BorrowMut`][BorrowMut]
 ### AsRef / AsMut
 
 So we now have a way to borrow an entire type as a different type, but we won't be able to do that with more complex
-compound types. If we have a more complex object and want to internally reference 
+compound types. If we have a more complex object and want to internally reference a part of it we can use one of these
+traits instead.
 
 Remember earlier we had our `Cat` type which only had a name. We could, if we wanted, implement `AsRef<str>` so that
 it can be used in the place of a `&str`:
