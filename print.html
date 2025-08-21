@@ -5541,7 +5541,7 @@ you should be aware of.</p>
 <ul>
 <li><strong>Markers</strong> - these can be considered intrinsic traits</li>
 <li><strong>Derivables</strong> - traits for which the functionality is so easy to implement there are easy tools to automate it</li>
-<li><strong>Error Handling</strong> - Traits related to handling</li>
+<li><strong>Error Handling</strong> - Traits related to handling errors</li>
 <li><strong>Converters</strong> - traits that allow you to change one type into another</li>
 <li><strong>Referencing and Dereferencing</strong> - traits that allow you to treat data as a different type without conversion</li>
 <li><strong>Other</strong> - Things that didn't fit nicely into the other categories</li>
@@ -5715,7 +5715,7 @@ might be where you want to implement <code>Debug</code> manually.</p>
 <p>What <code>Debug</code> is needed for, is things like the <code>assert_eq!</code> macro, mainly used in testing. If you <code>assert_eq!</code> two
 values, and they're not equivalent, the test suite will want to print the values to the screen. We'll show this more
 when we talk about the equivalence traits in the next section.</p>
-<p><code>Debug</code> works very similarly to <code>Display</code> taking a formater as a parameter.</p>
+<p><code>Debug</code> works very similarly to <code>Display</code> taking a formatter as a parameter.</p>
 <pre><code class="language-rust ignore">impl fmt::Debug for MyType {
     fn fmt(&amp;self, f: &amp;mut fmt::Formatter&lt;'_&gt;) -&gt; fmt::Result {
         // ...
@@ -5732,7 +5732,7 @@ official <code>Debug</code> documentation. 👇🏻</p>
 <p>Allow me to answer those questions with another question: Is <code>0</code> equivalent to <code>-0</code>. Mathematically, zero is neither
 positive nor negative, so these are identical, but inside a floating point number, the binary representation is
 different.</p>
-<p>Speaking of floating points, in binary representation its possible to represent that something is Not a Number (NaN).
+<p>Speaking of floating points, in binary representation it's possible to represent that something is Not a Number (NaN).
 However, should two NaNs, even if they have the same binary representation, be considered as the same value when you
 can get there in different ways? Probably not.</p>
 <p>For the most part in Rust, we're only concerned with Partial Equivalence <code>PartialEq</code>, this is what allows us to compare
@@ -6010,7 +6010,7 @@ side and the right hand side are the same type.</p>
 <h3 id="clone-and-copy"><a class="header" href="#clone-and-copy">Clone (and Copy)</a></h3>
 <p><code>Clone</code> is a bit like <code>Copy</code> in that it allows you to duplicate values, however, where <code>Copy</code> is implicitly very cheap,
 <code>Clone</code> can get away with doing a bit more work.</p>
-<p>With <code>Copy</code>, we can make a copy of data on that is purely on the stack, however, this restricts us to <code>Sized</code> data. This
+<p>With <code>Copy</code>, we can make a copy of data that is purely on the stack, however, this restricts us to <code>Sized</code> data. This
 means, for example, <code>String</code> which is a smart pointer to data on the heap, can not implement <code>Copy</code>. In order to
 duplicate <code>String</code> we'd need to request new memory on the Heap to place the data into, then copy the data to the new
 location, and create a new smart pointer on the stack to point to it.</p>
@@ -6485,7 +6485,7 @@ associated type, how clever is that! To ask Rust to infer a type, we use <code>_
 <h2 id="referencing-and-dereferencing"><a class="header" href="#referencing-and-dereferencing">Referencing and Dereferencing</a></h2>
 <p>We've talked about this a little bit already but in Rust, rather than having to pass around ownership of a value, you
 can instead reference it, while leaving ownership wherever it originated (so long as the reference never outlives the
-owned data it points to). Reference's in Rust are similar to pointers in other languages that you might have heard of,
+owned data it points to). References in Rust are similar to pointers in other languages that you might have heard of,
 in that they are a value which "points at" another location in memory where the actual value is.</p>
 <p>Since the reference only points at the data, if you pass it into a function, when the function ends, only the reference
 is cleaned up, not the data it was pointing at. Because the reference doesn't own the data it points at, we describe it
@@ -6645,7 +6645,8 @@ to another, making it less useful for compound types.</p>
 <p>Official Documentation: <a href="https://doc.rust-lang.org/std/borrow/trait.Borrow.html"><code>Borrow</code></a>, <a href="https://doc.rust-lang.org/std/borrow/trait.BorrowMut.html"><code>BorrowMut</code></a></p>
 <h3 id="asref--asmut"><a class="header" href="#asref--asmut">AsRef / AsMut</a></h3>
 <p>So we now have a way to borrow an entire type as a different type, but we won't be able to do that with more complex
-compound types. If we have a more complex object and want to internally reference</p>
+compound types. If we have a more complex object and want to internally reference a part of it we can use one of these
+traits instead.</p>
 <p>Remember earlier we had our <code>Cat</code> type which only had a name. We could, if we wanted, implement <code>AsRef&lt;str&gt;</code> so that
 it can be used in the place of a <code>&amp;str</code>:</p>
 <pre><pre class="playground"><code class="language-rust edition2024">struct Cat {
@@ -6669,7 +6670,7 @@ fn main() {
     let yuki = Cat { name: "Yuki".into(), age: 15 };
     cuddle(yuki.as_ref());
 }</code></pre></pre>
-<p>Arguably, we could make this code even friendly by changing the <code>cuddle</code> to take a generic, and then calling <code>.as_ref()</code>
+<p>Arguably, we could make this code even more friendly by changing the <code>cuddle</code> to take a generic, and then calling <code>.as_ref()</code>
 in the function itself. This code looks a little scarier, but once you get used to seeing code like this, you can write
 far more flexible and easy to use code.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">struct Cat {
@@ -6874,9 +6875,9 @@ match Email::is_valid(&amp;email) {
 <h3 id="drop"><a class="header" href="#drop">Drop</a></h3>
 <p>Rust is <em>very</em> good at cleaning up after itself, especially when you use the standard library:</p>
 <ul>
-<li>If your variable allocate heap memory, that memory is released when the variable that owns it goes out of scope</li>
+<li>If your variable allocates heap memory, that memory is released when the variable that owns it goes out of scope</li>
 <li>If you open a file to read or write, it's closed when the file handler goes out of scope</li>
-<li>If you start a TCP connection, its ended when the handler goes our of scope</li>
+<li>If you start a TCP connection, it's ended when the handler goes our of scope</li>
 </ul>
 <p>The Rust standard library is achieving this with the <code>Drop</code> trait.</p>
 <p>You can implement the drop trait yourself:</p>
