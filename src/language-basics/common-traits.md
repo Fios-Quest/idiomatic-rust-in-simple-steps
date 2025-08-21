@@ -12,7 +12,7 @@ you should be aware of.
 This chapter is broken into sections:
 - **Markers** - these can be considered intrinsic traits
 - **Derivables** - traits for which the functionality is so easy to implement there are easy tools to automate it 
-- **Error Handling** - Traits related to handling
+- **Error Handling** - Traits related to handling errors
 - **Converters** - traits that allow you to change one type into another
 - **Referencing and Dereferencing** - traits that allow you to treat data as a different type without conversion
 - **Other** - Things that didn't fit nicely into the other categories
@@ -244,7 +244,7 @@ What `Debug` is needed for, is things like the `assert_eq!` macro, mainly used i
 values, and they're not equivalent, the test suite will want to print the values to the screen. We'll show this more
 when we talk about the equivalence traits in the next section.
 
-`Debug` works very similarly to `Display` taking a formater as a parameter.
+`Debug` works very similarly to `Display` taking a formatter as a parameter.
 
 ```rust,ignore
 impl fmt::Debug for MyType {
@@ -271,7 +271,7 @@ Allow me to answer those questions with another question: Is `0` equivalent to `
 positive nor negative, so these are identical, but inside a floating point number, the binary representation is 
 different.
 
-Speaking of floating points, in binary representation its possible to represent that something is Not a Number (NaN).
+Speaking of floating points, in binary representation it's possible to represent that something is Not a Number (NaN).
 However, should two NaNs, even if they have the same binary representation, be considered as the same value when you
 can get there in different ways? Probably not.
 
@@ -598,7 +598,7 @@ Official Documentation: [`PartialOrd`][PartialOrd], [`Ord`][Ord]
 `Clone` is a bit like `Copy` in that it allows you to duplicate values, however, where `Copy` is implicitly very cheap,
 `Clone` can get away with doing a bit more work.
 
-With `Copy`, we can make a copy of data on that is purely on the stack, however, this restricts us to `Sized` data. This
+With `Copy`, we can make a copy of data that is purely on the stack, however, this restricts us to `Sized` data. This
 means, for example, `String` which is a smart pointer to data on the heap, can not implement `Copy`. In order to
 duplicate `String` we'd need to request new memory on the Heap to place the data into, then copy the data to the new
 location, and create a new smart pointer on the stack to point to it.
@@ -1170,7 +1170,7 @@ Referencing and Dereferencing
 
 We've talked about this a little bit already but in Rust, rather than having to pass around ownership of a value, you
 can instead reference it, while leaving ownership wherever it originated (so long as the reference never outlives the
-owned data it points to). Reference's in Rust are similar to pointers in other languages that you might have heard of,
+owned data it points to). References in Rust are similar to pointers in other languages that you might have heard of,
 in that they are a value which "points at" another location in memory where the actual value is.
 
 Since the reference only points at the data, if you pass it into a function, when the function ends, only the reference
@@ -1356,7 +1356,8 @@ Official Documentation: [`Borrow`][Borrow], [`BorrowMut`][BorrowMut]
 ### AsRef / AsMut
 
 So we now have a way to borrow an entire type as a different type, but we won't be able to do that with more complex
-compound types. If we have a more complex object and want to internally reference 
+compound types. If we have a more complex object and want to internally reference a part of it we can use one of these
+traits instead.
 
 Remember earlier we had our `Cat` type which only had a name. We could, if we wanted, implement `AsRef<str>` so that
 it can be used in the place of a `&str`:
@@ -1385,7 +1386,7 @@ fn main() {
 }
 ```
 
-Arguably, we could make this code even friendly by changing the `cuddle` to take a generic, and then calling `.as_ref()`
+Arguably, we could make this code even more friendly by changing the `cuddle` to take a generic, and then calling `.as_ref()`
 in the function itself. This code looks a little scarier, but once you get used to seeing code like this, you can write
 far more flexible and easy to use code. 
 
@@ -1615,9 +1616,9 @@ Other
 ### Drop
 
 Rust is _very_ good at cleaning up after itself, especially when you use the standard library:
-- If your variable allocate heap memory, that memory is released when the variable that owns it goes out of scope
+- If your variable allocates heap memory, that memory is released when the variable that owns it goes out of scope
 - If you open a file to read or write, it's closed when the file handler goes out of scope
-- If you start a TCP connection, its ended when the handler goes our of scope
+- If you start a TCP connection, it's ended when the handler goes our of scope
 
 The Rust standard library is achieving this with the `Drop` trait.
 
