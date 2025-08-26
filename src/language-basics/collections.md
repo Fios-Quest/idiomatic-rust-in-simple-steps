@@ -6,7 +6,7 @@ you'll use quite a lot, like `Vec` and `HashMap`, but there's a few more that ha
 useful in specific circumstances.
 
 This chapter will mostly focus on the collections you'll use the most, but we'll cover all the other collections 
-provided by the Rust standard library. Collections are commonly used with iterators, which allow you to step though
+provided by the Rust standard library. Collections are commonly used with iterators, which allow you to step through
 lists one item at a time, but we'll cover those in the next chapter.
 
 Arrays
