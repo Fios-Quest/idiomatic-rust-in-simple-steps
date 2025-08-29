@@ -267,7 +267,7 @@ a good software engineer. You're unlikely to ever use the Fibonacci sequence out
 asked to find the nth number, you'd simply look up a formula (see one way to do it below). You wouldn't solve it in
 this way you're expected to do in the interview.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">// Press 👁️ to reveal a method of calculating the nth value of the sequence
-// without having to use recursion of a loop!
+// without having to use recursion or a loop!
 <span class="boring">const GOLDEN_RATIO: f64 = 1.618033988749894848204586834365638118;
 </span><span class="boring">const SQRT_FIVE: f64 = 2.23606797749979;
 </span><span class="boring">
@@ -622,7 +622,7 @@ let mut ll = LinkedList::new();
 ll.push_back(hello);
 ll.push_back(world);
 
-// The inner type can be elided as Rust can work out that its String 
+// The inner type can be elided as Rust can work out that it's String 
 let v: Vec&lt;_&gt; = ll
     .into_iter() // This takes ownership of the contents of the linked list 
     .collect(); // This collects the data into the vector which now owns the inner data
@@ -662,7 +662,7 @@ operator comes in handy.</p>
 <p>Using what we've learned above, what if we want to use owned data, but we need to keep the original collection, so
 <code>.into_iter()</code> is out of the question?</p>
 <p>There are two methods on <code>Iterator</code> for this purpose: <code>.copied()</code> and <code>.cloned()</code>.</p>
-<p><code>.copied()</code> only works on Iterators where the item is <code>Copy</code> will take the iterator and return a new iterator which
+<p><code>.copied()</code> only works on Iterators where the item is <code>Copy</code> and will take the iterator and return a new iterator which
 returns each Item copied.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -881,7 +881,7 @@ let filtered_iter = full_iter.clone().filter(|n| n % 2 == 0);
 assert_eq!(full_iter.count(), 10);
 assert_eq!(filtered_iter.count(), 5);
 <span class="boring">}</span></code></pre></pre>
-<p>Another great way to process Iterators one Item at a time is to take that Item and transform it in some way. We can use
+<p>Another great way to process Iterators one Item at a time is to take that Item and transform it in some way. We can
 pass a function into the <code>.map()</code> method that receives the item and returns a new value. If that value is of a different
 type, the Iterator you get back will also be of that new type:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
@@ -994,7 +994,7 @@ let bad_sum = (100u8..=106)
 
 assert_eq!(bad_sum, Err(OverflowError));
 <span class="boring">}</span></code></pre></pre>
-<p>That said, in this kind of case, once our fold function returns a <code>Err</code>, we can't process any more items, we can break
+<p>That said, in this kind of case, once our fold function returns an <code>Err</code>, we can't process any more items, we can break
 out of this early with <code>.try_fold()</code> which will stop iterating immediately:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
