@@ -17,14 +17,9 @@ jobs:
       - name: Ensure cargo binstall is installed
         uses: cargo-bins/cargo-binstall@main
 
-      - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@v2
-        with:
-#          mdbook-version: '0.4.43'
-           mdbook-version: 'latest'
-
-      - name: Add mdBook extensions
+      - name: Add mdBook and extensions
         run: |
+          cargo binstall mdbook
           cargo binstall mdbook-external-links
           cargo binstall mdbook-mermaid
 
