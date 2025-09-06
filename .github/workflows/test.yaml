@@ -18,8 +18,8 @@ jobs:
 
       - name: Add mdBook extensions
         run: |
-          cargo install mdbook-external-links
-          cargo install mdbook-mermaid
+          cargo binstall mdbook-external-links
+          cargo binstall mdbook-mermaid
 
       - name: Test
         run: mdbook test
