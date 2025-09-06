@@ -20,6 +20,11 @@ jobs:
 #          mdbook-version: '0.4.43'
            mdbook-version: 'latest'
 
+      - name: Add mdBook extensions
+        run: |
+          cargo install mdbook-external-links
+          cargo install mdbook-mermaid
+
       - name: Test
         run: mdbook test
 
