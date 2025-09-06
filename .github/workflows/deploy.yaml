@@ -14,6 +14,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Ensure cargo binstall is installed
+        uses: cargo-bins/cargo-binstall@main
+
       - name: Setup mdBook
         uses: peaceiris/actions-mdbook@v2
         with:
