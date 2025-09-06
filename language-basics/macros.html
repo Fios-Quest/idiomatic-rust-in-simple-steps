@@ -176,21 +176,21 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="macros"><a class="header" href="#macros">Macros</a></h1>
-<p>Macro's let us do metaprogramming in Rust. This allows us to treat our code as data, manipulating it, expanding it, and
+<p>Macro’s let us do metaprogramming in Rust. This allows us to treat our code as data, manipulating it, expanding it, and
 creating new code.</p>
-<p>Over this chapter we'll learn how to do three things with macros:</p>
+<p>Over this chapter we’ll learn how to do three things with macros:</p>
 <ol>
 <li>Generate boilerplate code to mitigate repeating ourselves</li>
 <li>Create pseudo-functions that can take any number of parameters</li>
 <li>Implement another programming language within Rust to demonstrate how you can create domain-specific languages (DSLs)</li>
 </ol>
 <p>There are two types of macro in Rust, <code>macro_rules!</code>, also known as declarative macros, or macros by example, and
-<code>proc macro</code>s. We won't be dealing with <code>proc macro</code>s in this book, but they are what allow you to create custom Derive
+<code>proc macro</code>s. We won’t be dealing with <code>proc macro</code>s in this book, but they are what allow you to create custom Derive
 macros (like <code>#[derive(Clone)]</code>), and custom attributes like <code>#[YourAttriburte]</code>. They also let you make the same
-function style macros we'll be making with <code>macro_rules!</code> but can unlock even more power!</p>
+function style macros we’ll be making with <code>macro_rules!</code> but can unlock even more power!</p>
 <h2 id="anatomy-of-macro_rules"><a class="header" href="#anatomy-of-macro_rules">Anatomy of <code>macro_rules!</code></a></h2>
 <p><code>macro_rules!</code> is, itself, a macro, providing its own DSL that allows you to create more macros. This lets things get
-very powerful and, honestly, very weird. Let's take it slow.</p>
+very powerful and, honestly, very weird. Let’s take it slow.</p>
 <p>The general layout of <code>macro_rules!</code> looks like this:</p>
 <pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -222,7 +222,7 @@ compilation process where your code has already been turning into datastructures
 does.</p>
 <p>This makes it much safer and more fully featured than a copy-paste.</p>
 <h2 id="hello-macro"><a class="header" href="#hello-macro">Hello, macro!</a></h2>
-<p>We'll start by making a hello world macro that produces a string.</p>
+<p>We’ll start by making a hello world macro that produces a string.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { String::from("Hello, world") };
 }
@@ -230,14 +230,14 @@ does.</p>
 fn main() {
     assert_eq!(hello!(), "Hello, world".to_string());
 }</code></pre></pre>
-<p>Let's break it down. As we said above, immediately after <code>macro_rules!</code> we provide the name of the macro we're creating,
-in this case <code>hello</code>. Our first draft won't match anything between the brackets, so we leave those empty. We then have
+<p>Let’s break it down. As we said above, immediately after <code>macro_rules!</code> we provide the name of the macro we’re creating,
+in this case <code>hello</code>. Our first draft won’t match anything between the brackets, so we leave those empty. We then have
 an arrow, followed by some curly brackets surrounding what our macro will generate.</p>
 <p>Our <code>hello</code> macro simply creates a string containing <code>"Hello, world"</code> at the site where the macro is called (in this
 case inside an <code>assert_eq!</code> macro).</p>
-<p>This type of macro <em>could</em> be useful if you have a block of code you need to repeat but don't want to put it in a
-function, but let's be honest, that's not very likely.</p>
-<p>Let's upgrade our macro to match a pattern.</p>
+<p>This type of macro <em>could</em> be useful if you have a block of code you need to repeat but don’t want to put it in a
+function, but let’s be honest, that’s not very likely.</p>
+<p>Let’s upgrade our macro to match a pattern.</p>
 <pre><pre class="playground"><code class="language-rust editable edition2024">macro_rules! hello {
     (this must be present) =&gt; { String::from("Hello, world") };
 }
@@ -247,9 +247,9 @@ fn main() {
     // assert_eq!(hello!(this wont compile), "Hello, world".to_string());
 }</code></pre></pre>
 <p>What? What?! This is obviously madness. What kind of parameters are we passing to this macro?</p>
-<p>The key to understanding the power of macros is that they <em>don't</em> take parameters. The thing in the brackets at the
-start of each rule is a pattern, and that pattern can be <em>almost</em> anything. The content of the macro's invocation is
-broken up into something called a token tree, which we'll talk about in the next section. Here, <code>this must be present</code>
+<p>The key to understanding the power of macros is that they <em>don’t</em> take parameters. The thing in the brackets at the
+start of each rule is a pattern, and that pattern can be <em>almost</em> anything. The content of the macro’s invocation is
+broken up into something called a token tree, which we’ll talk about in the next section. Here, <code>this must be present</code>
 is considered a token tree made of the tokens: <code>this</code>, <code>must</code>, <code>be</code>, <code>present</code>.</p>
 <p>We can invoke different rules based on the matched pattern.</p>
 <pre><pre class="playground"><code class="language-rust editable edition2024">macro_rules! hello {
@@ -262,8 +262,8 @@ fn main() {
     assert_eq!(hello!(yuki), "Hello, yuki".to_string());
     // assert_eq!(hello!(this wont compile), "Hello, world".to_string());
 }</code></pre></pre>
-<p>We obviously can't write out every possible thing that we might want to match on (what if we want to be able to say
-"hello" to lots of different people), so we can capture tokens into metavariables.</p>
+<p>We obviously can’t write out every possible thing that we might want to match on (what if we want to be able to say
+“hello” to lots of different people), so we can capture tokens into metavariables.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     ($name:literal) =&gt; { 
         { 
@@ -277,21 +277,21 @@ fn main() {
 fn main() {
     assert_eq!(hello!("Yuki"), "Hello, Yuki".to_string());
 }</code></pre></pre>
-<p>Things got a little bit weird here, right? Let's step through our changes.</p>
-<p>First, we added a metavariable, and you'll immediately notice this looks nothing like a normal function parameter in
+<p>Things got a little bit weird here, right? Let’s step through our changes.</p>
+<p>First, we added a metavariable, and you’ll immediately notice this looks nothing like a normal function parameter in
 Rust.</p>
-<p>In <code>macro_rules!</code>, we can parameterise tokens into "metavariables" which are preceded by a dollar symbol, followed by a
-colon, and what's called a fragment-specifier (sometimes referred to as a designator).</p>
+<p>In <code>macro_rules!</code>, we can parameterise tokens into “metavariables” which are preceded by a dollar symbol, followed by a
+colon, and what’s called a fragment-specifier (sometimes referred to as a designator).</p>
 <p>Fragment-specifiers are a bit like types but are specific to how we think about how Rust classifies token trees. We
-can't specify "str" here, but we can specify that it's a <code>literal</code>, which is any raw value, such as a string slice, a
+can’t specify “str” here, but we can specify that it’s a <code>literal</code>, which is any raw value, such as a string slice, a
 number, a boolean, etc.</p>
-<p>You might wonder what will happen if our macro gets a literal that's not a <code>str</code> and the answer is it won't compile and
+<p>You might wonder what will happen if our macro gets a literal that’s not a <code>str</code> and the answer is it won’t compile and
 the person who passed in the non-<code>str</code> will get an error relating to the <code>.push_str</code> method on <code>String</code>.</p>
-<p>There are a number of different fragment-specifiers, some of which overlap with each other. We'll go over more of them
+<p>There are a number of different fragment-specifiers, some of which overlap with each other. We’ll go over more of them
 later in the section.</p>
-<p>The second change we've made here is that inside the code block... we've added <em>another</em> block.</p>
+<p>The second change we’ve made here is that inside the code block… we’ve added <em>another</em> block.</p>
 <p>The reason for this is that when we invoke the macro, Rust generates code at the point that you place the macro. If we
-didn't have the extra brackets, when we use the macro in our <code>assert_eq!</code>, our code would look to Rust as if it were
+didn’t have the extra brackets, when we use the macro in our <code>assert_eq!</code>, our code would look to Rust as if it were
 this:</p>
 <pre><pre class="playground"><code class="language-rust compile_fail edition2024"><span class="boring">fn main() {
 </span>assert_eq!(
@@ -301,7 +301,7 @@ this:</p>
     "Hello, Yuki".to_string()
 );
 <span class="boring">}</span></code></pre></pre>
-<p>This doesn't work because <code>assert_eq!</code>, which is also a macro, expects to match expressions (represented by the
+<p>This doesn’t work because <code>assert_eq!</code>, which is also a macro, expects to match expressions (represented by the
 fragment-specifier <code>:expr</code>).</p>
 <p>In Rust an expression is a segment of code that produces a value. So <code>String::from("Hello, ")</code> is an expression, but
 <code>let mut output = String::from("Hello, ");</code> is not. Blocks of code surrounded by <code>{ ... }</code> are expressions though
@@ -321,7 +321,7 @@ valid!</p>
 <span class="boring">}</span></code></pre></pre>
 <p>Expressions in Rust are particularly useful as they have a type and a value, just like variables, allowing you to use
 them inside other expressions.</p>
-<p>Let's go deeper and add another rule. Let's bring back our original behaviour for an empty <code>hello!</code> macro:</p>
+<p>Let’s go deeper and add another rule. Let’s bring back our original behaviour for an empty <code>hello!</code> macro:</p>
 <pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { String::from("Hello, world") };
     ($name:literal) =&gt; { 
@@ -337,7 +337,7 @@ fn main() {
     assert_eq!(hello!(), "Hello, world".to_string());
     assert_eq!(hello!("Yuki"), "Hello, Yuki".to_string());
 }</code></pre></pre>
-<p>This is fine, but we're repeating ourselves a little bit. In case we might want to change our greeting later, lets not
+<p>This is fine, but we’re repeating ourselves a little bit. In case we might want to change our greeting later, lets not
 have <code>"Hello, "</code> twice. To maintain consistency, we can call our macro from inside our macro!</p>
 <pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     () =&gt; { hello!("world") };
@@ -354,9 +354,9 @@ fn main() {
     assert_eq!(hello!(), "Hello, world".to_string());
     assert_eq!(hello!("Yuki"), "Hello, Yuki".to_string());
 }</code></pre></pre>
-<p>We're nearly there now, but I think our hello macro is missing one critical feature; what if I want to greet lots of
+<p>We’re nearly there now, but I think our hello macro is missing one critical feature; what if I want to greet lots of
 people at the same time?</p>
-<p>We can "repeat" patterns inside macros by surrounding them with <code>$(...)</code> followed by either a <code>?</code>, a <code>+</code>, or a <code>*</code>.
+<p>We can “repeat” patterns inside macros by surrounding them with <code>$(...)</code> followed by either a <code>?</code>, a <code>+</code>, or a <code>*</code>.
 Similar to regex rules:</p>
 <ul>
 <li><code>?</code> means the content is repeated zero or one times</li>
@@ -399,7 +399,7 @@ fn main() {
         "Hello, Yuki and Daniel and Indra".to_string()
     );
 }</code></pre></pre>
-<p>Our new rule looks a bit like the previous one, but now there's a comma after <code>$name:literal</code> and then a repeat pattern.</p>
+<p>Our new rule looks a bit like the previous one, but now there’s a comma after <code>$name:literal</code> and then a repeat pattern.</p>
 <p>The repeat pattern contains a metavariable, <code>$rest:literal</code>, which will be used to store all metavariables passed to
 the macro after the first. It uses a <code>+</code> to show that there must be at least one additional metavariable, but there may
 be many.</p>
@@ -423,9 +423,9 @@ metavariable. Because we have a repeated metavariable inside a repeated block, t
     "Hello, Yuki and Daniel and Indra".to_string()
 );
 <span class="boring">}</span></code></pre></pre>
-<p>Hopefully, you're probably starting to see why writing a quick macro can really cut down on repeated boilerplate code,
-and we're really only making a quick toy macro to demonstrate the power they provide!</p>
-<p>You might be wondering if we can use repeats to reduce the number of rules we have. We unfortunately can't do things
+<p>Hopefully, you’re probably starting to see why writing a quick macro can really cut down on repeated boilerplate code,
+and we’re really only making a quick toy macro to demonstrate the power they provide!</p>
+<p>You might be wondering if we can use repeats to reduce the number of rules we have. We unfortunately can’t do things
 like treat the first or last element of a repeat differently using macro repeats <em>cough</em>foreshadowing<em>cough</em>, but we
 can merge the second and third arms using a <code>*</code>.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
@@ -448,12 +448,12 @@ fn main() {
     assert_eq!(hello!("Yuki"), "Hello, Yuki".to_string());
     assert_eq!(hello!("Yuki", "Daniel", "Indra"), "Hello, Yuki and Daniel and Indra".to_string());
 }</code></pre></pre>
-<p>You'll notice that the <code>,</code> after <code>$name:literal</code> has moved inside the repeat pattern, and the <code>,</code> being used as a
+<p>You’ll notice that the <code>,</code> after <code>$name:literal</code> has moved inside the repeat pattern, and the <code>,</code> being used as a
 separator has been dropped. This is because if we were to try to match <code>($name:literal, $($rest:literal)*)</code> then
-we'd <em>have</em> to use the comma after the first literal so <code>hello!("Yuki")</code> would <em>have</em> to be <code>hello!("Yuki", )</code> to work.</p>
-<p>Instead, we've moved the comma token to the beginning of the repeat pattern which can contain things that aren't
+we’d <em>have</em> to use the comma after the first literal so <code>hello!("Yuki")</code> would <em>have</em> to be <code>hello!("Yuki", )</code> to work.</p>
+<p>Instead, we’ve moved the comma token to the beginning of the repeat pattern which can contain things that aren’t
 metavariables too.</p>
-<p>I wasn't quite lying about not being able to treat the first and last differently with macro repeats. We can't do it
+<p>I wasn’t quite lying about not being able to treat the first and last differently with macro repeats. We can’t do it
 with <em>just</em> macro repeats, BUT we can work around that with very low-cost language features like slices.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     ($($names:literal),*) =&gt; {
@@ -507,64 +507,64 @@ fn main() {
 }</code></pre></pre>
 <p>Being able to quickly compose macros like this can save us a lot of time when repeating the same code over and over.</p>
 <h2 id="tokens-metavariables-and-fragment-specifiers"><a class="header" href="#tokens-metavariables-and-fragment-specifiers">Tokens, Metavariables, and Fragment-Specifiers</a></h2>
-<p>Rust (like most languages) turns your human written code into tokens so that it can process what you've written. Tokens
+<p>Rust (like most languages) turns your human written code into tokens so that it can process what you’ve written. Tokens
 are like the atoms of a programming language, the smallest meaningfully divisible parts.</p>
 <p>For example, the statement <code>let hello = String::from("Hello");</code> can be broken into the following tokens:</p>
 <p><img src="macros/Tokens.svg" alt="Tokens" /></p>
-<p>When working with <code>macro_rules!</code> though, Rust actually won't allow us to work with tokens directly. Instead, the
+<p>When working with <code>macro_rules!</code> though, Rust actually won’t allow us to work with tokens directly. Instead, the
 smallest part we get is token trees. A token tree can be either any individual token <em>except</em> delimiter tokens
 (parentheses <code>()</code>, square brackets <code>[]</code>, and curly brackets <code>{}</code>), or a group of token trees wrapped in delimiter
-tokens. That statement broken into token trees looks similar but isn't <em>quite</em> the same:</p>
+tokens. That statement broken into token trees looks similar but isn’t <em>quite</em> the same:</p>
 <p><img src="macros/TokenTree.svg" alt="Token Trees" /></p>
-<p>We'll see later in the chapter as to how this subtle difference can be extremely useful.</p>
+<p>We’ll see later in the chapter as to how this subtle difference can be extremely useful.</p>
 <p><code>macro_rules!</code> also allows us to match against categorisations of token trees, or groups of token trees. When we wrote
 the <code>hello!</code> macro, we captured tokens that were specifically literals into metavariables with fragment-specifiers, but
 we can categorise token trees and groups of token trees in other ways too.</p>
-<p>Here's a quick rundown of some of the most common fragment-specifiers:</p>
+<p>Here’s a quick rundown of some of the most common fragment-specifiers:</p>
 <ul>
 <li><code>tt</code> matches a token tree, which is any single token or valid group of tokens wrapped in delimiters. Remember when we
-wrote <code>this must be present</code> in our silly example, that's technically a token tree, but so was <code>"yuki"</code> which it not
+wrote <code>this must be present</code> in our silly example, that’s technically a token tree, but so was <code>"yuki"</code> which it not
 only a literal, but also a token tree consisting of a single token.</li>
 <li><code>literal</code> is the specifier we used earlier to match against a literal value. This matches integers, floats, booleans,
 characters, a whole set of string types (string literals, raw string literals, byte string literals, C string
 literals) and more.</li>
-<li><code>expr</code> short for "expression". An expression is any series of token trees that has a value (e.g.,
+<li><code>expr</code> short for “expression”. An expression is any series of token trees that has a value (e.g.,
 <code>String::from("Hello")</code> is an expression, but <code>let hello = String::from("Hello");</code> is not). Blocks are also
 expressions as they have a value.</li>
 <li><code>block</code> is specifically a block expression</li>
-<li><code>stmt</code> short for "statement". This could be thought of as a line of code, though it could be split across multiple
+<li><code>stmt</code> short for “statement”. This could be thought of as a line of code, though it could be split across multiple
 lines, usually ending in a semicolon. Statements usually either set a value to something or call a function.</li>
-<li><code>ident</code> short for "identifier". These are things like variable names, type names, or anything that's not specifically
-a keyword (though you can make a raw identifier using <code>r#</code>, e.g. <code>true</code> is not an identifier because it's a keyword
+<li><code>ident</code> short for “identifier”. These are things like variable names, type names, or anything that’s not specifically
+a keyword (though you can make a raw identifier using <code>r#</code>, e.g. <code>true</code> is not an identifier because it’s a keyword
 but <code>r#true</code> is an identifier). In our earlier <code>this must be present</code>, each of those tokens is also an identifier;
-they don't need to exist in code.</li>
+they don’t need to exist in code.</li>
 <li><code>path</code> is a type path. This could be an identifier on its own, or a sequence of identifiers seperated by <code>::</code> tokens.
-Like with identifiers, they don't need to exist within the code, they just need to fit the pattern.</li>
-<li><code>ty</code> short for "type". This could be a type or a type description. For example <code>(dyn Clone + Send)</code> is what's called a
+Like with identifiers, they don’t need to exist within the code, they just need to fit the pattern.</li>
+<li><code>ty</code> short for “type”. This could be a type or a type description. For example <code>(dyn Clone + Send)</code> is what’s called a
 parenthesised type, but it is a type nonetheless.</li>
 <li><code>item</code> is anything that could belong to a crate, such as functions, modules, static items, use statements, etc.</li>
-<li><code>vis</code> short for "visibility" describes the visibility of something else eg <code>pub</code>, <code>pub(crate)</code>, <code>pub(super)</code>, etc.</li>
+<li><code>vis</code> short for “visibility” describes the visibility of something else eg <code>pub</code>, <code>pub(crate)</code>, <code>pub(super)</code>, etc.</li>
 <li><code>lifetime</code> matches lifetimes such as <code>'a</code> or <code>'static</code></li>
 <li><code>meta</code>, this is a weird one, it matches attributes. It could be useful if you want to construct a type and pass in
 attributes to apply to it.</li>
 </ul>
-<p>There's a lot here, and I've ignored the backwards compatible fragment specifiers (some specifiers have changed
+<p>There’s a lot here, and I’ve ignored the backwards compatible fragment specifiers (some specifiers have changed
 behaviour over the years). If you want to see the full list of fragment-specifiers, or more complete descriptions for
 each of them, check out the official documentation here:
 https://doc.rust-lang.org/reference/macros-by-example.html#metavariables</p>
 <h2 id="usefully-dry"><a class="header" href="#usefully-dry">Usefully DRY</a></h2>
 <blockquote>
-<p>ℹ️ I've slightly altered the code in this section to not rely on third party crates, such as
-<a href="https://crates.io/crates/uuid">Uuid</a> and <a href="https://crates.io/crates/paste">paste</a>. If you're comfortable with crates
-then bellow is a permalink straight to the <code>storage</code> crate of the Job Application repository where you'll find the
-real examples. For example, if you look in the <code>storable</code> module, you'll find test macros defined in the <code>property</code>
+<p>ℹ️ I’ve slightly altered the code in this section to not rely on third party crates, such as
+<a href="https://crates.io/crates/uuid" title="" target="_blank">Uuid</a> and <a href="https://crates.io/crates/paste" title="" target="_blank">paste</a>. If you’re comfortable with crates
+then bellow is a permalink straight to the <code>storage</code> crate of the Job Application repository where you’ll find the
+real examples. For example, if you look in the <code>storable</code> module, you’ll find test macros defined in the <code>property</code>
 module which are consumed in the <code>object</code> module.</p>
-<p><a href="https://github.com/Fios-Quest/job-tracker/tree/c1eba63311ff954de0d80cdd9f55984051c620ef/storage/src/storable">https://github.com/Fios-Quest/job-tracker/tree/c1eba63311ff954de0d80cdd9f55984051c620ef/storage/src/</a></p>
+<p><a href="https://github.com/Fios-Quest/job-tracker/tree/c1eba63311ff954de0d80cdd9f55984051c620ef/storage/src/storable" title="" target="_blank">https://github.com/Fios-Quest/job-tracker/tree/c1eba63311ff954de0d80cdd9f55984051c620ef/storage/src/</a></p>
 </blockquote>
-<p>The example we've run through to build up our understanding of how macro's work is very abstract and not very useful,
-so I wanted to go over a quick example of how I've started using Macro's.</p>
-<p>In the <a href="https://github.com/Fios-Quest/job-tracker/">Fio's Job Tracker</a> app I've been building with the help of folks in
-the chat of my <a href="https://www.youtube.com/playlist?list=PLW2L8KbM0O7Z2KroHNNBWY1UApqmeiyqe">streams</a>, I've leaned heavily
+<p>The example we’ve run through to build up our understanding of how macro’s work is very abstract and not very useful,
+so I wanted to go over a quick example of how I’ve started using Macro’s.</p>
+<p>In the <a href="https://github.com/Fios-Quest/job-tracker/" title="" target="_blank">Fio’s Job Tracker</a> app I’ve been building with the help of folks in
+the chat of my <a href="https://www.youtube.com/playlist?list=PLW2L8KbM0O7Z2KroHNNBWY1UApqmeiyqe" title="" target="_blank">streams</a>, I’ve leaned heavily
 into composing my types using Traits to form common behaviour.</p>
 <p>For example, at time of writing, I allow the user to create <code>Company</code>s, <code>Role</code>s, and <code>Flag</code>s. <code>Role</code>s and <code>Flag</code>s
 belong to <code>Company</code>s so those types implement the following trait:</p>
@@ -574,8 +574,8 @@ belong to <code>Company</code>s so those types implement the following trait:</p
     fn get_company_id(&amp;self) -&gt; u128;
 }
 <span class="boring">}</span></code></pre></pre>
-<p>The trait itself does not provide any code, so each item that implements this code must decide on its behaviour. I'm
-a big believer in unit tests, so let's look at how that works with a test using <code>Role</code> as an example.:</p>
+<p>The trait itself does not provide any code, so each item that implements this code must decide on its behaviour. I’m
+a big believer in unit tests, so let’s look at how that works with a test using <code>Role</code> as an example.:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">pub trait HasCompany {
@@ -609,8 +609,8 @@ mod tests {
     }
 }
 <span class="boring">}</span></code></pre></pre>
-<p>That's fine, but we're going to be doing this for every item that implements that trait, as well as for every
-implementation of every other trait. Every time we add a new storable item, we'll have to add tests for its
+<p>That’s fine, but we’re going to be doing this for every item that implements that trait, as well as for every
+implementation of every other trait. Every time we add a new storable item, we’ll have to add tests for its
 implementation.</p>
 <p>The way I worked around this was, first I created a trait allowing me to create test instances of the types I want to
 test, then I created macros that use that trait to run the test:</p>
@@ -688,7 +688,7 @@ mod tests {
 act of storing and recalling these storable objects.</p>
 <h2 id="domain-specific-languages"><a class="header" href="#domain-specific-languages">Domain Specific Languages</a></h2>
 <p>Ever wanted to write your own language?</p>
-<p>We're going to get a little bit silly here, but Domain-Specific Languages (DSLs) can be incredibly useful for
+<p>We’re going to get a little bit silly here, but Domain-Specific Languages (DSLs) can be incredibly useful for
 conceptualising code in meaningful ways. For example, JSX is a DSL for writing React in JavaScript.</p>
 <p>This:</p>
 <pre><code class="language-javascript">const heading = (
@@ -704,10 +704,10 @@ conceptualising code in meaningful ways. For example, JSX is a DSL for writing R
     'Hello, world!'
 );
 </code></pre>
-<p>So, I promised silly, let's write our own DSL... a Brain Fudge interpreter.</p>
+<p>So, I promised silly, let’s write our own DSL… a Brain Fudge interpreter.</p>
 <p>Urban Müller created the programming language Brain Fudge (which is not, in fact, called Brain Fudge) in 1993.</p>
-<p>The language is what's known as an "esoteric" language, which is, generally, a fully functional language that you would
-never actually want to use. Often they're considered jokes, but Brain Fudge actually lets us write real programs with
+<p>The language is what’s known as an “esoteric” language, which is, generally, a fully functional language that you would
+never actually want to use. Often they’re considered jokes, but Brain Fudge actually lets us write real programs with
 just eight instructions. This makes it ideal for creating a full DSL with little effort.</p>
 <p>The language operates on theoretically infinite sequential memory initialised to <code>0</code>. You start with a pointer
 pointing to the first cell in memory. Each instruction can then allow you to move the pointer, modify the data
@@ -719,16 +719,16 @@ at that point in memory and either output or input data at the current pointer l
 <li><code>+</code> increments the value at the current position in memory</li>
 <li><code>-</code> decrements the value at the current position in memory</li>
 <li><code>.</code> outputs the value at the current position in memory</li>
-<li><code>,</code> takes one byte of input and stores it in memory (we won't use this in this example though)</li>
+<li><code>,</code> takes one byte of input and stores it in memory (we won’t use this in this example though)</li>
 <li><code>[</code> and <code>]</code> contain a loop that repeats the contained code. Each time the loop begins, the value at the current
 position is checked, and the loop is then skipped if the value is 0.</li>
 </ul>
-<p>That sounds easy enough, right... well, here's Hello World in Brain Fudge.</p>
+<p>That sounds easy enough, right… well, here’s Hello World in Brain Fudge.</p>
 <pre><code class="language-text">++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.
 </code></pre>
-<p>Don't panic! For now, we'll just trust that this is the Hello World program, we'll implement the instructions and see
+<p>Don’t panic! For now, we’ll just trust that this is the Hello World program, we’ll implement the instructions and see
 what happens when we run it.</p>
-<p>We're going to use two macros. First, let's create a macro that initialises the program.</p>
+<p>We’re going to use two macros. First, let’s create a macro that initialises the program.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>macro_rules! brain_fudge {
@@ -745,26 +745,26 @@ what happens when we run it.</p>
     };
 }
 <span class="boring">}</span></code></pre></pre>
-<p>Let's break it down:</p>
+<p>Let’s break it down:</p>
 <ul>
-<li><code>$($token:tt)+</code> is the input to our interpreter. We're using the <code>tt</code> fragment-specifier which means that our
+<li><code>$($token:tt)+</code> is the input to our interpreter. We’re using the <code>tt</code> fragment-specifier which means that our
 repeating metavariable <code>$token</code> represents a token tree. As it happens <code>&gt;</code>, <code>&lt;</code>, <code>+</code>, <code>-</code>, <code>.</code>, <code>,</code>, <code>[</code> and <code>]</code> are
-all tokens in Rust so this <em>should</em> work well... (<strong>foreshadowing</strong>).</li>
-<li><code>memory</code> is going to be our programs' memory. We're using a Vec with a single initialised value of <code>0</code> under the
-assumption that even the smallest program requires one word of memory. We'll expand the Vec as necessary. Maybe not
-the most time-effective, but it'll be ok. For our memory we're using <code>u8</code> to represent one word. You can use larger
+all tokens in Rust so this <em>should</em> work well… (<strong>foreshadowing</strong>).</li>
+<li><code>memory</code> is going to be our programs’ memory. We’re using a Vec with a single initialised value of <code>0</code> under the
+assumption that even the smallest program requires one word of memory. We’ll expand the Vec as necessary. Maybe not
+the most time-effective, but it’ll be ok. For our memory we’re using <code>u8</code> to represent one word. You can use larger
 words if you like, but different programs might function differently depending on what word size is used and how
 overflows are handled (more on that later).</li>
 <li><code>pointer</code> points to the current position in memory (our Vector)</li>
-<li><code>output</code> is where we'll store output data from the program. We're using a Vec<u8> here, but actually any type that has
+<li><code>output</code> is where we’ll store output data from the program. We’re using a Vec<u8> here, but actually any type that has
 a method <code>.push(u8)</code> will work.</li>
-<li>At the end of the macro we take the output Vec of <code>u8</code>s we've stored in output and collect it into a string by naively
-considering each byte to be a character. Again, this won't be appropriate for every use case which is why utilising
+<li>At the end of the macro we take the output Vec of <code>u8</code>s we’ve stored in output and collect it into a string by naively
+considering each byte to be a character. Again, this won’t be appropriate for every use case which is why utilising
 <code>Write</code> might be better but do you <em>really</em> want to use this DSL properly 😅</li>
 </ul>
-<p>So now we need to handle the token stream, but before we do that, let's write some tests. We'll keep it simple for now,
+<p>So now we need to handle the token stream, but before we do that, let’s write some tests. We’ll keep it simple for now,
 while <code>++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.</code>
-outputs "Hello, world!\n", so does the following, with only three of the eight possible instructions:</p>
+outputs “Hello, world!\n”, so does the following, with only three of the eight possible instructions:</p>
 <pre><pre class="playground"><code class="language-rust should_panic edition2024"><span class="boring">macro_rules! brain_fudge {
 </span><span class="boring">    ($($token:tt)+) =&gt; {
 </span><span class="boring">        {
@@ -815,13 +815,13 @@ outputs "Hello, world!\n", so does the following, with only three of the eight p
 );
 <span class="boring">}</span></code></pre></pre>
 <p>So lets work out how to handle <code>&gt;</code>, <code>+</code> and <code>.</code></p>
-<p>We'll create a new helper macro that can handle these tokens by having a rule that matches a token string that starts
+<p>We’ll create a new helper macro that can handle these tokens by having a rule that matches a token string that starts
 with the token we want to handle and passes remaining tokens back to itself. We also need a special arm to handle when
 there are no tokens left, so we have an endpoint to our recursive calls.</p>
-<p>Unlike before, when we create our match arms, we're going to use a semicolon as a separator. The reason for this is
-that Brain Fudge uses <code>,</code>s as part of its syntax (even if we're not using it here). This surprisingly doesn't cause a
+<p>Unlike before, when we create our match arms, we’re going to use a semicolon as a separator. The reason for this is
+that Brain Fudge uses <code>,</code>s as part of its syntax (even if we’re not using it here). This surprisingly doesn’t cause a
 problem with matching, even if the first character of your Brain Fudge program is a comma, it still matches based on
-position relative to the other commas. But we <em>can</em> use semicolons as separators in our macro, which aren't part of the
+position relative to the other commas. But we <em>can</em> use semicolons as separators in our macro, which aren’t part of the
 Brain Fudge language, and it <em>will</em> help readability when we get to the final part of this chapter.</p>
 <p>Each arm will also expect the memory, the pointer, and the output buffer before matching on the specific token:</p>
 <pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
@@ -927,14 +927,14 @@ Brain Fudge language, and it <em>will</em> help readability when we get to the f
     "Hello World!\n"
 );
 <span class="boring">}</span></code></pre></pre>
-<p>When we build it... ah, it errors.</p>
+<p>When we build it… ah, it errors.</p>
 <pre><code class="language-text">error: recursion limit reached while expanding `brain_fudge_helper!`
 </code></pre>
 <p>Rust keeps track of how many times we recurse (call a function/macro from the same function/macro), and by default, the
 maximum number of times we can do this is 128. Our macro, using our silly Hello World example, recurses 1120 times!</p>
-<p>So, we <em>could</em> avoid recursing by looping through the tokens instead. That will work for our Hello World... but it
-won't work for loops when we come to them. For now, we're going to play a dangerous game and manually tell Rust
-it's fine for it to recurse 2048 times.</p>
+<p>So, we <em>could</em> avoid recursing by looping through the tokens instead. That will work for our Hello World… but it
+won’t work for loops when we come to them. For now, we’re going to play a dangerous game and manually tell Rust
+it’s fine for it to recurse 2048 times.</p>
 <p>The <code>recursion_limit</code> attribute applies at the crate level so be careful with this one!</p>
 <pre><pre class="playground"><code class="language-rust edition2024">#![recursion_limit = "2048"]
 
@@ -1007,14 +1007,14 @@ macro_rules! brain_fudge {
     "Hello World!\n"
 );
 <span class="boring">}</span></code></pre></pre>
-<p>Huzzah! We've made a good start. Dealing with <code>&gt;</code> and <code>-</code> will be easy enough, they're the opposite of what we already
-have. More complex is the loop <code>[</code>...<code>]</code>. Luckily, we aren't dealing with characters, we're dealing with token trees!</p>
+<p>Huzzah! We’ve made a good start. Dealing with <code>&gt;</code> and <code>-</code> will be easy enough, they’re the opposite of what we already
+have. More complex is the loop <code>[</code>…<code>]</code>. Luckily, we aren’t dealing with characters, we’re dealing with token trees!</p>
 <p>In Rust, the bracket pairs <code>()</code>, <code>[]</code>, and <code>{}</code> are all considered tokens that wrap other tokens, so Rust will correctly
 handle them in pairs, even when nested. E.g. with the token tree <code>[+[-]]</code> Rust will correctly match the first <code>[</code> token
 with the final <code>]</code> rather than the first <code>]</code>.</p>
 <p>This means to make our loop arm work, we can match against any token tree that starts with a <code>[</code>, contains more tokens
 which may include more <code>[]</code> pairs, matches its ending <code>]</code> and is followed by yet more tokens! How cool is that!?</p>
-<p>Let's write up the missing arms and run our test against the original Hello World program:</p>
+<p>Let’s write up the missing arms and run our test against the original Hello World program:</p>
 <pre><pre class="playground"><code class="language-rust compile_fail edition2024">#![recursion_limit = "2048"]
 
 macro_rules! brain_fudge_helper {
@@ -1120,15 +1120,15 @@ macro_rules! brain_fudge {
 </span><span class="boring">    "Hello World!\n"
 </span><span class="boring">);
 </span><span class="boring">}</span></code></pre></pre>
-<p>And when we run this... it doesn't work again 🤦🏻‍♂️</p>
+<p>And when we run this… it doesn’t work again 🤦🏻‍♂️</p>
 <p>The exact error we get is:</p>
 <pre><code class="language-text">67 |         ++++++++[&gt;++++[&gt;++&gt;+++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;+&gt;+&gt;-&gt;&gt;+[&lt;]&lt;-]&gt;&gt;.&gt;---.+++++++..+++.&gt;&gt;.&lt;-.&lt;.+++.------.--------.&gt;&gt;+.&gt;++.
    |                                                          ^^ no rules expected this token in macro call
    |
 </code></pre>
 <p>Why is it pointing at <code>&gt;&gt;</code>? We have a match on <code>&gt;</code>.</p>
-<p>Well, here's the problem with using tokens for our DSL. Rust considers <code>&gt;&gt;</code> to be a single token. Specifically, it's a
-"right shift" operator. Tokens in Rust can be multiple characters. Here are our problem tokens and what they mean in
+<p>Well, here’s the problem with using tokens for our DSL. Rust considers <code>&gt;&gt;</code> to be a single token. Specifically, it’s a
+“right shift” operator. Tokens in Rust can be multiple characters. Here are our problem tokens and what they mean in
 each language:</p>
 <div class="table-wrapper"><table><thead><tr><th>token</th><th>Rust</th><th>Brain Fudge</th></tr></thead><tbody>
 <tr><td><code>..</code></td><td>range literal</td><td>output the current value twice</td></tr>
@@ -1254,9 +1254,9 @@ macro_rules! brain_fudge_helper {
 </span><span class="boring">    "Hello World!\n"
 </span><span class="boring">);
 </span><span class="boring">}</span></code></pre></pre>
-<p>And we just created an interpreter for another language inside Rust! That's kind of wild, right?!</p>
+<p>And we just created an interpreter for another language inside Rust! That’s kind of wild, right?!</p>
 <h2 id="challenge"><a class="header" href="#challenge">Challenge</a></h2>
-<p>I stopped setting homework, but I thought I'd set a little challenge for anyone who wants to do it.</p>
+<p>I stopped setting homework, but I thought I’d set a little challenge for anyone who wants to do it.</p>
 <p>Can you edit our <code>brain_fudge!</code> macro to work with programs that take input via the <code>,</code> token? To achieve this, I
 recommend making the following change to the <code>brain_fudge!</code> macro:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
@@ -1361,7 +1361,7 @@ assert_eq!(&amp;output_string, "Svbf Dhrfg");
 println!("{}", output_string);
 <span class="boring">}</span></code></pre></pre>
 <h2 id="next-chapter"><a class="header" href="#next-chapter">Next Chapter</a></h2>
-<p>Next chapter we're going to take a brief look at unsafe Rust. We'll talk about what makes certain things unsafe and
+<p>Next chapter we’re going to take a brief look at unsafe Rust. We’ll talk about what makes certain things unsafe and
 cover some best practices to make unsafe as safe as possible!</p>
 
                     </main>
@@ -1418,6 +1418,8 @@ cover some best practices to make unsafe as safe as possible!</p>
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
 
 
 

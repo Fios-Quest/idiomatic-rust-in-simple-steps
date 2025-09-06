@@ -191,9 +191,9 @@
 <p>For Mac, make sure to run <code>xcode-select install</code></p>
 <p>For Linux, you need to install gcc via your package manage, for example, on a Raspberry Pi, you might do
 <code>sudo apt install gcc</code></p>
-<p>Go to <a href="https://rustup.rs">https://rustup.rs</a>, copy the command displayed there into your terminal.</p>
+<p>Go to <a href="https://rustup.rs" title="" target="_blank">https://rustup.rs</a>, copy the command displayed there into your terminal.</p>
 <p><img src="images/rustup-mac.png" alt="Rustup Mac / Linux" /></p>
-<p>You will be given the option for customizing the installation, but we don't need to do that for now</p>
+<p>You will be given the option for customizing the installation, but we don’t need to do that for now</p>
 <pre><code class="language-sh">$ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 # [other information about the install appears here]
@@ -211,7 +211,7 @@ Current installation options:
 3) Cancel installation
 &gt;
 </code></pre>
-<p>Choose 1 and wait for installation to complete. To immediately use Rust's tools now, you will need to run the command it
+<p>Choose 1 and wait for installation to complete. To immediately use Rust’s tools now, you will need to run the command it
 tells you to run at the end of the installer, however, you should only need to do this once as the installer makes the
 changes necessary for new terminal sessions to pick up on the changes.</p>
 <pre><code class="language-shell">$ source "$HOME/.cargo/env"
@@ -221,14 +221,14 @@ like this:</p>
 <pre><code class="language-shell">$ cargo version
 cargo 1.75.0 (1d8b05cdd 2023-11-20)
 </code></pre>
-<p>Cargo is the main tool we'll use to build and work with Rust, you will need at least version <code>1.75</code> for this tutorial.</p>
+<p>Cargo is the main tool we’ll use to build and work with Rust, you will need at least version <code>1.75</code> for this tutorial.</p>
 <h2 id="windows"><a class="header" href="#windows">Windows</a></h2>
-<p>Installing Rust on Windows is a bit more challenging, but you've got this, I believe in you.</p>
-<p>All the important differences for Windows are explained on <a href="https://rustup.rs">rustup.rs</a>, however, I personally
-struggled a bit with this, so I'm laying it out here in my own words.</p>
+<p>Installing Rust on Windows is a bit more challenging, but you’ve got this, I believe in you.</p>
+<p>All the important differences for Windows are explained on <a href="https://rustup.rs" title="" target="_blank">rustup.rs</a>, however, I personally
+struggled a bit with this, so I’m laying it out here in my own words.</p>
 <h3 id="windows-build-tools"><a class="header" href="#windows-build-tools">Windows Build Tools</a></h3>
-<p>The first thing we're going to need are some Microsoft build tools.</p>
-<p>Head to <a href="https://visualstudio.microsoft.com/downloads/">https://visualstudio.microsoft.com/downloads/</a> and download the
+<p>The first thing we’re going to need are some Microsoft build tools.</p>
+<p>Head to <a href="https://visualstudio.microsoft.com/downloads/" title="" target="_blank">https://visualstudio.microsoft.com/downloads/</a> and download the
 community edition.</p>
 <p><img src="./images/windows-visual-studio-community.png" alt="windows-visual-studio-community.png" /></p>
 <p>The installer is the gateway to a huge number of tools and software, but we only need two things.</p>
@@ -236,11 +236,11 @@ community edition.</p>
 <p>Select the latest version.</p>
 <p>Next search for: <code>Windows SDK</code></p>
 <p>Select the latest version of the SDK for your version of Windows.</p>
-<p>Finally, click install. You may get a prompt asking if you'd like to continue without workloads, which you do,
+<p>Finally, click install. You may get a prompt asking if you’d like to continue without workloads, which you do,
 so continue.</p>
 <p>The installation itself can take a while so grab a tea or something ☕</p>
 <h3 id="rustup"><a class="header" href="#rustup">Rustup</a></h3>
-<p>Once the Windows build tools are installed, head back to <a href="https://rustup.rs">rustup.rs</a> and download <code>rustup-init.exe</code>.
+<p>Once the Windows build tools are installed, head back to <a href="https://rustup.rs" title="" target="_blank">rustup.rs</a> and download <code>rustup-init.exe</code>.
 Running this will install the tools we need.</p>
 <p>Choose the default install options.</p>
 <p>Once complete, we can check that things have been installed correctly by opening either <code>cmd</code> or <code>powershell</code> or your
@@ -248,20 +248,20 @@ terminal of choice, and run:</p>
 <pre><code class="language-shell">cargo version
 </code></pre>
 <h3 id="gcc-optional-but-recommended"><a class="header" href="#gcc-optional-but-recommended">GCC (optional, but recommended)</a></h3>
-<p>Wait, the rustup website doesn't mention this!</p>
-<p>I know, and you don't <em>necessarily</em> need to do this. However, Rust is a language that can interop with other languages.
+<p>Wait, the rustup website doesn’t mention this!</p>
+<p>I know, and you don’t <em>necessarily</em> need to do this. However, Rust is a language that can interop with other languages.
 In particular, Rust works really well with existing C and C++ libraries, however, Windows and Linux us different C++
 libraries. This can be fixed by installing <code>gcc</code>.</p>
-<p>Like Microsoft's build tools, gcc isn't packaged by itself, but unlike Microsoft's build tools there are many, many ways
+<p>Like Microsoft’s build tools, gcc isn’t packaged by itself, but unlike Microsoft’s build tools there are many, many ways
 to install it.</p>
-<p>The easiest way I've found is to install the <a href="https://scoop.sh">Scoop</a> package manager by following the instructions on
+<p>The easiest way I’ve found is to install the <a href="https://scoop.sh" title="" target="_blank">Scoop</a> package manager by following the instructions on
 their website.</p>
 <p>Once installed, all you need to do is run:</p>
 <pre><code class="language-shell">scoop install main/gcc
 </code></pre>
 <p>You can check this worked by running <code>gcc --version</code></p>
-<p>Phew! That's it, congratulations! It took me over an hour to do this on my first attempt.</p>
-<p>If you haven't done already, its a good idea to restart your computer before moving on.</p>
+<p>Phew! That’s it, congratulations! It took me over an hour to do this on my first attempt.</p>
+<p>If you haven’t done already, its a good idea to restart your computer before moving on.</p>
 
                     </main>
 
@@ -317,6 +317,8 @@ their website.</p>
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
 
 
 

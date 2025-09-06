@@ -178,8 +178,8 @@
                         <h1 id="iterators"><a class="header" href="#iterators">Iterators</a></h1>
 <p>Iterators are a way to produce, and perform operations on, a sequence of values.</p>
 <p>We often use them with <a href="collections.html">collections</a> so that we can perform the same operation on each item in a
-collection, or reduce a collection to a single value. They're also often used implicitly in some forms of loop.</p>
-<p>We'll talk about these common uses later in the chapter, but to get an understanding of how Iterators work, lets make
+collection, or reduce a collection to a single value. They’re also often used implicitly in some forms of loop.</p>
+<p>We’ll talk about these common uses later in the chapter, but to get an understanding of how Iterators work, lets make
 our own.</p>
 <h2 id="the-iterator-trait"><a class="header" href="#the-iterator-trait">The Iterator Trait</a></h2>
 <p>The Iterator trait can be applied to any type and has a single required method:</p>
@@ -194,10 +194,10 @@ our own.</p>
 <span class="boring">}</span></code></pre></pre>
 <blockquote>
 <p>ℹ️ Iterator also has 75 provided methods, which perhaps goes to show how incredibly useful and flexible this trait is.
-We'll be talking about some of these methods, but it's well worth checking out the documentation to see what else
+We’ll be talking about some of these methods, but it’s well worth checking out the documentation to see what else
 is possible.</p>
 </blockquote>
-<p>We're going to build an Iterator that produces the Fibonacci sequence.</p>
+<p>We’re going to build an Iterator that produces the Fibonacci sequence.</p>
 <p>The Fibonacci sequence is a sequence of numbers starting <code>1, 1</code>* where each subsequent number is the previous
 two added together.</p>
 <blockquote>
@@ -261,11 +261,11 @@ make it work starting at <code>0, 1, ...</code> (one way to do it hidden below):
 <p>Creating a function that returns the <code>n</code>th Fibonacci number is a common question in software engineering interviews*,
 intending to show your understanding of recursion.</p>
 <blockquote>
-<p>*Aside 2: In my opinion... it's not a very good question to ask. It's supposed to show that you have an understanding
-of recursion, and can lead to follow up questions on things like memoization, but it's a bad test of whether you are
-a good software engineer. You're unlikely to ever use the Fibonacci sequence outside an interview. Even if you were
-asked to find the nth number, you'd simply look up a formula (see one way to do it below). You wouldn't solve it in
-this way you're expected to do in the interview.</p>
+<p>*Aside 2: In my opinion… it’s not a very good question to ask. It’s supposed to show that you have an understanding
+of recursion, and can lead to follow up questions on things like memoization, but it’s a bad test of whether you are
+a good software engineer. You’re unlikely to ever use the Fibonacci sequence outside an interview. Even if you were
+asked to find the nth number, you’d simply look up a formula (see one way to do it below). You wouldn’t solve it in
+this way you’re expected to do in the interview.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">// Press 👁️ to reveal a method of calculating the nth value of the sequence
 // without having to use recursion or a loop!
 <span class="boring">const GOLDEN_RATIO: f64 = 1.618033988749894848204586834365638118;
@@ -320,9 +320,9 @@ this way you're expected to do in the interview.</p>
 </span><span class="boring">    }
 </span><span class="boring">}</span></code></pre></pre>
 </blockquote>
-<p>Instead of using recursion though, we'll create an iterator type that produces the numbers in sequence. To do this,
-we'll create a struct that stores the current state of the Iterator. To keep things simple, we'll use a <code>u8</code> to store
-the current number (that gives us numbers 0-255), and we'll use an Option to prevent overflowing the <code>u8</code>.</p>
+<p>Instead of using recursion though, we’ll create an iterator type that produces the numbers in sequence. To do this,
+we’ll create a struct that stores the current state of the Iterator. To keep things simple, we’ll use a <code>u8</code> to store
+the current number (that gives us numbers 0-255), and we’ll use an Option to prevent overflowing the <code>u8</code>.</p>
 <pre><code class="language-rust ignore">struct Fibonacci {
     previous: u8,
     next: Option&lt;u8&gt;,
@@ -339,7 +339,7 @@ impl Fibonacci {
 <span class="boring">fn main() {}</span></code></pre>
 <p>The only method we need to provide to implement Iterator is <code>next</code>, though we also use an associated type to provide
 the information on what is returned from <code>next</code>. The reason for the associated type is that it is re-used multiple times
-throughout the Provided methods, and there should only ever be one Iterator trait applied to a type, so generics aren't
+throughout the Provided methods, and there should only ever be one Iterator trait applied to a type, so generics aren’t
 the right solution.</p>
 <pre><code class="language-rust ignore">impl Iterator for Fibonacci {
     type Item = u8;
@@ -400,7 +400,7 @@ the right solution.</p>
 <span class="boring">}</span></code></pre></pre>
 <p>You can see that each item in the sequence is wrapped in an <code>Option</code>. When an Iterator has no more items to provide, it
 will produce a <code>None</code>. The final number this Iterator will produce is <code>233</code>, after which we would overflow the <code>u8</code>
-we've used.</p>
+we’ve used.</p>
 <p>Just calling <code>.next()</code> is pretty boring, no one wants to iterate through things by hand. What if we want to print out
 all the Fibonacci values that fit inside a <code>u8</code>? You can give an Iterator to a <code>for ... in ...</code> loop, and it will
 automatically unwrap the <code>Option</code> for you. Once the loop hits a <code>None</code> the loop ends.</p>
@@ -440,9 +440,9 @@ automatically unwrap the <code>Option</code> for you. Once the loop hits a <code
         println!("{f}");
     }
 <span class="boring">}</span></code></pre></pre>
-<p>That's cool, but on its own, it's still not very interesting.</p>
+<p>That’s cool, but on its own, it’s still not very interesting.</p>
 <p>Iterators are designed to be chained. Those 75 provided methods I mentioned earlier allow you to do some exceptional
-tricks. For example, a list of Fibonacci numbers might be more useful if we knew what number in the sequence we're on.
+tricks. For example, a list of Fibonacci numbers might be more useful if we knew what number in the sequence we’re on.
 We can chain a method called <code>.enumerate</code> which will take the old iterator and give us a new one where each <code>next</code>
 now returns a tuple of <code>(position, T)</code> where <code>T</code> was the original piece of data.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">struct Fibonacci {
@@ -480,9 +480,9 @@ now returns a tuple of <code>(position, T)</code> where <code>T</code> was the o
         println!("{i}: {f}");
     }
 <span class="boring">}</span></code></pre></pre>
-<p>What's brilliant about this though is that when I say it "takes the iterator", it doesn't try to process every item
-in the iterator (a process in Rust we refer to as "consuming" the iterator), it merely takes ownership of it. Rust
-iterators are "lazy" meaning that they only call <code>next</code> when its necessary to get the next item in the list.</p>
+<p>What’s brilliant about this though is that when I say it “takes the iterator”, it doesn’t try to process every item
+in the iterator (a process in Rust we refer to as “consuming” the iterator), it merely takes ownership of it. Rust
+iterators are “lazy” meaning that they only call <code>next</code> when its necessary to get the next item in the list.</p>
 <p>For example, we can chain another method that only takes the first <code>n</code> items:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">struct Fibonacci {
 </span><span class="boring">    previous: u8,
@@ -520,19 +520,19 @@ iterators are "lazy" meaning that they only call <code>next</code> when its nece
     }
 <span class="boring">}</span></code></pre></pre>
 <p>This gives us a new iterator that only produces 4 items, but it only calls <code>enumerate</code> four times, which only calls our
-Fibonacci Iterator four times. This has huge performance benefits, and we'll talk more about this later in the chapter.</p>
+Fibonacci Iterator four times. This has huge performance benefits, and we’ll talk more about this later in the chapter.</p>
 <p>To recap:</p>
 <ul>
 <li>Iterators are designed to be chained together.</li>
-<li>Iterators in Rust are "lazy". That means that each item is only processed as it's needed.</li>
+<li>Iterators in Rust are “lazy”. That means that each item is only processed as it’s needed.</li>
 </ul>
 <h2 id="getting-iterators"><a class="header" href="#getting-iterators">Getting Iterators</a></h2>
-<p>I wanted to show you how to make your own Iterator to give you an understanding of how they work, but usually you'll get
+<p>I wanted to show you how to make your own Iterator to give you an understanding of how they work, but usually you’ll get
 an Iterator from a collection.</p>
 <p>As with most things in Rust, Iterators (or specifically, the items being iterated) can be thought of in three groups,
 and all the collections we discussed in <a href="collections.html">the last chapter</a> can give you an iterator in any of the following forms.</p>
 <h3 id="1-referenced-data-t"><a class="header" href="#1-referenced-data-t">1. Referenced data (<code>&amp;T</code>)</a></h3>
-<p>Often we don't actually need to <em>own</em> the data we're iterating over, it can be enough to just read it. All built in
+<p>Often we don’t actually need to <em>own</em> the data we’re iterating over, it can be enough to just read it. All built in
 collections have a method called <code>.iter()</code> which returns an Iterator type where the items are references to the data
 held in the collection.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
@@ -584,7 +584,7 @@ assert_eq!(iter.next(), None);
 assert_eq!(v, vec![&amp;hello, &amp;world]);
 <span class="boring">}</span></code></pre></pre>
 <h3 id="2-mutably-referenced-mut-t"><a class="header" href="#2-mutably-referenced-mut-t">2. Mutably referenced (<code>&amp;mut T</code>)</a></h3>
-<p>Sometimes, you need to edit things while iterating through them. There's actually a couple of ways to take an item from
+<p>Sometimes, you need to edit things while iterating through them. There’s actually a couple of ways to take an item from
 an iterator and get new data from it, but in the event that you want to edit data in place, the right way to do this is
 with an iterator of mutable references.</p>
 <p>All Rusts built in collections can give you a mutable iterator (if the underlying collection is mutable) using
@@ -608,7 +608,7 @@ turn one collection type into another collection type, though there are other re
 underlying data without duplicating it.</p>
 <p>There is a trait called <code>FromIterator&lt;A&gt;</code> that is implemented for types that can consume an iterator and populate
 themselves. This is almost always used with the <code>.collect()</code> iterator method, though you need to be explicit about what
-you're collecting into, either by typing the variable you're collecting into, or by using the turbofish operator that
+you’re collecting into, either by typing the variable you’re collecting into, or by using the turbofish operator that
 allows you to be explicit about the concrete types to fill in generics.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -635,7 +635,7 @@ assert_eq!(
     ]
 );
 <span class="boring">}</span></code></pre></pre>
-<p>Sometimes you may not want to have an additional variable just to provide type information, that's when the turbofish
+<p>Sometimes you may not want to have an additional variable just to provide type information, that’s when the turbofish
 operator comes in handy.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -659,7 +659,7 @@ operator comes in handy.</p>
 );
 <span class="boring">}</span></code></pre></pre>
 <h2 id="copying-and-cloning-items"><a class="header" href="#copying-and-cloning-items">Copying and cloning Items</a></h2>
-<p>Using what we've learned above, what if we want to use owned data, but we need to keep the original collection, so
+<p>Using what we’ve learned above, what if we want to use owned data, but we need to keep the original collection, so
 <code>.into_iter()</code> is out of the question?</p>
 <p>There are two methods on <code>Iterator</code> for this purpose: <code>.copied()</code> and <code>.cloned()</code>.</p>
 <p><code>.copied()</code> only works on Iterators where the item is <code>Copy</code> and will take the iterator and return a new iterator which
@@ -687,7 +687,7 @@ assert_eq!(cloned, vec![String::from("Hello"), String::from("World")]);
 <span class="boring">}</span></code></pre></pre>
 <h2 id="other-ways-to-get-iterators"><a class="header" href="#other-ways-to-get-iterators">Other Ways to get Iterators</a></h2>
 <p>Beyond collections there are other things that can be iterated through.</p>
-<p>Ranges are iterators, it's why you often see them used in for loops:</p>
+<p>Ranges are iterators, it’s why you often see them used in for loops:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>for n in 0..5 {
@@ -723,7 +723,7 @@ assert_eq!(iter.count(), 255);
 let iter = u8::MIN..u8::MAX;
 assert_eq!(iter.count(), 255);
 <span class="boring">}</span></code></pre></pre>
-<p>Fun fact, if you want to take an existing finite Iterator and repeat that infinitely, there's a method for that too,
+<p>Fun fact, if you want to take an existing finite Iterator and repeat that infinitely, there’s a method for that too,
 though the Item type must implement <code>Clone</code>.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -738,7 +738,7 @@ assert_eq!(iter.next(), Some(2));
 assert_eq!(iter.next(), Some(0)); // &lt;- Repeat
 // ...and so on
 <span class="boring">}</span></code></pre></pre>
-<p>Though don't forget, immutable references are <code>Clone</code>.</p>
+<p>Though don’t forget, immutable references are <code>Clone</code>.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[derive(Debug, PartialEq)]
@@ -763,8 +763,8 @@ let i2 = vec![3, 4, 5].into_iter(); // i2 does not need to be mutable as we're t
 assert_eq!(i1.chain(i2).collect::&lt;Vec&lt;_&gt;&gt;(), vec![0, 1, 2, 3, 4, 5]);
 <span class="boring">}</span></code></pre></pre>
 <p>Many other Types in Rust can also be broken down into Iterators. This Chapter of the book, for example, can be
-represented as one large <code>str</code>, which you can break the data down by <code>.lines()</code>, <code>.chars()</code> or <code>.bytes()</code>. Don't forget
-a <code>char</code> is not the same as a byte (<code>u8</code>) in Rust, and in this Chapter I've used several multibyte characters 😉</p>
+represented as one large <code>str</code>, which you can break the data down by <code>.lines()</code>, <code>.chars()</code> or <code>.bytes()</code>. Don’t forget
+a <code>char</code> is not the same as a byte (<code>u8</code>) in Rust, and in this Chapter I’ve used several multibyte characters 😉</p>
 <h2 id="cool-ways-to-use-iterators"><a class="header" href="#cool-ways-to-use-iterators">Cool ways to use Iterators</a></h2>
 <h3 id="mathematics"><a class="header" href="#mathematics">Mathematics</a></h3>
 <p>A common use case for iterators over things like numbers is adding all the items together, or multiplying them together.</p>
@@ -808,7 +808,7 @@ respectively:</p>
 assert_eq!(v.iter().min(), Some(&amp;'H'));
 assert_eq!(v.iter().max(), Some(&amp;'w'));
 <span class="boring">}</span></code></pre></pre>
-<p>These methods are "consuming" methods, which means they will process every element in the iterator before giving a
+<p>These methods are “consuming” methods, which means they will process every element in the iterator before giving a
 result.</p>
 <p>Another example of a consuming iterator is <code>.count()</code> which merely tells us how many items are in an iterator.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
@@ -832,8 +832,8 @@ assert_eq!(iter.next(), Some(&amp;'H'));
 <h4 id="-warning"><a class="header" href="#-warning">⚠️ Warning!</a></h4>
 <p>Methods like <code>sum</code> and <code>product</code> do a simple <code>+</code> or <code>*</code> respectively, which means that if the result overflows, the
 <em>best</em> thing that can happen is your program panics. For more robust (but slower) code you may want to implement the
-operation yourself using <code>fold</code> which is an iterator method we'll talk about later.</p>
-<p>Furthermore, methods like <code>sum</code>, <code>product</code>, <code>min</code>, <code>max</code> and anything else that "consumes" an iterator, expect that
+operation yourself using <code>fold</code> which is an iterator method we’ll talk about later.</p>
+<p>Furthermore, methods like <code>sum</code>, <code>product</code>, <code>min</code>, <code>max</code> and anything else that “consumes” an iterator, expect that
 iterator to have an end to give you a final result, but it is possible to create infinite iterators. For example, the
 function <code>repeat("hi")</code> will just continue to produce a reference to the string slice <code>"hi"</code> forever.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
@@ -871,7 +871,7 @@ assert_eq!(iter.next(), Some(8));
 assert_eq!(iter.next(), Some(10));
 assert_eq!(iter.next(), None);
 <span class="boring">}</span></code></pre></pre>
-<p>If we were to look at the length of the iterators before and after this filter you'll see they've changed!</p>
+<p>If we were to look at the length of the iterators before and after this filter you’ll see they’ve changed!</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let full_iter = (1..=10);
@@ -897,7 +897,7 @@ assert_eq!(iter.next(), None);
 <p>Sometimes the process you apply to an item might itself result in an <code>Option</code>, and rather than having an iterator of
 <code>Options</code> you may want to discard <code>None</code>s and unwrap the <code>Ok</code>, this is where <code>.filter_map()</code> is really handy.</p>
 <p>In the example below we use <code>.checked_add</code> which returns an <code>Option</code> with an <code>Ok</code> so long as the result is inbounds. By
-combining this with filter_map, we'll get only the items that were Some, and those items will be unwrapped.</p>
+combining this with filter_map, we’ll get only the items that were Some, and those items will be unwrapped.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let mut iter = (1..=u8::MAX)
@@ -940,7 +940,7 @@ assert_eq!(iter_skip.collect::&lt;Vec&lt;_&gt;&gt;(), vec![&amp;4, &amp;5, &amp;
 <p>An Iterator method we used earlier, <code>.enumerate()</code>, allows us to add an index to our Iterator by changing the type of
 the iterator <code>T</code> to a tuple: <code>(usize, T)</code>. This can be really handy in combination with other iterators when the
 position in an iterator is important. For example, lets say we want to filter every other item out of a <code>Vec</code>. We can
-do that by chaining together several of the Iterators we've just learned.</p>
+do that by chaining together several of the Iterators we’ve just learned.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let v1 = vec!["This", "sentence", "is", "not", "shorter"];
@@ -994,7 +994,7 @@ let bad_sum = (100u8..=106)
 
 assert_eq!(bad_sum, Err(OverflowError));
 <span class="boring">}</span></code></pre></pre>
-<p>That said, in this kind of case, once our fold function returns an <code>Err</code>, we can't process any more items, we can break
+<p>That said, in this kind of case, once our fold function returns an <code>Err</code>, we can’t process any more items, we can break
 out of this early with <code>.try_fold()</code> which will stop iterating immediately:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -1009,7 +1009,7 @@ out of this early with <code>.try_fold()</code> which will stop iterating immedi
 assert_eq!(bad_sum, Err(OverflowError));
 <span class="boring">}</span></code></pre></pre>
 <h2 id="more-iterator-traits"><a class="header" href="#more-iterator-traits">More Iterator Traits</a></h2>
-<p>There's a few more traits you may want to be aware of when making your own iterators:</p>
+<p>There’s a few more traits you may want to be aware of when making your own iterators:</p>
 <p><code>IntoIterator</code> can be implemented on any type that can be turned into an <code>Iterator</code>. One place you may find yourself
 using it is on newtypes.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">struct Album {
@@ -1155,7 +1155,7 @@ assert_eq!(iter.next(), Some(1));
 assert_eq!(iter.next(), None);
 <span class="boring">}</span></code></pre></pre>
 <h2 id="next-chapter"><a class="header" href="#next-chapter">Next Chapter</a></h2>
-<p>We've now covered all of what I'd describe as the core, synchronous language features (at least... I hope). We're going
+<p>We’ve now covered all of what I’d describe as the core, synchronous language features (at least… I hope). We’re going
 move on to Threads in the next chapter, discuss what they are and some of the most important and useful tools to use
 when working with them.</p>
 
@@ -1213,6 +1213,8 @@ when working with them.</p>
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
 
 
 

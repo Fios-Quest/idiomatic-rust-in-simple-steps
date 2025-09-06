@@ -177,28 +177,28 @@
                     <main>
                         <h1 id="threads"><a class="header" href="#threads">Threads</a></h1>
 <p>Threads allow us to build programs where parts of the program can run independently of one another.</p>
-<p>Threads <em>can</em> (big emphasis on "can") help you make faster and more responsive programs.</p>
+<p>Threads <em>can</em> (big emphasis on “can”) help you make faster and more responsive programs.</p>
 <p>For example:</p>
 <ul>
-<li>As a web developer, I would like the server framework I'm using to start responding to the next request before it's
+<li>As a web developer, I would like the server framework I’m using to start responding to the next request before it’s
 finished responding to the previous request</li>
 <li>As a game developer, I would like my game engine to capture player inputs without being blocked by the renderer</li>
 <li>As a data engineer, I would like to process large sets of data in parallel</li>
 </ul>
-<p>We'll step through:</p>
+<p>We’ll step through:</p>
 <ul>
 <li>how we can run code in a thread, including sending data before it starts</li>
 <li>how we can wait for a thread to end, including receiving data when it ends</li>
 <li>how we can communicate with running threads</li>
 <li>how we can share state between threads</li>
 </ul>
-<p>We'll also be touching again on our marker traits Send and Sync</p>
+<p>We’ll also be touching again on our marker traits Send and Sync</p>
 <h2 id="what-is-a-thread"><a class="header" href="#what-is-a-thread">What is a thread?</a></h2>
-<p>Before we get into the Rust, it's worth discussing what a thread is.</p>
+<p>Before we get into the Rust, it’s worth discussing what a thread is.</p>
 <p>When you run a program, that specific instance of the program is called a Process. The process incorporates not just the
 instructions to be run but is an abstraction around various resources that the program has access to, such as memory.</p>
 <p>You can run multiple processes which the operating system will schedule separately which could allow you to do more things
-at once, however, those processes won't (or at least, shouldn't) have access to the same memory. There are ways to
+at once, however, those processes won’t (or at least, shouldn’t) have access to the same memory. There are ways to
 communicate between processes, but they can be slower and more restrictive than if we could share memory.</p>
 <p>The part of the process responsible for executing your code is called a thread, and a single process can have multiple
 threads. Threads are scheduled by the operating system independently, allowing one process to do multiple things
@@ -208,8 +208,8 @@ effectively concurrently.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">fn main() {
     println!("Hello, I am in a thread!")
 }</code></pre></pre>
-<p>What we're interested in today is how we start more threads. This is a process called Spawning.</p>
-<p>To spawn a thread, we use <code>std::thread::spawn</code>... but, this will do little on its own. Run the code below, see what's
+<p>What we’re interested in today is how we start more threads. This is a process called Spawning.</p>
+<p>To spawn a thread, we use <code>std::thread::spawn</code>… but, this will do little on its own. Run the code below, see what’s
 missing in the output?</p>
 <pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 
@@ -234,9 +234,9 @@ fn main() {
     handler.join().expect("Child thread panicked");
     println!("This is the end of the main thread");
 }</code></pre></pre>
-<p>Note, we're using closures here, but functions work just as well and can be better for more complex programs. The only
+<p>Note, we’re using closures here, but functions work just as well and can be better for more complex programs. The only
 restriction is: it needs to be <code>FnOnce() -&gt; T + Send + 'static</code>. See
-<a href="https://doc.rust-lang.org/std/thread/fn.spawn.html">the documentation</a> for more details.</p>
+<a href="https://doc.rust-lang.org/std/thread/fn.spawn.html" title="" target="_blank">the documentation</a> for more details.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">use std::thread::spawn;
 
 fn child() {
@@ -249,7 +249,7 @@ fn main() {
     handler.join().expect("Child thread panicked");
     println!("This is the end of the main thread");
 }</code></pre></pre>
-<p>Exactly <em>when</em> threads are allowed to execute code is controlled by a scheduler which we can't directly manage
+<p>Exactly <em>when</em> threads are allowed to execute code is controlled by a scheduler which we can’t directly manage
 ourselves, but we can influence it. Putting one thread to sleep can allow another thread to run. Run this code, then
 uncomment the commented lines and run it again.</p>
 <pre><pre class="playground"><code class="language-rust editable edition2024">use std::thread::{sleep, spawn};
@@ -270,7 +270,7 @@ fn main() {
 
     handler.join().expect("Child thread panicked");
 }</code></pre></pre>
-<p>So now we can run threads, let's start looking at how to send data back and forth between them.</p>
+<p>So now we can run threads, let’s start looking at how to send data back and forth between them.</p>
 <p>We can pass data into a thread before it starts so long as the data is <code>Send</code>. We previously talked about this trait in
 the <a href="./traits.html">Traits</a> chapter, but to recap, data is <code>Send</code> so long as it can be safely sent between threads, and
 this trait is auto-implemented for all types that can be <code>Send</code> (though it is also possible to opt out of it).</p>
@@ -311,7 +311,7 @@ fn main() {
     assert_eq!(answer, 2147385345);
 }</code></pre></pre>
 <h2 id="sending-messages"><a class="header" href="#sending-messages">Sending messages</a></h2>
-<p>Now we can start one thread, there's no stopping us!</p>
+<p>Now we can start one thread, there’s no stopping us!</p>
 <p>Modern schedulers can manage a <em>lot</em> of threads at once, however, so far we can only send data between a child thread
 and the parent that started it. What if we want to communicate across multiple threads, or send data to a thread after
 we already started it?</p>
@@ -319,7 +319,7 @@ we already started it?</p>
 can send messages, and a single <code>Reciever</code> that can receive them. As per the name, Multi-producer, you can clone
 <code>Sender</code>s but each of those clones can only send to a single <code>Reciever</code>. The <code>Sender</code> and <code>Receiver</code> types are <code>Send</code>
 meaning that you can create them in one thread and send them to another.</p>
-<p>Let's create a bunch of threads and give each of them a <code>Sender</code> that points back to a single <code>Reciever</code>, we'll send
+<p>Let’s create a bunch of threads and give each of them a <code>Sender</code> that points back to a single <code>Reciever</code>, we’ll send
 that <code>Reciever</code> to a final thread that will collect the data from the other threads.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">use std::sync::mpsc::channel;
 use std::thread::spawn;
@@ -353,9 +353,9 @@ fn main() {
     receiving_handler.join().expect("receiving thread panicked");
 }
 </code></pre></pre>
-<p>For what its worth, there's no built-in way to create a channel with multiple receivers (<code>Receiver</code> is not <code>Clone</code>),
-however, there's nothing stopping you building your own type for that, or there are crates that support it like
-<a href="https://docs.rs/crossbeam/latest/crossbeam/">Crossbeam</a>.</p>
+<p>For what its worth, there’s no built-in way to create a channel with multiple receivers (<code>Receiver</code> is not <code>Clone</code>),
+however, there’s nothing stopping you building your own type for that, or there are crates that support it like
+<a href="https://docs.rs/crossbeam/latest/crossbeam/" title="" target="_blank">Crossbeam</a>.</p>
 <h2 id="sharing-state"><a class="header" href="#sharing-state">Sharing State</a></h2>
 <p>So now we can send messages across threads, but what if we need multiple threads to have access to the <em>same</em> data,
 maybe even able to edit that data. To do this, we need to use types that implement the <code>Sync</code> trait.</p>
@@ -363,8 +363,8 @@ maybe even able to edit that data. To do this, we need to use types that impleme
 <p>Something is <code>Sync</code> if a reference to it can be sent between threads, i.e. <code>T</code> is <code>Sync</code> if <code>&amp;T</code> is <code>Send</code>.</p>
 <p>Most things are <code>Sync</code>, but we still have to abide the rules of references in that we can have as many immutable
 references as we like, but we can only have one mutable reference. Furthermore, references cannot outlive the data they
-reference... which is a little harder to confirm with threads. How do you know the thread referencing your data doesn't
-exist for longer than the data it's referenced?</p>
+reference… which is a little harder to confirm with threads. How do you know the thread referencing your data doesn’t
+exist for longer than the data it’s referenced?</p>
 <p>This is where <code>std::thread::scope</code> can help us, by providing scoped threads.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">// We will create a scope and use that to spawn threads instead of spawning 
 // them directly.
@@ -415,7 +415,7 @@ fn main() {
 }</code></pre></pre>
 <p>So we can share readable data across multiple threads with immutable references, or share writable data temporarily with
 a single thread, but what if we want to share read/write access to data across multiple threads.</p>
-<p>Let's start by thinking why we can't do this with just references. When we're using threads, multiple parts of our
+<p>Let’s start by thinking why we can’t do this with just references. When we’re using threads, multiple parts of our
 program can be executed at the same time. Imagine we have two threads that want to change the data behind a reference
 based on what is currently stored there, something simple like each thread wants to multiply the data.</p>
 <ol>
@@ -424,14 +424,14 @@ based on what is currently stored there, something simple like each thread wants
 <li>Thread 1 multiplies the data and stores it back in memory</li>
 <li>Thread 2 multiplies the data and stores it back in memory</li>
 </ol>
-<p>In this situation, we've lost the effect of Thread 1, which <em>could</em> be a bug.</p>
-<p>Let's consider a more serious version of this. Imagine the data rather than just being a single value, is an image
-stored in an array like structure, and you're applying multiple processes to the image at the same time. This time, if
-one thread were to override another's work, we have a much more obvious problem.</p>
+<p>In this situation, we’ve lost the effect of Thread 1, which <em>could</em> be a bug.</p>
+<p>Let’s consider a more serious version of this. Imagine the data rather than just being a single value, is an image
+stored in an array like structure, and you’re applying multiple processes to the image at the same time. This time, if
+one thread were to override another’s work, we have a much more obvious problem.</p>
 <p>To get around this, we need to prevent two threads accessing the same piece of data at the same time. There is a general
-software abstraction concept called a "mutex" that makes access to the data MUTually EXclusive. Rust provides it's mutex
+software abstraction concept called a “mutex” that makes access to the data MUTually EXclusive. Rust provides it’s mutex
 through <code>std::sync::Mutex</code>.</p>
-<p>Once you place data inside a Mutex, to access it again, you need to "lock" the Mutex. If the Mutex is already locked,
+<p>Once you place data inside a Mutex, to access it again, you need to “lock” the Mutex. If the Mutex is already locked,
 then the thread currently trying to access the data needs to wait for the existing lock to be released.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">use std::thread::scope;
 use std::sync::Mutex;
@@ -459,26 +459,26 @@ fn main() {
         .iter()
         .for_each(|s| assert_eq!(s, &amp;"Thread reporting in!".to_string()));
 }</code></pre></pre>
-<p>However, there's still a slight problem here. We're currently very dependent on using scoped threads because we need our
-references to point back to the owned data, but scoped threads aren't the norm. In fact, most of the time you use
+<p>However, there’s still a slight problem here. We’re currently very dependent on using scoped threads because we need our
+references to point back to the owned data, but scoped threads aren’t the norm. In fact, most of the time you use
 threads in Rust, they will probably be abstracted behind some other framework (for example, a web server, a game engine,
 or data processing tools).</p>
-<p>The problem, of course, is that we don't know when the owned data will go out of scope and no longer be accessible.</p>
-<p>We can solve this problem using an Atomic Reference Count. We haven't discussed reference counting yet as it's usually
+<p>The problem, of course, is that we don’t know when the owned data will go out of scope and no longer be accessible.</p>
+<p>We can solve this problem using an Atomic Reference Count. We haven’t discussed reference counting yet as it’s usually
 fairly niche, however, reference counting allows you to share data around an application without needing to clone it and
 side stepping complex reference rules. It works by moving the data you want to share onto the heap, and allowing access
 through a reference count type. When you clone the reference count value, instead of the data being cloned, it modifies
 its internal count of how many clones currently exist. Every time a reference count type goes out of scope, the count is
 decreased. Once the count hits zero, there are no further references to the data and so it can be cleaned up.</p>
-<p>Now, if you've paid attention as to why we need a Mutex for modifying data across threads, you'll see that using a
-normal reference count won't work. If the reference counter is cloned or dropped while also being cloned or dropped in
+<p>Now, if you’ve paid attention as to why we need a Mutex for modifying data across threads, you’ll see that using a
+normal reference count won’t work. If the reference counter is cloned or dropped while also being cloned or dropped in
 another thread, you could end up with an inconsistent count of references, meaning data gets dropped at the wrong
 time. This is why we need a special reference count type, <code>std::sync::Arc</code>, an Atomic Reference Count.</p>
 <p>Atomic data types guarantee atomic changes. Atomic changes are guaranteed to appear to be instantaneous to all external
 observers, meaning that two threads can change the value, but that this change cannot overlap. <code>Arc</code> is a little slower
-than Rust's built in basic reference counting type <code>std::rc::Rc</code>, but prevents corruption across threads.</p>
+than Rust’s built in basic reference counting type <code>std::rc::Rc</code>, but prevents corruption across threads.</p>
 <blockquote>
-<p>Authors note: I don't think I've <em>ever</em> used <code>Rc</code>, but I use <code>Arc</code> all the time, so don't worry that we didn't
+<p>Authors note: I don’t think I’ve <em>ever</em> used <code>Rc</code>, but I use <code>Arc</code> all the time, so don’t worry that we didn’t
 cover it in this book. If you need to pass data around wrapped in its own container its there to use</p>
 </blockquote>
 <p>So, armed with this knowledge, we can go back to unscoped threads!</p>
@@ -510,7 +510,7 @@ fn main() {
         .for_each(|s| assert_eq!(s, &amp;"Thread reporting in!".to_string()));
 }</code></pre></pre>
 <h2 id="next-chapter"><a class="header" href="#next-chapter">Next Chapter</a></h2>
-<p>Macros! We'll be looking at the <code>macro_rules!</code> macro that lets you make more macros. We'll learn how <code>macro_rules!</code>
+<p>Macros! We’ll be looking at the <code>macro_rules!</code> macro that lets you make more macros. We’ll learn how <code>macro_rules!</code>
 is used, how we can use it to remove repetitive code or even write our own domain-specific language (DSL)!</p>
 
                     </main>
@@ -567,6 +567,8 @@ is used, how we can use it to remove repetitive code or even write our own domai
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
 
 
 

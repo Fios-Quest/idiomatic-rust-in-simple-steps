@@ -177,15 +177,15 @@
                     <main>
                         <h1 id="tests"><a class="header" href="#tests">Tests</a></h1>
 <p>Tests. Are. Awesome.</p>
-<p>They are my favourite bit of software engineering. I'm sure many of you can relate, but I don't tend to trust humans
-telling me I'm doing well at my job. When I make a test pass though, oh that dopamine hits good.</p>
-<p>A good test makes sure that the thing we're building does what we think it should do.</p>
-<p>Anecdotally I recently interviewed at a company where I professed my love of tests, and they told me flatly they don't
-write tests, they "move fast". Later in the interview they admitted they were having morale issues because their
+<p>They are my favourite bit of software engineering. I’m sure many of you can relate, but I don’t tend to trust humans
+telling me I’m doing well at my job. When I make a test pass though, oh that dopamine hits good.</p>
+<p>A good test makes sure that the thing we’re building does what we think it should do.</p>
+<p>Anecdotally I recently interviewed at a company where I professed my love of tests, and they told me flatly they don’t
+write tests, they “move fast”. Later in the interview they admitted they were having morale issues because their
 engineers were constantly getting called out of hours to fix things.</p>
-<p>So, it begs the question: are you moving fast if you're writing software that doesn't work?</p>
-<p>Software engineers are not paid to write software, we're paid to solve problems. Tests are what make sure we solved the
-problem and by automating our tests they make sure we don't accidentally "unsolve" it further down the line.</p>
+<p>So, it begs the question: are you moving fast if you’re writing software that doesn’t work?</p>
+<p>Software engineers are not paid to write software, we’re paid to solve problems. Tests are what make sure we solved the
+problem and by automating our tests they make sure we don’t accidentally “unsolve” it further down the line.</p>
 <h2 id="the-testing-pyramid"><a class="header" href="#the-testing-pyramid">The testing Pyramid</a></h2>
 <p>There are many ways to test software, these largely fall into three categories that make up what we call the testing
 pyramid.</p>
@@ -204,40 +204,40 @@ expensive   |      /   Integration  \     |  expensive
             |   /----------------------\  ↓           
 </code></pre>
 </div>
-<p>It's a pyramid to indicate that, although all tests are important, those lower down the pyramid should be laying the
+<p>It’s a pyramid to indicate that, although all tests are important, those lower down the pyramid should be laying the
 foundation for the others. Not only should you have more of them, but they will provide the greatest feeling of safety
 and security.</p>
 <h3 id="end-to-end-tests"><a class="header" href="#end-to-end-tests">End-to-End Tests</a></h3>
-<p>E2E tests are designed to make sure that the user of the software you've created can complete full user
+<p>E2E tests are designed to make sure that the user of the software you’ve created can complete full user
 journeys, for example, can the user open, edit and save a file in a desktop application or can a user add an item to
 a shopping cart and checkout of an ecommerce store. End-to-End tests are the slowest form of test and lack depth.</p>
 <h3 id="integration-tests"><a class="header" href="#integration-tests">Integration Tests</a></h3>
 <p>Integration tests check that the code you control works correctly with code that your program depends on that you
-don't control. This would include things like databases or other data stores, web apis, library apis, etc. Integration
+don’t control. This would include things like databases or other data stores, web apis, library apis, etc. Integration
 tests are also used if your software produces a public API. You write tests to check that people using your software in
 its more natural state. Because of the communication component to these tests, these tests are also quite slow.</p>
 <h3 id="unit-tests"><a class="header" href="#unit-tests">Unit Tests</a></h3>
 <p>Unit tests test a single unit of functionality. These tests are the simplest, fastest and should make up the bulk
 of your testing. These tests are so important, that it is best practice to write them before you write the code
-you're going to test.</p>
-<p>For this book, we're only going to cover Unit Tests. That isn't to say that Integration Tests and End-to-End Tests
-aren't important, they absolutely are, and there are many good guides out there. But, it is to say, that Unit Tests are
+you’re going to test.</p>
+<p>For this book, we’re only going to cover Unit Tests. That isn’t to say that Integration Tests and End-to-End Tests
+aren’t important, they absolutely are, and there are many good guides out there. But, it is to say, that Unit Tests are
 <em>so</em> important, that they significantly impact how we communicate about Rust code and particularly libraries that we
-might use, and they'll change the way we talk about Rust in this book going forward.</p>
+might use, and they’ll change the way we talk about Rust in this book going forward.</p>
 <h2 id="introduction-to-modules"><a class="header" href="#introduction-to-modules">Introduction to Modules</a></h2>
-<p>Unlike many languages, in Rust, tests live with the code that they're testing. To explain this we need to talk about
+<p>Unlike many languages, in Rust, tests live with the code that they’re testing. To explain this we need to talk about
 how code in Rust is organised with Modules.</p>
 <p>A Module is simply a container for other things, functions, type definitions, other modules, etc. You could think of it
 like a physical container, though you can nest any number of containers together. The contents of the module are private
 to that module unless explicitly marked as public with the <code>pub</code> keyword.</p>
-<p>We define a module with the <code>mod</code> keyword and a name. There are then three ways to define what's inside that module:</p>
+<p>We define a module with the <code>mod</code> keyword and a name. There are then three ways to define what’s inside that module:</p>
 <ol>
 <li>With a directory named the same thing as the module which contains the file <code>mod.rs</code>, eg <code>my_module/mod.rs</code></li>
 <li>With a file in the same directory named the same thing as the module, eg <code>my_module.rs</code></li>
 <li>Inside curly brackets, eg <code>mod my_module { ... }</code></li>
 </ol>
 <p>If the module exposes anything publicly, you can then reference them with the path to the module and the name of the
-thing you're referencing separated by double colons. Sound familiar? It should, this is how we've been accessing Rust's
+thing you’re referencing separated by double colons. Sound familiar? It should, this is how we’ve been accessing Rust’s
 standard library. For example, the <code>stdin</code> function is inside the <code>io</code> module, which itself is available inside the
 <code>std</code> library.</p>
 <p>We access that function using <code>std::io::stdin()</code>. We can also use the <code>use</code> keyword to simplify this a bit, for example:</p>
@@ -247,8 +247,8 @@ fn main() {
     let _ = stdin(); // No need to use the full name here
 }</code></pre>
 <h2 id="test-modules"><a class="header" href="#test-modules">Test Modules</a></h2>
-<p>In Rust, we typically create a test module near the code that is being tested. Let's say we want to test some of the
-functions we wrote in the last chapter (I've renamed them slightly below).</p>
+<p>In Rust, we typically create a test module near the code that is being tested. Let’s say we want to test some of the
+functions we wrote in the last chapter (I’ve renamed them slightly below).</p>
 <p>First we start by creating a module to test these functions in the same file as the functions exist</p>
 <pre><code class="language-rust noplayground">fn split_at(input: &amp;str, at: usize) -&gt; (&amp;str, &amp;str) {
     // ...
@@ -279,16 +279,17 @@ fn split_around_many&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str, collect
 mod tests {
     // empty for now
 }</code></pre>
-<p>As long as nothing in the <code>tests</code> module is used in your main program it shouldn't appear in your final binary, however,
-this isn't good enough. There's a risk we might make a mistake, but even without that, the module will still be
-processed by the compiler in order to do things like type checking. We only care about this module when we're running
+<p>As long as nothing in the <code>tests</code> module is used in your main program it shouldn’t appear in your final binary, however,
+this isn’t good enough. There’s a risk we might make a mistake, but even without that, the module will still be
+processed by the compiler in order to do things like type checking. We only care about this module when we’re running
 our tests and Rust provides us a way to tell it that, the
-<a href="https://doc.rust-lang.org/reference/conditional-compilation.html"><code>#[cfg(...)]</code> attribute</a>.</p>
-<p>Attributes are one of Rust's many meta programming tools which we'll cover more in the future at increasing difficulty
+<a href="https://doc.rust-lang.org/reference/conditional-compilation.html" title="" target="_blank">
+<code>#[cfg(...)]</code> attribute</a>.</p>
+<p>Attributes are one of Rust’s many meta programming tools which we’ll cover more in the future at increasing difficulty
 levels. For now, the <code>cfg</code> attribute allows us to tell the Rust Compiler (<code>rustc</code>) <em>when</em> we want to compile something.
-There are many, many ways to use conditional compilation, but for tests it's pretty simple, we only want the module
-compiled when we're building tests and <code>cfg</code> has a "predicate" to identify this simply called <code>test</code>.</p>
-<p>We use <code>cfg</code> to only build our tests module when we're building for tests like this:</p>
+There are many, many ways to use conditional compilation, but for tests it’s pretty simple, we only want the module
+compiled when we’re building tests and <code>cfg</code> has a “predicate” to identify this simply called <code>test</code>.</p>
+<p>We use <code>cfg</code> to only build our tests module when we’re building for tests like this:</p>
 <pre><code class="language-rust noplayground"><span class="boring">fn split_at(input: &amp;str, at: usize) -&gt; (&amp;str, &amp;str) {
 </span><span class="boring">    let up_to = std::cmp::min(at, input.len()); // Prevent out of bounds
 </span><span class="boring">    (&amp;input[..up_to], &amp;input[up_to..])
@@ -317,9 +318,9 @@ mod tests {
     // still empty
 }</code></pre>
 <h2 id="writing-tests"><a class="header" href="#writing-tests">Writing Tests</a></h2>
-<p>Now we're ready to write our first test.</p>
+<p>Now we’re ready to write our first test.</p>
 <p>A test is simply a function that we mark with another attribute <code>#[test]</code>.</p>
-<p>Let's quickly write a broken test to make sure things are working.</p>
+<p>Let’s quickly write a broken test to make sure things are working.</p>
 <pre><code class="language-rust noplayground">#[cfg(test)]
 mod tests {
     
@@ -328,17 +329,17 @@ mod tests {
         assert!(false, "Intentionally failing a test to show how they work")
     }
 }</code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=d62bd5aa150a9f0bdab23a98b655fc78">Link to tests</a></p>
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=d62bd5aa150a9f0bdab23a98b655fc78" title="" target="_blank">Link to tests</a></p>
 <blockquote>
-<p>Note: currently mdbook, the tool we're using to create the IRISS book, does not support running tests natively.
-Instead, we'll provide a permalink to the relevant code in Rust Playground. Inside Rust Playground, click the three
+<p>Note: currently mdbook, the tool we’re using to create the IRISS book, does not support running tests natively.
+Instead, we’ll provide a permalink to the relevant code in Rust Playground. Inside Rust Playground, click the three
 dots next to Run, and choose Test</p>
 </blockquote>
 <p>The <code>assert!()</code> macro takes either one or two parameters. The first parameter which is not optional is a boolean value,
 or something that evaluates to a boolean. If this boolean is false, then the assertion will cause a panic, and the test
-will fail (unless it's expected to panic, more on that later).</p>
+will fail (unless it’s expected to panic, more on that later).</p>
 <p>The second, optional parameter allows us to annotate the assertion, which can help us more easily determine which (if
-any) assertion failed in a test that might have multiple assertions. You'll find that people don't use this as much, I'm
+any) assertion failed in a test that might have multiple assertions. You’ll find that people don’t use this as much, I’m
 guilty of this too, but I do recommend making an effort to describe each specific assertion. The people you work with,
 as well as future you, will appreciate the effort.</p>
 <p>There are three main assert macros:</p>
@@ -348,7 +349,7 @@ as well as future you, will appreciate the effort.</p>
 <li><code>assert_ne!(&lt;left&gt;, &lt;right&gt;, &lt;optional message&gt;)</code> asserts left is NOT equal to right or panics with optional message</li>
 </ul>
 <p>There are a couple of restrictions with the assert macros. Values used must implement <code>PartialEq</code> and <code>Debug</code>. Most
-built in types already implement both, and we'll talk about how to implement them for your own types in the Traits
+built in types already implement both, and we’ll talk about how to implement them for your own types in the Traits
 chapter.</p>
 <blockquote>
 <p>You can also find more assert macros for specific types, in Rusts experimental tool chain, and in other libraries.
@@ -372,12 +373,12 @@ failures:
 test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 </code></pre>
 <h2 id="testing-our-code"><a class="header" href="#testing-our-code">Testing our code</a></h2>
-<p>Let's move on to writing our actual tests, we'll start with "split_at".</p>
+<p>Let’s move on to writing our actual tests, we’ll start with “split_at”.</p>
 <p>Before we can write a test, <code>split_at</code> is not part of the <code>tests</code> module, so we need to make it available inside. We can
 do that with the <code>use</code> statement in one of two ways, either <code>use super::split_at</code> or <code>use super::*</code>. The <code>super</code> keyword
-simply means the module above this one, which for your unit tests should be the module to you're writing tests for. We
+simply means the module above this one, which for your unit tests should be the module to you’re writing tests for. We
 can either bring just the one function in, or we can bring in everything available in that scope. The idiom here is that
-your module ideally shouldn't be so complicated that you can't bring in everything, so it's usually safe to
+your module ideally shouldn’t be so complicated that you can’t bring in everything, so it’s usually safe to
 <code>use super::*</code>.</p>
 <pre><code class="language-rust noplayground">fn split_at(input: &amp;str, at: usize) -&gt; (&amp;str, &amp;str) {
     // ...
@@ -397,12 +398,12 @@ mod tests {
         assert_eq!(split_right, "lo, world!", "Rest of input");
     }
 }</code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=c690b50e621e51a775b9ecf2019ee663">Link to tests</a></p>
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=c690b50e621e51a775b9ecf2019ee663" title="" target="_blank">Link to tests</a></p>
 <p>Congratulations, we now have our first working test! If you mess with the assertions, you can see how the optional
 message helps us find the broken assertion faster. And if you read the optional message, it tells us the expected
-behaviour... I think those of you who regularly USE non-english languages will see where the expectation doesn't meet
+behaviour… I think those of you who regularly USE non-english languages will see where the expectation doesn’t meet
 the behaviour.</p>
-<p>Let's write another test for <code>split_at</code>:</p>
+<p>Let’s write another test for <code>split_at</code>:</p>
 <pre><code class="language-rust noplayground">fn split_at(input: &amp;str, at: usize) -&gt; (&amp;str, &amp;str) {
     // ...
 <span class="boring">    let up_to = std::cmp::min(at, input.len()); // Prevent out of bounds
@@ -430,17 +431,18 @@ mod tests {
         assert_eq!(split_right, "ちは世界！", "Rest of input");
     }
 }</code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=cf9de81995dc46c807e4d08e9cc4c75b">Link to tests</a></p>
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=cf9de81995dc46c807e4d08e9cc4c75b" title="" target="_blank">Link to tests</a></p>
 <p>This is why setting our expectations of functionality in plain, natural language, is so important!</p>
-<p>We've explained in the test that we expected to split at the nth character NOT the nth byte. Now that we know this
-doesn't match the expectations, we should fix our function.</p>
-<p>Don't worry too much about this next bit yet, but if you'd like an explanation of the fix</p>
+<p>We’ve explained in the test that we expected to split at the nth character NOT the nth byte. Now that we know this
+doesn’t match the expectations, we should fix our function.</p>
+<p>Don’t worry too much about this next bit yet, but if you’d like an explanation of the fix</p>
 <p>In order to do this, we need to find the byte number where our number of characters is met. Looking at the
-documentation for <a href="https://doc.rust-lang.org/std/primitive.str.html#method.chars">str</a> we can find there's a method
+documentation for <a href="https://doc.rust-lang.org/std/primitive.str.html#method.chars" title="" target="_blank">str</a> we can find there’s a method
 for creating an iterator of chars. For small strings, this feels like an acceptable way to find the new place to split
-our string slice. We'll also use a method called
-<a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.take"><code>take</code></a> that we can use to effectively only take the
-first X characters. We'll then <code>map</code> over each item remaining in the iterator to get its size in bytes, before summing
+our string slice. We’ll also use a method called
+<a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.take" title="" target="_blank">
+<code>take</code></a> that we can use to effectively only take the
+first X characters. We’ll then <code>map</code> over each item remaining in the iterator to get its size in bytes, before summing
 the number of bytes to get our new split point.</p>
 <p>We no longer need the bounds check because, if the <code>at</code> is greater than the length of the string in characters, our
 <code>chars</code> iterator will end before we reach the <code>take</code> limit.</p>
@@ -471,9 +473,9 @@ mod tests {
 </span><span class="boring">        assert_eq!(split_right, "ちは世界！", "Rest of input");
 </span><span class="boring">    }
 </span>}</code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=09d99c5316173b306ad23c4f938a0b54">Link to tests</a></p>
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=09d99c5316173b306ad23c4f938a0b54" title="" target="_blank">Link to tests</a></p>
 <p>Now this test works too!</p>
-<p>Let's quickly write the tests for <code>split_around</code> and <code>split_around_many</code>:</p>
+<p>Let’s quickly write the tests for <code>split_around</code> and <code>split_around_many</code>:</p>
 <pre><code class="language-rust noplayground">fn split_at(input: &amp;str, at: usize) -&gt; (&amp;str, &amp;str) {
     // ...
 <span class="boring">    let byte_count = input.chars().take(at).map(|c| c.len_utf8()).sum();
@@ -574,19 +576,19 @@ mod tests {
         ]);
     }
 }</code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=1192fc71d8bf6be488c241a0a7f0a827">Link to tests</a></p>
-<p>Note that we didn't need to update the other functions for multibyte because we're specifically looking for a substring
-that either exists or doesn't.</p>
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=1192fc71d8bf6be488c241a0a7f0a827" title="" target="_blank">Link to tests</a></p>
+<p>Note that we didn’t need to update the other functions for multibyte because we’re specifically looking for a substring
+that either exists or doesn’t.</p>
 <p>Now, what if I told you: we just did all of this backwards 😲</p>
 <h2 id="test-driven-development"><a class="header" href="#test-driven-development">Test Driven Development</a></h2>
-<p>So now, hopefully, you're eager to write a load of code and then write a load of tests, but wait!</p>
-<p>As we alluded to at the top of chapter, and again halfway through, the point of tests isn't to test that your code does
-what you <em>think</em> it does, it's to make sure it does what it's <em>supposed</em> to do.</p>
+<p>So now, hopefully, you’re eager to write a load of code and then write a load of tests, but wait!</p>
+<p>As we alluded to at the top of chapter, and again halfway through, the point of tests isn’t to test that your code does
+what you <em>think</em> it does, it’s to make sure it does what it’s <em>supposed</em> to do.</p>
 <p>The best way to achieve this is to work out what your code is supposed to do, then write the test, then write the code.
 This is called Test Driven Development (TDD).</p>
-<p>Let's try some TDD. We'll create a function that checks if a given string is a palindrome (a word that's the same
+<p>Let’s try some TDD. We’ll create a function that checks if a given string is a palindrome (a word that’s the same
 forwards and backwards).</p>
-<p>We'll start by writing our test:</p>
+<p>We’ll start by writing our test:</p>
 <pre><code class="language-rust noplayground">#[cfg(test)]
 mod tests {
     use super::*;
@@ -598,9 +600,9 @@ mod tests {
         assert!(!is_palindrome("wood"));
     }
 }</code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=6f6409b54d8e8d3af13086a02030c3f4">Link to tests</a></p>
-<p>This won't compile though, so in order to run our test (even though it won't work), we need to write the function. We
-don't want to write any code inside it yet though, so we'll use the <code>todo!()</code> macro.</p>
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=6f6409b54d8e8d3af13086a02030c3f4" title="" target="_blank">Link to tests</a></p>
+<p>This won’t compile though, so in order to run our test (even though it won’t work), we need to write the function. We
+don’t want to write any code inside it yet though, so we’ll use the <code>todo!()</code> macro.</p>
 <pre><code class="language-rust noplayground">fn is_palindrome(_input: &amp;str) -&gt; bool {
     todo!("Implement the palindrome checker");
 }
@@ -617,14 +619,14 @@ mod tests {
 </span><span class="boring">        assert!(!is_palindrome("wood"));
 </span>    }
 }</code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=64e08f5b84aaf37520679327ae0eb015">Link to tests</a></p>
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=64e08f5b84aaf37520679327ae0eb015" title="" target="_blank">Link to tests</a></p>
 <p>We use the <code>todo!</code> macro to state we are intending to come back and fix this code soon. It works even in our function
-that's supposed to return a boolean because Rust recognises that the todo macro will kill the program, and therefore the
+that’s supposed to return a boolean because Rust recognises that the todo macro will kill the program, and therefore the
 function will never return.</p>
-<p>We've also used an underscore on the front of the <code>_input</code> parameter just to let Rust know that <em>we</em> know that parameter
-isn't used yet (otherwise it'll warn us about it).</p>
-<p>Let's think about our implementation. The string slice type doesn't have a reverse method built in to it and even if it
-did, that would require allocating memory. Instead, lets use the chars iterator like we did earlier, we'll create two
+<p>We’ve also used an underscore on the front of the <code>_input</code> parameter just to let Rust know that <em>we</em> know that parameter
+isn’t used yet (otherwise it’ll warn us about it).</p>
+<p>Let’s think about our implementation. The string slice type doesn’t have a reverse method built in to it and even if it
+did, that would require allocating memory. Instead, lets use the chars iterator like we did earlier, we’ll create two
 iterators, reverse one of them, then zip them together. If every character matches its counterpart then the string is
 a palindrome.</p>
 <pre><code class="language-rust noplayground">fn is_palindrome(input: &amp;str) -&gt; bool {
@@ -644,13 +646,13 @@ mod tests {
         assert!(!is_palindrome("wood"));
     }
 }</code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=29b7f57a396eef9d06d0d0c501bd3e8c">Link to tests</a></p>
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=29b7f57a396eef9d06d0d0c501bd3e8c" title="" target="_blank">Link to tests</a></p>
 <blockquote>
-<p>ℹ️ Curiously, cloning an iterator does not necessarily cause a memory allocation. In this case we're safe, but it can
+<p>ℹ️ Curiously, cloning an iterator does not necessarily cause a memory allocation. In this case we’re safe, but it can
 be worth checking these things when speed and efficiency are important.</p>
 </blockquote>
-<p>And now our test passes! But, uh-oh, when we send the code to be reviewed by a peer, they point out "racecar" isn't a
-word. They do think that "race car" (with a space) should be considered a palindrome, so we update our test, but now it
+<p>And now our test passes! But, uh-oh, when we send the code to be reviewed by a peer, they point out “racecar” isn’t a
+word. They do think that “race car” (with a space) should be considered a palindrome, so we update our test, but now it
 fails.</p>
 <pre><code class="language-rust noplayground">fn is_palindrome(input: &amp;str) -&gt; bool {
     // ...
@@ -670,8 +672,8 @@ mod tests {
         assert!(!is_palindrome("wood"));
     }
 }</code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=55ca613fc48720fe1b2ab48370ccf866">Link to tests</a></p>
-<p>Now we broke our test, lets fix the code. This one is easy, we just ignore anything that's not a letter or a number.
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=55ca613fc48720fe1b2ab48370ccf866" title="" target="_blank">Link to tests</a></p>
+<p>Now we broke our test, lets fix the code. This one is easy, we just ignore anything that’s not a letter or a number.
 We can do this by adding a filter to the iterator.</p>
 <pre><code class="language-rust noplayground">fn is_palindrome(input: &amp;str) -&gt; bool {
     let forward = input.chars().filter(|c| c.is_alphanumeric());
@@ -690,8 +692,8 @@ mod tests {
         assert!(!is_palindrome("wood"));
     }
 }</code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=0b7ab806e298c477989d64dd899985b3">Link to tests</a></p>
-<p>And we've fixed the code. The person reviewing the code is happy, so it goes out to customers, but someone complains.
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=0b7ab806e298c477989d64dd899985b3" title="" target="_blank">Link to tests</a></p>
+<p>And we’ve fixed the code. The person reviewing the code is happy, so it goes out to customers, but someone complains.
 Their name is Anna, which is an anagram. We add it to the test:</p>
 <pre><code class="language-rust noplayground"><span class="boring">fn is_palindrome(input: &amp;str) -&gt; bool {
 </span><span class="boring">    let forward = input.chars().filter(|c| c.is_alphanumeric());
@@ -711,7 +713,7 @@ fn test_is_palindrome() {
     assert!(is_palindrome("Anna"));
 }
 <span class="boring">}</span></code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=62e10f1d7a723de4637d560c5153219c">Link to tests</a></p>
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=62e10f1d7a723de4637d560c5153219c" title="" target="_blank">Link to tests</a></p>
 <p>Capital letters are a little more complex as an uppercase character might be the same for multiple lowercase characters.
 When we call <code>.to_lowercase()</code> on a character in Rust, it will return an iterator for each character that could
 conceivably be turned into that uppercase character. If we map over each character and use <code>.to_lowercase()</code> then we
@@ -740,15 +742,15 @@ characters that could have multiple lowercase counterparts.</p>
 </span><span class="boring">        assert!(is_palindrome("Anna"));
 </span><span class="boring">    }
 </span><span class="boring">}</span></code></pre>
-<p><a href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2021&amp;gist=e012e666c1862768da409a7995116cfe">Link to tests</a></p>
-<p>This function still isn't perfect, but it works for the given test conditions.</p>
+<p><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=e012e666c1862768da409a7995116cfe" title="" target="_blank">Link to tests</a></p>
+<p>This function still isn’t perfect, but it works for the given test conditions.</p>
 <blockquote>
 <p>If you want to continue developing this function to include things like diacritics, please do! But, you will need to
 start using external crates which is out of scope of this section of the book.</p>
 </blockquote>
 <h2 id="how-many-tests-should-a-good-test-writer-write-if-a-good-test-writer-could-write-good-tests"><a class="header" href="#how-many-tests-should-a-good-test-writer-write-if-a-good-test-writer-could-write-good-tests">How many tests should a good test writer write if a good test writer could write good tests?</a></h2>
 <p>The perennial of questions when it comes to testing: How many tests should you write?</p>
-<p>The important thing here is "coverage". Do you have a test that "covers" each line of code.</p>
+<p>The important thing here is “coverage”. Do you have a test that “covers” each line of code.</p>
 <p>Take for example this really silly function:</p>
 <pre><code class="language-rust noplayground">fn is_positive(num: i32) -&gt; bool {
     if num &gt; 0 {
@@ -757,7 +759,7 @@ start using external crates which is out of scope of this section of the book.</
         true
     }
 }</code></pre>
-<p>If we only test this function by giving it a number greater than 0, we'll only "cover" the line first branch of the
+<p>If we only test this function by giving it a number greater than 0, we’ll only “cover” the line first branch of the
 <code>if</code>, we miss the fact there is a mistake in the second branch.</p>
 <p>So what percent coverage should you aim for?</p>
 <p>Anecdotally, when I was creating my own API framework in PHP, I decided I wanted to get 100% coverage, that is, every
@@ -765,7 +767,7 @@ line should have a test that hits it. The very last line that was uncovered was:
 <pre><code class="language-php ignore">        }
 </code></pre>
 <p>I wondered if it was worth the effort, decided it was. The reason this was the last uncovered line was that it was part
-of a nested <code>if</code>. I'd tested what happens if you went into both <code>if</code>s, what happens if you didn't go into the first, but
+of a nested <code>if</code>. I’d tested what happens if you went into both <code>if</code>s, what happens if you didn’t go into the first, but
 not what happens if you went into the first, but not the second.</p>
 <pre><code class="language-php">function example() {
     if first_condition {
@@ -776,18 +778,18 @@ not what happens if you went into the first, but not the second.</p>
     return do_something_else();
 }
 </code></pre>
-<p>I wrote the test and... found a bug so severe that I had to rewrite almost a third of the framework. Should have written
+<p>I wrote the test and… found a bug so severe that I had to rewrite almost a third of the framework. Should have written
 the tests first, right?</p>
 <p>My personal feelings are that you as an engineer should strive for 100% coverage of your code.</p>
-<p>As a manager or engineering lead though, test coverage is a terrible metric. Test coverage doesn't tell you if the test
-was any good. If you make arbitrary metrics like this, you're not improving code quality, engineers will write tests
-that meet that metric, but don't fulfil the reason we want tests in the first place which is to answer: "does this
-code do what we want it to do?".</p>
-<p>As an engineer, it's a matter of pride. Get your code right now, and you won't have to deal with it later. As a leader,
+<p>As a manager or engineering lead though, test coverage is a terrible metric. Test coverage doesn’t tell you if the test
+was any good. If you make arbitrary metrics like this, you’re not improving code quality, engineers will write tests
+that meet that metric, but don’t fulfil the reason we want tests in the first place which is to answer: “does this
+code do what we want it to do?”.</p>
+<p>As an engineer, it’s a matter of pride. Get your code right now, and you won’t have to deal with it later. As a leader,
 make sure your engineers are encouraged to be the best they can. That means giving them the time to write tests first,
 giving them access to the resources they need to learn how to write the best tests, etc.</p>
 <h2 id="homework"><a class="header" href="#homework">Homework</a></h2>
-<p>We've already let on how you can solve last chapters homework:</p>
+<p>We’ve already let on how you can solve last chapters homework:</p>
 <pre><code class="language-rust noplayground">fn split_around_many&lt;'a&gt;(input: &amp;'a str, sub_string: &amp;str, collection: &amp;mut Vec&lt;&amp;'a str&gt;) {
     if let Some(found_at) = input.find(sub_string) {
         let end_pos = found_at + sub_string.len();
@@ -830,8 +832,8 @@ be the unit type <code>()</code>).</li>
 </ol>
 <p>Your function will need to allocate memory and should probably have the header:</p>
 <pre><code class="language-rust ignore">fn reverse_sentence(input: &amp;str) -&gt; Result&lt;String, ()&gt;</code></pre>
-<p>Here is the documentation on <a href="https://doc.rust-lang.org/std/string/struct.String.html">String</a> and
-<a href="https://doc.rust-lang.org/std/result/enum.Result.html">Result</a></p>
+<p>Here is the documentation on <a href="https://doc.rust-lang.org/std/string/struct.String.html" title="" target="_blank">String</a> and
+<a href="https://doc.rust-lang.org/std/result/enum.Result.html" title="" target="_blank">Result</a></p>
 <h2 id="going-forward"><a class="header" href="#going-forward">Going forward</a></h2>
 <p>As I mentioned, after this chapter we will be talking about Rust differently. This will primarily be by using the assert
 macros to state what a value <em>should</em> be.</p>
@@ -843,7 +845,7 @@ let max_byte: u8 = 0b1111_1111;
 println!("min_byte: {min_byte}"); // 0
 println!("max_byte: {max_byte}"); // 255
 <span class="boring">}</span></code></pre></pre>
-<p>But from here on out it'll look like this:</p>
+<p>But from here on out it’ll look like this:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let min_byte: u8 = 0b0000_0000;
@@ -851,7 +853,7 @@ let max_byte: u8 = 0b1111_1111;
 assert_eq!(min_byte, 0);
 assert_eq!(max_byte, 255);
 <span class="boring">}</span></code></pre></pre>
-<p>Now that you've seen the assert macros, this should be cleaner and clearer.</p>
+<p>Now that you’ve seen the assert macros, this should be cleaner and clearer.</p>
 
                     </main>
 
@@ -907,6 +909,8 @@ assert_eq!(max_byte, 255);
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
 
 
 

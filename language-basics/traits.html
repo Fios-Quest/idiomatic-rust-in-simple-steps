@@ -178,8 +178,8 @@
                         <h1 id="introduction-to-traits"><a class="header" href="#introduction-to-traits">Introduction to Traits</a></h1>
 <p>In the last chapter we created a state machine for our Cat, but we were left with several problems.</p>
 <ol>
-<li>We couldn't access anything about the Cat from inside our State.</li>
-<li>The behaviours didn't seem generally applicable. Would <code>Hangry&lt;Human&gt;</code> make loud noises and bite someone? Mostly,
+<li>We couldn’t access anything about the Cat from inside our State.</li>
+<li>The behaviours didn’t seem generally applicable. Would <code>Hangry&lt;Human&gt;</code> make loud noises and bite someone? Mostly,
 probably not.</li>
 </ol>
 <p>Traits can help us solve those problems.</p>
@@ -200,11 +200,11 @@ of these types implement that trait.</p>
 <span class="boring">}</span></code></pre></pre>
 <p>Any type can implement this trait to provide the <code>to_string()</code> method.</p>
 <p>We can use the <code>ToString</code> trait to create a generic function where we accept data of some type that could be literally
-anything, and in the list of generic parameters we use a "Trait Bound" to restrict the types that can be used to only
+anything, and in the list of generic parameters we use a “Trait Bound” to restrict the types that can be used to only
 those that implement the <code>ToString</code> trait.</p>
-<p>In the example below, we use the generic <code>S</code> but we use "bounding" to say that whatever <code>S</code> is, it <em>must</em> implement
+<p>In the example below, we use the generic <code>S</code> but we use “bounding” to say that whatever <code>S</code> is, it <em>must</em> implement
 <code>ToString</code>. We can then be sure that whatever goes into our generic function it <em>must</em> have the <code>to_string()</code> method, so
-it's safe to rely on it being there. If it doesn't implement <code>ToString</code> you'll get a compiler error (this should show
+it’s safe to rely on it being there. If it doesn’t implement <code>ToString</code> you’ll get a compiler error (this should show
 up in your IDE before you get as far as compiling though). AS it happens, a <em>lot</em> of built-in types already implement
 <code>ToString</code>.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">fn say_hello&lt;S: ToString&gt;(could_be_anything: S) {
@@ -218,7 +218,7 @@ fn main() {
     // say_hello(Vec::new());        // Vec doesn't impl ToString, this won't compile 
 }</code></pre></pre>
 <p>We can also implement <code>ToString</code> on our own types. Imagine we have a <em>*cough*</em>
-<a href="https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/">poorly designed</a> Person type with a
+<a href="https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/" title="" target="_blank">poorly designed</a> Person type with a
 first and last name. We can implement <code>ToString</code> to turn the user into a string which combines their name. You can
 run this example to see that it works with our previous function</p>
 <pre><pre class="playground"><code class="language-rust edition2024">struct Person {
@@ -244,27 +244,27 @@ impl ToString for Person {
 </span><span class="boring">    say_hello(daniel); 
 </span><span class="boring">}</span></code></pre></pre>
 <blockquote>
-<p>⚠️ <strong>Important:</strong> You actually <em>shouldn't</em> implement <code>ToString</code>. I use it here because it's very slightly easier to
-understand than what you <em>should</em> do, which is implement the trait <code>Display</code>. We'll cover this at the end of the
+<p>⚠️ <strong>Important:</strong> You actually <em>shouldn’t</em> implement <code>ToString</code>. I use it here because it’s very slightly easier to
+understand than what you <em>should</em> do, which is implement the trait <code>Display</code>. We’ll cover this at the end of the
 chapter when the reason why is easier to understand.</p>
 </blockquote>
-<p>It's worth noting that in order to use methods associated with a trait, the trait must be in scope. We don't have to do
-this ourselves because <code>ToString</code> is part of the <a href="https://doc.rust-lang.org/std/prelude/">Rust prelude</a>, a collection
-of types and traits that are always available in Rust. Often when people create libraries they'll make their own prelude
+<p>It’s worth noting that in order to use methods associated with a trait, the trait must be in scope. We don’t have to do
+this ourselves because <code>ToString</code> is part of the <a href="https://doc.rust-lang.org/std/prelude/" title="" target="_blank">Rust prelude</a>, a collection
+of types and traits that are always available in Rust. Often when people create libraries they’ll make their own prelude
 module that contains the most commonly used types and traits so that you can import the entire prelude module (eg
-<code>use rayon::prelude</code>, which we'll talk more about in the ecosystem section of the book) rather than having to import a
+<code>use rayon::prelude</code>, which we’ll talk more about in the ecosystem section of the book) rather than having to import a
 lot of items individually.</p>
-<p><code>ToString</code> is one of many traits that are built into the Rust standard library, and we'll talk more about some of the
-other traits available to you in the future. For now though, we're going to build our own!</p>
+<p><code>ToString</code> is one of many traits that are built into the Rust standard library, and we’ll talk more about some of the
+other traits available to you in the future. For now though, we’re going to build our own!</p>
 <h2 id="animals"><a class="header" href="#animals"><code>Animal</code>s</a></h2>
-<p>Let's start by tackling the first problem, not having access to the <code>Cat</code>'s data inside the States.</p>
-<p>We're going to make an <code>Animal</code> trait to represent the behaviour of any animal.</p>
-<p>We'll also do a little reorganising while we're at it.</p>
-<p>The idea here is that all animals will implement the <code>Animal</code> trait, then we'll have some known behaviour.</p>
-<p>First let's create an animal module. In <code>main.rs</code> add <code>mod animal</code> and then create the file <code>animal/mod.rs</code>.</p>
-<p>Let's move <code>cat.rs</code> to <code>animal/cat.rs</code> so that it's a submodule of <code>animal</code>. Finally, don't forget to add <code>pub mod cat;</code>
+<p>Let’s start by tackling the first problem, not having access to the <code>Cat</code>’s data inside the States.</p>
+<p>We’re going to make an <code>Animal</code> trait to represent the behaviour of any animal.</p>
+<p>We’ll also do a little reorganising while we’re at it.</p>
+<p>The idea here is that all animals will implement the <code>Animal</code> trait, then we’ll have some known behaviour.</p>
+<p>First let’s create an animal module. In <code>main.rs</code> add <code>mod animal</code> and then create the file <code>animal/mod.rs</code>.</p>
+<p>Let’s move <code>cat.rs</code> to <code>animal/cat.rs</code> so that it’s a submodule of <code>animal</code>. Finally, don’t forget to add <code>pub mod cat;</code>
 to <code>animal/mod.rs</code> and to update your use statement in <code>main.rs</code> to <code>animal::cat::Cat</code>.</p>
-<p>We're now ready to make our trait.</p>
+<p>We’re now ready to make our trait.</p>
 <p>In <code>animal/mod.rs</code>, underneath <code>pub mod cat;</code>, let our new <code>Animal</code> trait:</p>
 <pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -273,12 +273,12 @@ pub trait Animal {
     fn get_name(&amp;self) -&gt; &amp;str;
 }
 <span class="boring">}</span></code></pre></pre>
-<p>With trait methods, we don't <em>have</em> to define any behaviour (though we can), we only need to tell Rust how the method
+<p>With trait methods, we don’t <em>have</em> to define any behaviour (though we can), we only need to tell Rust how the method
 will be used. In this case we define a method called <code>get_name</code> which will take a reference to the data this is
-implemented for, and will return a string slice. We also don't need to specify that the method is public as Traits are
-Rust's equivalent of Interfaces, everything listed is assumed to be public.</p>
-<p>So, let's implement this for <code>Cat</code>.</p>
-<p>In <code>cat.rs</code> we'll add the implementation. As with implementations for types we start with <code>impl &lt;TRAIT_NAME&gt;</code> but with
+implemented for, and will return a string slice. We also don’t need to specify that the method is public as Traits are
+Rust’s equivalent of Interfaces, everything listed is assumed to be public.</p>
+<p>So, let’s implement this for <code>Cat</code>.</p>
+<p>In <code>cat.rs</code> we’ll add the implementation. As with implementations for types we start with <code>impl &lt;TRAIT_NAME&gt;</code> but with
 traits we follow it up with <code>for &lt;TYPE&gt;</code>. So our impl block should look like this:</p>
 <pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">// Prevent mdbook wrapping everything in a main function
 </span><span class="boring">fn main() {}
@@ -313,11 +313,11 @@ impl Animal for Cat {
 }
 <span class="boring">}</span></code></pre></pre>
 <p>You might have noticed that we now have <em>two</em> methods for Cat called <code>get_name()</code>, one in <code>impl Cat</code>, and one in
-<code>impl Animal for Cat</code>. That's actually ok, but is indicative of a code smell. What happens if we want to add more
-functionality to the getter? We'd have to remember to update both. It'd be better to call the underlying
+<code>impl Animal for Cat</code>. That’s actually ok, but is indicative of a code smell. What happens if we want to add more
+functionality to the getter? We’d have to remember to update both. It’d be better to call the underlying
 <code>Cat::get_name</code> from <code>Animal::get_name</code>, but how do we do that?</p>
 <p>Have you noticed that when calling methods with the dot syntax, eg, <code>yuki.get_name()</code>, even though the methods first
-argument is <code>&amp;self</code> (or similar), we don't actually pass anything in here, this argument is skipped when calling. This
+argument is <code>&amp;self</code> (or similar), we don’t actually pass anything in here, this argument is skipped when calling. This
 is because when we call a method with the dot syntax, we call it on a specific instance, so Rust, like many similar
 languages, can infer the value of <code>self</code> (or <code>this</code> in some languages) to be the instance the method was called on.</p>
 <p>We can also call the method directly and manually pass in the value of <code>self</code>. For example, in the method
@@ -367,10 +367,10 @@ would look like this:</p>
     animal: A,
 }</code></pre></pre>
 <p>Update all of your other states (<code>Hangry</code>, and <code>Eepy</code>) to match.</p>
-<p>Now that we know that whatever is in each state's <code>animal</code> field must implement the <code>Animal</code> trait, we can treat it as
+<p>Now that we know that whatever is in each state’s <code>animal</code> field must implement the <code>Animal</code> trait, we can treat it as
 such in any implementation code for those states. Just remember that for generic <code>impl</code>s, it is the <code>impl</code> that
 specifies the generic, so we need to make sure we add the Trait Bound there, then we can update our describe to use the
-trait (here I've used the <code>format!</code> macro which is like <code>println!</code> but produces a <code>String</code>):</p>
+trait (here I’ve used the <code>format!</code> macro which is like <code>println!</code> but produces a <code>String</code>):</p>
 <pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">fn main() {}
 </span><span class="boring">trait Animal {
 </span><span class="boring">    fn get_name(&amp;self) -&gt; &amp;str;
@@ -533,10 +533,10 @@ fn main() {
   println!("{}", mischievous_yuki.describe());
   println!();
 }</code></pre></pre>
-<p>So that's our first problem solved! We can now access the <code>Cat</code>'s data through the <code>Animal</code> trait.</p>
+<p>So that’s our first problem solved! We can now access the <code>Cat</code>’s data through the <code>Animal</code> trait.</p>
 <h2 id="making-more-flexible-animals"><a class="header" href="#making-more-flexible-animals">Making more flexible <code>Animal</code>s</a></h2>
-<p>Now that we can read details from the underlying <code>Cat</code> object, let's start to think about how we can expand this
-functionality out to other types of animals... starting with the most dangerous of animal.</p>
+<p>Now that we can read details from the underlying <code>Cat</code> object, let’s start to think about how we can expand this
+functionality out to other types of animals… starting with the most dangerous of animal.</p>
 <p>Start by adding <code>pub mod human;</code> to <code>animal.mod</code>.</p>
 <p>Then create <code>animal/human.rs</code> and pop this inside:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">// Prevent mdbook wrapping everything in a main function
@@ -588,7 +588,7 @@ impl Animal for Human {
 
 pub mod cat;
 pub mod human;</code></pre>
-<p>Finally, let's update our main function, and run the program to make sure everything is working.</p>
+<p>Finally, let’s update our main function, and run the program to make sure everything is working.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">pub mod animal {
 </span><span class="boring">   // animal/mod.rs
 </span><span class="boring">   pub trait Animal {
@@ -745,20 +745,20 @@ fn main() {
     println!("{}", mischievous_daniel.describe());
 }</code></pre></pre>
 <p>Notice that we barely had to change anything to add humans to our code, how cool is that!</p>
-<p>But there's still an issue... my mischievous state doesn't tend to have me breaking into wardrobes by pulling on exposed
-clothing... I have an opposable thumb.</p>
-<p>In fact, when I'm in a mischievous mood, I probably don't behave the same as other humans, I probably don't behave the
-same as you when you're feeling mischievous.</p>
+<p>But there’s still an issue… my mischievous state doesn’t tend to have me breaking into wardrobes by pulling on exposed
+clothing… I have an opposable thumb.</p>
+<p>In fact, when I’m in a mischievous mood, I probably don’t behave the same as other humans, I probably don’t behave the
+same as you when you’re feeling mischievous.</p>
 <h2 id="optional-homework"><a class="header" href="#optional-homework">Optional Homework</a></h2>
-<p>Can you change the code so that each state's behaviours are defined when the structs are instantiated? To do this you
+<p>Can you change the code so that each state’s behaviours are defined when the structs are instantiated? To do this you
 will need to:</p>
 <ul>
 <li>modify the <code>Human</code> and <code>Cat</code> structs</li>
 <li>add methods to the <code>Animal</code> trait</li>
 <li>and then implement those methods for each struct</li>
 </ul>
-<p>If you get stuck, I've implemented the code below, just hit the eye icon. Please note that a limitation of this book
-means all the code is in one place, you should split your modules into files so that it's easier to manage and work
+<p>If you get stuck, I’ve implemented the code below, just hit the eye icon. Please note that a limitation of this book
+means all the code is in one place, you should split your modules into files so that it’s easier to manage and work
 with.</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">pub mod animal {
 </span><span class="boring">   // animal/mod.rs
@@ -978,10 +978,10 @@ with.</p>
 </span><span class="boring">}
 </span>// Run me or look at my code using the hover icons</code></pre></pre>
 <h2 id="display"><a class="header" href="#display"><code>Display</code></a></h2>
-<p>As I mentioned earlier, we shouldn't actually implement <code>ToString</code>, we should implement <code>Display</code>. In fact, none of the
+<p>As I mentioned earlier, we shouldn’t actually implement <code>ToString</code>, we should implement <code>Display</code>. In fact, none of the
 internal types I mentioned (numbers, string slices, strings, etc) implement <code>ToString</code> but do in fact implement
 <code>Display</code>.</p>
-<p>Let's start looking at the trait itself:</p>
+<p>Let’s start looking at the trait itself:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span><span class="boring">use std::fmt::{Formatter, Result};
@@ -993,7 +993,7 @@ internal types I mentioned (numbers, string slices, strings, etc) implement <cod
 <p>As you can see, its already more complex than <code>ToString</code>. It takes an additional parameter of type <code>Formatter</code>
 (specifically <code>std::fmt::Formatter</code>), and instead of returning a string, it returns a <code>Result</code> (specifically
 <code>std::fmt::Result</code>).</p>
-<p>Luckily, we don't actually have to worry about any of this ourselves as there is a macro called <code>write!</code> that deals with
+<p>Luckily, we don’t actually have to worry about any of this ourselves as there is a macro called <code>write!</code> that deals with
 it all for us.</p>
 <p>To change our <code>ToString</code> implementation for <code>Person</code> to <code>Display</code>, in addition to changing the trait name and method,
 we can simply swap the <code>format!</code> macro for <code>write!</code> and pass the formatter as the first part of the macro.</p>
@@ -1013,10 +1013,10 @@ impl fmt::Display for Person {
 }</code></pre></pre>
 <p>Hang on though, if none of these types are implementing <code>ToString</code>, how did we use them in a function with a <code>ToString</code>
 trait bound?</p>
-<p>Well, they don't implement <code>ToString</code> directly, there is a
-<a href="https://doc.rust-lang.org/1.81.0/src/alloc/string.rs.html#2555">generic implementation of <code>ToString</code></a>
+<p>Well, they don’t implement <code>ToString</code> directly, there is a
+<a href="https://doc.rust-lang.org/1.81.0/src/alloc/string.rs.html#2555" title="" target="_blank">generic implementation of <code>ToString</code></a>
 for all types that implement <code>Display</code>.</p>
-<p>Over simplified (there's still more to the <code>Display</code> trait I don't want to cover <em>yet</em>, but check the link for the full
+<p>Over simplified (there’s still more to the <code>Display</code> trait I don’t want to cover <em>yet</em>, but check the link for the full
 code) it looks like this:</p>
 <pre><code class="language-rust ignore"><span class="boring">use std::fmt;
 </span><span class="boring">
@@ -1028,17 +1028,17 @@ code) it looks like this:</p>
         buffer
     }
 }</code></pre>
-<p>Having gone through the rest of the chapter this hopefully makes some sense. We're implementing <code>ToString</code> for the
+<p>Having gone through the rest of the chapter this hopefully makes some sense. We’re implementing <code>ToString</code> for the
 generic <code>T</code> where <code>T</code> already has <code>Display</code>. We can then create the string using the display method of that type.</p>
-<p>Because those built in types already have <code>Display</code>, they get <code>ToString</code> for free. Once you've implemented <code>Display</code> for
-<code>Person</code>, you not only won't need <code>ToString</code> any more, you'll find that if you leave you're <code>ToString</code>
-implementation in, you can't compile your code because it now conflicts with this other implementation.</p>
+<p>Because those built in types already have <code>Display</code>, they get <code>ToString</code> for free. Once you’ve implemented <code>Display</code> for
+<code>Person</code>, you not only won’t need <code>ToString</code> any more, you’ll find that if you leave you’re <code>ToString</code>
+implementation in, you can’t compile your code because it now conflicts with this other implementation.</p>
 <p>So why do both <code>Display</code> and <code>ToString</code> exist, especially if everything with <code>Display</code> gets a free <code>ToString</code>
-implementation? The answer might surprise you! ... But it's non-trivial so I'll save it for much further into the book,
-however I will give you a hint, it's <em>something</em> to do with memory.</p>
+implementation? The answer might surprise you! … But it’s non-trivial so I’ll save it for much further into the book,
+however I will give you a hint, it’s <em>something</em> to do with memory.</p>
 <h2 id="next-chapter"><a class="header" href="#next-chapter">Next Chapter</a></h2>
-<p>In the next chapter we'll continue to explore Traits by looking at some of the more commonly used ones available in the
-Rust standard library. This will also allow us to cover some Trait features we haven't seen so far, including associated
+<p>In the next chapter we’ll continue to explore Traits by looking at some of the more commonly used ones available in the
+Rust standard library. This will also allow us to cover some Trait features we haven’t seen so far, including associated
 types!</p>
 
                     </main>
@@ -1095,6 +1095,8 @@ types!</p>
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
 
 
 
