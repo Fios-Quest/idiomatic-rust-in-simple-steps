@@ -31,5 +31,8 @@ fn main() {
     // The pin is consumed by poll, so we need to repin each time
     assert_eq!(example.as_mut().poll(&mut context), Poll::Pending);
     assert_eq!(example.as_mut().poll(&mut context), Poll::Pending);
-    assert_eq!(example.as_mut().poll(&mut context), Poll::Ready("All done!"));
+    assert_eq!(
+        example.as_mut().poll(&mut context),
+        Poll::Ready("All done!")
+    );
 }

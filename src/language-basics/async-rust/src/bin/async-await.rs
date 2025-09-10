@@ -1,108 +1,28 @@
-use std::pin::{pin, Pin};
-use std::sync::{Arc, Mutex};
-use std::task::{Context, Poll, Wake, Waker};
-use std::thread::{JoinHandle, Thread, sleep, spawn};
-use std::time::Duration;
-
-struct ThreadedTimer {
-    duration: Duration,
-    join_handle: Option<JoinHandle<()>>,
-    waker: Arc<Mutex<Waker>>,
-}
-
-impl ThreadedTimer {
-    fn new(duration: Duration) -> ThreadedTimer {
-        Self {
-            duration,
-            join_handle: None,
-            waker: Arc::new(Mutex::new(Waker::noop().clone())),
-        }
-    }
-}
-
-impl Future for ThreadedTimer {
-    type Output = ();
-
-    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        let fut = self.get_mut();
-        *fut.waker.lock().expect("Thread crashed with mutex lock") = cx.waker().clone();
-
-        if fut.join_handle.is_none() {
-            let duration = fut.duration;
-            let waker = fut.waker.clone();
-            fut.join_handle = Some(spawn(move || {
-                sleep(duration);
-                waker
-                    .lock()
-                    .expect("Thread crashed with mutex lock")
-                    .wake_by_ref();
-            }));
-            return Poll::Pending;
-        }
-
-        if fut
-            .join_handle
-            .as_ref()
-            .map(|h| h.is_finished())
-            .unwrap_or_default()
-        {
-            Poll::Ready(())
-        } else {
-            Poll::Pending
-        }
-    }
-}
-
-struct ThreadWaker {
-    thread: Thread,
-}
-
-impl ThreadWaker {
-    fn new() -> Self {
-        ThreadWaker {
-            thread: std::thread::current(),
-        }
-    }
-}
-
-impl Wake for ThreadWaker {
-    fn wake(self: Arc<Self>) {
-        self.thread.unpark();
-    }
-}
+use async_rust::fake_work::ThreadedFakeWorker;
+use async_rust::thread_executor::block_thread_on;
+use std::time::{Duration, Instant};
 
 fn main() {
     // We can also Pin a future by putting it in a Box
-    let timer_1 = ThreadedTimer::new(Duration::from_secs(2));
-    let timer_2 = ThreadedTimer::new(Duration::from_secs(1));
-    
-    let timer_1_fut = async {
-        timer_1.await;
-        println!("Timer 1 complete");
-    }; 
-    let timer_2_fut = async {
-        timer_2.await;
-        println!("Timer 2 complete");
-    }; 
+    let worker_1 = ThreadedFakeWorker::new(Duration::from_secs(2));
+    let worker_2 = ThreadedFakeWorker::new(Duration::from_secs(1));
 
-    let fut = async {
-        timer_1_fut.await;
-        timer_2_fut.await;
+    let worker_1_wrapper = async {
+        worker_1.await;
+        println!("Timer 1 complete");
+    };
+    let worker_2_wrapper = async {
+        worker_2.await;
+        println!("Timer 2 complete");
     };
 
-    let mut example = pin!(fut);
+    let fut = async {
+        let now = Instant::now();
+        worker_1_wrapper.await;
+        worker_2_wrapper.await;
+        now.elapsed().as_millis()
+    };
 
-    let waker = Arc::new(ThreadWaker::new()).into();
-    let mut context = Context::from_waker(&waker);
-
-    let mut loop_counter = 0;
-    while example.as_mut().poll(&mut context) == Poll::Pending {
-        print!(".");
-        loop_counter += 1;
-        std::thread::park();
-    }
-
-    println!();
-    println!("All done!");
-    println!("This time the loop was only called {loop_counter} times, yay!");
+    let time_taken = block_thread_on(fut);
+    println!("Time taken: {time_taken}ms")
 }

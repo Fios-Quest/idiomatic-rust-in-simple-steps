@@ -1,5 +1,5 @@
 use std::ops::Add;
-use std::pin::{pin, Pin};
+use std::pin::{Pin, pin};
 use std::task::{Context, Poll, Waker};
 use std::time::{Duration, SystemTime};
 
@@ -27,12 +27,12 @@ impl Future for Timer {
     }
 }
 
-fn block_on<T, F: Future<Output = T>>(future: F) -> T {
+fn execute<F: Future>(future: F) -> F::Output {
     let mut pinned_future = pin!(future);
     let mut context = Context::from_waker(Waker::noop());
-    
+
     let mut loop_counter = 0;
-    
+
     let result = loop {
         match pinned_future.as_mut().poll(&mut context) {
             Poll::Ready(r) => break r,
@@ -46,25 +46,12 @@ fn block_on<T, F: Future<Output = T>>(future: F) -> T {
     println!();
     println!("All done!");
     println!("But we called the loop {loop_counter} times, yikes!");
-    
+
     result
-} 
+}
 
 fn main() {
-    // We can also Pin a future by putting it in a Box
-    let mut example = Box::pin(Timer::new(Duration::from_secs(1)));
-    
-    let mut context = Context::from_waker(Waker::noop());
-    
-    let mut loop_counter = 0;
-    while example.as_mut().poll(&mut context) == Poll::Pending {
-        print!(".");
-        loop_counter += 1;
-    }
-    
-    println!();
-    println!("All done!");
-    println!("But we called the loop {loop_counter} times, yikes!");
-    
-    block_on(Timer::new(Duration::from_secs(1)));
+    let future = Timer::new(Duration::from_secs(1));
+
+    execute(future);
 }
