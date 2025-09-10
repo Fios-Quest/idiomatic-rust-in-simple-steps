@@ -8780,7 +8780,7 @@ fn main() {
 <p>Macros! We’ll be looking at the <code>macro_rules!</code> macro that lets you make more macros. We’ll learn how <code>macro_rules!</code>
 is used, how we can use it to remove repetitive code or even write our own domain-specific language (DSL)!</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="macros"><a class="header" href="#macros">Macros</a></h1>
-<p>Macro’s let us do metaprogramming in Rust. This allows us to treat our code as data, manipulating it, expanding it, and
+<p>Macros let us do metaprogramming in Rust. This allows us to treat our code as data, manipulating it, expanding it, and
 creating new code.</p>
 <p>Over this chapter we’ll learn how to do three things with macros:</p>
 <ol>
@@ -8790,7 +8790,7 @@ creating new code.</p>
 </ol>
 <p>There are two types of macro in Rust, <code>macro_rules!</code>, also known as declarative macros, or macros by example, and
 <code>proc macro</code>s. We won’t be dealing with <code>proc macro</code>s in this book, but they are what allow you to create custom Derive
-macros (like <code>#[derive(Clone)]</code>), and custom attributes like <code>#[YourAttriburte]</code>. They also let you make the same
+macros (like <code>#[derive(Clone)]</code>), and custom attributes like <code>#[YourAttribute]</code>. They also let you make the same
 function style macros we’ll be making with <code>macro_rules!</code> but can unlock even more power!</p>
 <h2 id="anatomy-of-macro_rules"><a class="header" href="#anatomy-of-macro_rules">Anatomy of <code>macro_rules!</code></a></h2>
 <p><code>macro_rules!</code> is, itself, a macro, providing its own DSL that allows you to create more macros. This lets things get
@@ -8806,7 +8806,7 @@ macro_rules! &lt;macro_name&gt; {
     // "metavariables".
     //
     // Each rule is matched based on the pattern and stores matching
-    // "metavariables" for use in the macro.  Don't worry, we''ll explain all
+    // "metavariables" for use in the macro.  Don't worry, we'll explain all
     // of this very soon.
     ( &lt;match_pattern&gt; ) =&gt; {
         // curly braces surround the macro body. This is used to generate code
@@ -8822,7 +8822,7 @@ macro_rules! &lt;macro_name&gt; {
 <span class="boring">}</span></code></pre></pre>
 <p>When you invoke your macro, it works as a sort of replacement, generating new code to exist at that point of invocation.
 But, rather than it being a copy-paste, <code>macro_rules!</code> works on the Abstract Syntax Tree, an intermediate step of the
-compilation process where your code has already been turning into datastructures that represents what your program
+compilation process where your code has already been turned into data structures that represents what your program
 does.</p>
 <p>This makes it much safer and more fully featured than a copy-paste.</p>
 <h2 id="hello-macro"><a class="header" href="#hello-macro">Hello, macro!</a></h2>
@@ -8970,8 +8970,8 @@ Similar to regex rules:</p>
 <p>You can add a separator to the repeat pattern by placing it before the repeat character. This token can be almost
 anything except the repeat symbols, or token used for delimiters, e.g.: <code>$(...),+</code> or <code>$(...);+</code> or even <code>$(...)~+</code>
 are all fine, but its worth noting things get a <em>little</em> weird using separators with <code>*</code>.</p>
-<p>Repeats can be used to match metavariables multiple times and to repeat code generation for each used repeated
-metavariable. When the repeat pattern is used in code generation, it will repeat for each combination of metavariables
+<p>Repeats can be used to match metavariables multiple times and to repeat code generation for each repeated
+metavariable used. When the repeat pattern is used in code generation, it will repeat for each combination of metavariables
 used within it.</p>
 <p>We already have zero and one metavariable dealt with, so we want a rule in our macro that takes two or more inputs:</p>
 <pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
@@ -9057,7 +9057,7 @@ separator has been dropped. This is because if we were to try to match <code>($n
 we’d <em>have</em> to use the comma after the first literal so <code>hello!("Yuki")</code> would <em>have</em> to be <code>hello!("Yuki", )</code> to work.</p>
 <p>Instead, we’ve moved the comma token to the beginning of the repeat pattern which can contain things that aren’t
 metavariables too.</p>
-<p>I wasn’t quite lying about not being able to treat the first and last differently with macro repeats. We can’t do it
+<p>I wasn’t quite lying about not being able to treat the first and last elements differently with macro repeats. We can’t do it
 with <em>just</em> macro repeats, BUT we can work around that with very low-cost language features like slices.</p>
 <pre><pre class="playground"><code class="language-rust edition2024">macro_rules! hello {
     ($($names:literal),*) =&gt; {
@@ -9160,13 +9160,13 @@ https://doc.rust-lang.org/reference/macros-by-example.html#metavariables</p>
 <blockquote>
 <p>ℹ️ I’ve slightly altered the code in this section to not rely on third party crates, such as
 <a href="https://crates.io/crates/uuid" title="" target="_blank">Uuid</a> and <a href="https://crates.io/crates/paste" title="" target="_blank">paste</a>. If you’re comfortable with crates
-then bellow is a permalink straight to the <code>storage</code> crate of the Job Application repository where you’ll find the
+then below is a permalink straight to the <code>storage</code> crate of the Job Application repository where you’ll find the
 real examples. For example, if you look in the <code>storable</code> module, you’ll find test macros defined in the <code>property</code>
 module which are consumed in the <code>object</code> module.</p>
 <p><a href="https://github.com/Fios-Quest/job-tracker/tree/c1eba63311ff954de0d80cdd9f55984051c620ef/storage/src/storable" title="" target="_blank">https://github.com/Fios-Quest/job-tracker/tree/c1eba63311ff954de0d80cdd9f55984051c620ef/storage/src/</a></p>
 </blockquote>
-<p>The example we’ve run through to build up our understanding of how macro’s work is very abstract and not very useful,
-so I wanted to go over a quick example of how I’ve started using Macro’s.</p>
+<p>The example we’ve run through to build up our understanding of how macros work is very abstract and not very useful,
+so I wanted to go over a quick example of how I’ve started using Macros.</p>
 <p>In the <a href="https://github.com/Fios-Quest/job-tracker/" title="" target="_blank">Fio’s Job Tracker</a> app I’ve been building with the help of folks in
 the chat of my <a href="https://www.youtube.com/playlist?list=PLW2L8KbM0O7Z2KroHNNBWY1UApqmeiyqe" title="" target="_blank">streams</a>, I’ve leaned heavily
 into composing my types using Traits to form common behaviour.</p>
@@ -9354,7 +9354,7 @@ what happens when we run it.</p>
 <li><code>$($token:tt)+</code> is the input to our interpreter. We’re using the <code>tt</code> fragment-specifier which means that our
 repeating metavariable <code>$token</code> represents a token tree. As it happens <code>&gt;</code>, <code>&lt;</code>, <code>+</code>, <code>-</code>, <code>.</code>, <code>,</code>, <code>[</code> and <code>]</code> are
 all tokens in Rust so this <em>should</em> work well… (<strong>foreshadowing</strong>).</li>
-<li><code>memory</code> is going to be our programs’ memory. We’re using a Vec with a single initialised value of <code>0</code> under the
+<li><code>memory</code> is going to be our program’s memory. We’re using a Vec with a single initialised value of <code>0</code> under the
 assumption that even the smallest program requires one word of memory. We’ll expand the Vec as necessary. Maybe not
 the most time-effective, but it’ll be ok. For our memory we’re using <code>u8</code> to represent one word. You can use larger
 words if you like, but different programs might function differently depending on what word size is used and how
