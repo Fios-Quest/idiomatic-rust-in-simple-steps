@@ -4,21 +4,25 @@ use std::time::{Duration, Instant};
 use async_rust::join::Join;
 
 fn main() {
-    let timer_1_fut = async {
+    let future_1 = async {
+        let now = Instant::now();
         ThreadedFakeWorker::new(Duration::from_secs(2)).await;
-        println!("Timer 1 complete");
+        now.elapsed().as_millis()
     };
-    let timer_2_fut = async {
+    let future_2 = async {
+        let now = Instant::now();
         ThreadedFakeWorker::new(Duration::from_secs(1)).await;
-        println!("Timer 2 complete");
+        now.elapsed().as_millis()
     };
 
     let fut = async {
         let now = Instant::now();
-        let _ = Join::new(timer_1_fut, timer_2_fut).await;
-        now.elapsed().as_millis()
+        let (timer_1, timer_2) = Join::new(future_1, future_2).await.expect("Join failed");
+        (timer_1, timer_2, now.elapsed().as_millis())
     };
 
-    let time_taken = block_thread_on(fut);
-    println!("Time taken: {time_taken}ms")
+    let (t1, t2, tt) = block_thread_on(fut);
+    println!("Time for future 1: {t1}ms");
+    println!("Time for future 2: {t2}ms");
+    println!("Total time:        {tt}ms")
 }

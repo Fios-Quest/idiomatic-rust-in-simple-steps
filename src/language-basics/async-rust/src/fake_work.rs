@@ -25,30 +25,29 @@ impl Future for ThreadedFakeWorker {
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let fut = self.get_mut();
+        
+        // We always need to update the waker whenever we're polled
         *fut.waker.lock().expect("Thread crashed with mutex lock") = cx.waker().clone();
-
-        if fut.join_handle.is_none() {
-            let duration = fut.duration;
-            let waker = fut.waker.clone();
-            fut.join_handle = Some(spawn(move || {
-                sleep(duration);
-                waker
-                    .lock()
-                    .expect("Thread crashed with mutex lock")
-                    .wake_by_ref();
-            }));
-            return Poll::Pending;
-        }
-
-        if fut
-            .join_handle
-            .as_ref()
-            .map(|h| h.is_finished())
-            .unwrap_or_default()
-        {
-            Poll::Ready(())
-        } else {
-            Poll::Pending
+        
+        match &fut.join_handle {
+            None => {
+                let duration = fut.duration;
+                let waker = fut.waker.clone();
+                fut.join_handle = Some(spawn(move || {
+                    sleep(duration);
+                    waker
+                        .lock()
+                        .expect("Thread crashed with mutex lock")
+                        .wake_by_ref();
+                }));
+                Poll::Pending
+            }
+            Some(join_handler) => {
+                match join_handler.is_finished() {
+                    true => Poll::Ready(()),
+                    false => Poll::Pending,
+                }
+            }
         }
     }
 }

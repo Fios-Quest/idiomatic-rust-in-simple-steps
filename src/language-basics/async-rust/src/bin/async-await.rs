@@ -8,21 +8,25 @@ fn main() {
     let worker_2 = ThreadedFakeWorker::new(Duration::from_secs(1));
 
     let worker_1_wrapper = async {
+        let now = Instant::now();
         worker_1.await;
-        println!("Timer 1 complete");
+        now.elapsed().as_millis()
     };
     let worker_2_wrapper = async {
+        let now = Instant::now();
         worker_2.await;
-        println!("Timer 2 complete");
+        now.elapsed().as_millis()
     };
 
     let fut = async {
         let now = Instant::now();
-        worker_1_wrapper.await;
-        worker_2_wrapper.await;
-        now.elapsed().as_millis()
+        let time_1 = worker_1_wrapper.await;
+        let time_2 = worker_2_wrapper.await;
+        (time_1, time_2, now.elapsed().as_millis())
     };
 
-    let time_taken = block_thread_on(fut);
-    println!("Time taken: {time_taken}ms")
+    let (t1, t2, tt) = block_thread_on(fut);
+    println!("Time for future 1: {t1}ms");
+    println!("Time for future 2: {t2}ms");
+    println!("Total time:        {tt}ms");
 }

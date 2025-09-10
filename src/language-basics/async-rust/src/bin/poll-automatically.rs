@@ -1,7 +1,10 @@
 use std::ops::Add;
 use std::pin::{Pin, pin};
+use std::sync::Arc;
 use std::task::{Context, Poll, Waker};
 use std::time::{Duration, SystemTime};
+use async_rust::fake_work::ThreadedFakeWorker;
+use async_rust::thread_waker::ThreadWaker;
 
 struct Timer {
     time_to_end: SystemTime,
@@ -50,8 +53,41 @@ fn execute<F: Future>(future: F) -> F::Output {
     result
 }
 
+pub fn block_thread_on<F: Future>(future: F) -> F::Output {
+    // The pin macro also pins the thing you give it but does so by taking ownership and then
+    // pinning. This does not require Heap storage which is more efficient.
+    let mut example = pin!(future);
+
+    let waker = Arc::new(ThreadWaker::current_thread()).into();
+    let mut context = Context::from_waker(&waker);
+
+    let mut loop_counter = 0;
+
+    let output = loop {
+        match example.as_mut().poll(&mut context) {
+            Poll::Pending => {
+                print!(".");
+                loop_counter += 1;
+                std::thread::park();
+            }
+            Poll::Ready(output) => break output,
+        }
+    };
+
+    println!();
+    println!("All done!");
+    println!("This time the loop was only called {loop_counter} times, yay!");
+
+    output
+}
+
 fn main() {
     let future = Timer::new(Duration::from_secs(1));
-
     execute(future);
+    
+    let future = ThreadedFakeWorker::new(Duration::from_secs(1));
+    execute(future);
+    
+    let future = ThreadedFakeWorker::new(Duration::from_secs(1));
+    block_thread_on(future);
 }

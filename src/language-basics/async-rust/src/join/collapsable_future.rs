@@ -23,6 +23,7 @@ impl<F: Future> InnerCollapsableFuture<F> {
     }
 }
 
+#[derive(Debug)]
 pub struct InnerFutureSpentError;
 
 pub struct CollapsableFuture<F: Future>(RefCell<InnerCollapsableFuture<F>>);

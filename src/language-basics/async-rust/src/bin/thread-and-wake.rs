@@ -5,10 +5,13 @@ use std::task::{Context, Poll};
 use std::time::Duration;
 
 fn main() {
-    // We can also Pin a future by putting it in a Box
+    // We can also Pin a future by putting it in a Box. This might be more useful if you know the
+    // generic of a future but not its concrete type. We obviously know the concrete type here
+    // though so this is a little less useful.
     let mut example = Box::pin(ThreadedFakeWorker::new(Duration::from_secs(1)));
 
-    let waker = Arc::new(ThreadWaker::new()).into();
+    // This time we'll use a real Waker
+    let waker = Arc::new(ThreadWaker::current_thread()).into();
     let mut context = Context::from_waker(&waker);
 
     let mut loop_counter = 0;

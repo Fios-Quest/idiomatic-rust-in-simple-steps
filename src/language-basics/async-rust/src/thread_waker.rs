@@ -7,7 +7,7 @@ pub struct ThreadWaker {
 }
 
 impl ThreadWaker {
-    pub fn new() -> Self {
+    pub fn current_thread() -> Self {
         ThreadWaker {
             thread: std::thread::current(),
         }
