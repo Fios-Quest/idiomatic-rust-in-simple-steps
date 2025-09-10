@@ -1,27 +1,166 @@
 Async Rust
 ==========
 
-Often times, when we write code, we have to wait on certain things happening. For example, if we want parse a json file
-from a url, into a structure in our code: we have to download the file, putting it into memory, and then parse it into
-meaningful data.
+Often times, when we write code, we have to wait on certain things happening. This is usually some form of IO, such
+as reading or writing to a disk, getting data from a database, downloading a file, etc. Sometimes it could just be 
+something computationally expensive, such as processing large amounts of data.
 
-Let's say we need to download many files for our application to work. Waiting for each file to be fully downloaded and
-parsed one after the other is going to take a long time, and for a lot of that time, we're just waiting, not doing
-anything.
-
-We could spin up threads to manage each file separately but there's a lot of mental overhead in that, and this may be
-only one small task in a much larger program. Depending on where and how our program is running, threads may not even be
-available.
+Our programs are typically complex with multiple parts to them. For example, applications often have a user interface,
+whether that's via a terminal, a web page, or a full desktop GUI. If our application has to wait on something happening,
+we don't want to prevent other aspects (like the UI) to freeze up, unable to do anything while we wait.
 
 Asynchronous programming is a way to structure our code so that we can do work when nothing else is happening, and it
-doesn't depend on specific way to get the work done.
+doesn't depend on specific way to get the work done. Under the hood, we might use threads, or we may depend on Operating
+System hooks or even, for embedded programming, hardware interrupts and exceptions.
 
 In this chapter we're going explain the modular design of async programming in Rust with the aim of getting a solid
 understanding of the concepts involved, even though, in the real world, you're likely to depend on others to design and
-build many of the parts of the system you'll depend on.
+build the more complex stuff.
+
+Seriously, I've simplified this chapter beyond real world usefulness, it's just here to explain the concepts. Please 
+don't use any of this in a real application!
+
+Move and Pin
+------------
+
+Before we go further into the chapter, we once again need to talk about memory, moving, and pinning.
+
+All data in our running program exists somewhere in memory, whether it's the stack, the heap, or static memory. That
+means, everything has a pointer address in memory. When we do something like pass a variable to another function,
+ownership of that variable "moves" to the other function. If we do something like add a variable to a `Vec` then
+ownership of that variable "moves" to the heap.
+
+When data "moves" ownership, it also physically moves in memory. Run this and look closely at the returned addresses.
+
+```rust
+fn demo_move(hello: String) {
+    let hello_ptr = &raw const hello;
+    println!("Hello is stored at {hello_ptr:p}");
+}
+
+fn main() {
+    let hello = "Hello".to_string();
+    
+    let hello_ptr = &raw const hello;
+    println!("Hello is stored at {hello_ptr:p}");
+    
+    demo_move(hello);
+}
+```
+
+This is usually fine, but _occasionally_ things might need to know where they themselves are in memory. This is called
+self referencing. If something references itself, and we move it, where does that reference now point?
+
+In the below example we create a self-referential struct and pass it to a function up the stack. When you run the code,
+you'll see we get some weird behavior.
+
+```rust,should_panic
+struct HorribleExampleOfSelfReference {
+    value: usize,
+    reference_to_value: Option<*const usize>,
+}
+
+impl HorribleExampleOfSelfReference {
+    fn new(value: usize) -> Self {
+        Self {
+            value,
+            reference_to_value: None,
+        }
+    }
+    
+    fn set_reference(&mut self) {
+        self.reference_to_value = Some(&raw const self.value);
+    }
+    
+    fn get_value(&self) -> usize {
+        // SAFETY: This is intentionally NOT safe, don't try this at home!
+        unsafe { *self.reference_to_value.expect("Did not set_reference") }
+    }
+}
+
+fn main() {
+    let mut example = HorribleExampleOfSelfReference::new(1);
+    // We need to set the reference now as the constructor moves the data too!
+    example.set_reference();
+    
+    // Check the value was initialised correctly
+    assert_eq!(example.get_value(), 1);
+    // Update the value
+    example.value = 2;
+    // Check the value has updated
+    assert_eq!(example.get_value(), 2);
+    
+    // This causes a move in the same stack frame
+    let mut example = example;
+    
+    // Update the value again
+    example.value = 3;
+    // Check the value has updated
+    assert_eq!(example.get_value(), 3);
+}
+```
+
+The pointer in the struct is just a number pointing at a location in memory. We moved the data, but the pointer is
+pointing at the old location.
+
+Obviously self-referential data is dangerous... but it can be useful. In order to keep ourselves safer then, we can
+`Pin` any arbitrary data to memory. Pin itself is just a container for a mutable reference to the data, so that's safe
+to move around, but through the magic of the borrow checker, that single mutable reference will lock the data in place.
+
+```rust
+use std::pin::pin;
+
+# struct HorribleExampleOfSelfReference {
+#     value: usize,
+#     reference_to_value: Option<*const usize>,
+# }
+# 
+# impl HorribleExampleOfSelfReference {
+#     fn new(value: usize) -> Self {
+#         Self {
+#             value,
+#             reference_to_value: None,
+#         }
+#     }
+# 
+#     fn set_reference(&mut self) {
+#         self.reference_to_value = Some(&raw const self.value);
+#     }
+# 
+#     fn get_value(&self) -> usize {
+#         // SAFETY: This is intentionally NOT safe, don't try this at home!
+#         unsafe { *self.reference_to_value.expect("Did not set_reference") }
+#     }
+# }
+# 
+fn main() {
+    let mut example = HorribleExampleOfSelfReference::new(1);
+
+    // We need to set the reference now as the constructor moves the data too!
+    example.set_reference();
+
+    let pinned_example = pin!(example);
+
+    // We can still read the value
+    assert_eq!(pinned_example.get_value(), 1);
+
+    // But we can no longer mutate it
+    // example.value = 2;
+    // pinned_example.value = 2;
+
+    // Or move the underlying data
+    // let example = example;
+}
+```
+
+There's a lot to `Pin` so and if you're curious about it, the [std documentation](https://doc.rust-lang.org/std/pin/)
+has a lot more information. For the purposes of this chapter its enough to know that, in specific circumstances, we need
+to be certain data won't move unexpectedly, and this is achieved through the `Pin` type.
 
 Breaking Down Work
 ------------------
+
+ToDo: Rethink all of this
 
 Instead of waiting on one thing to be finished before we start the next thing, we could think of our code as a set of
 tasks that need to be completed. Imagine we have two tasks, A and B, where B depends on work done by A.
@@ -254,9 +393,6 @@ Async / Await
 -------------
 
 ### Join!
-
-Creating a Basic Runtime
-------------------------
 
 Over in the Real World
 ----------------------
