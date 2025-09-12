@@ -154,8 +154,9 @@ fn main() {
 ```
 
 There's a lot to `Pin` so and if you're curious about it, the [std documentation](https://doc.rust-lang.org/std/pin/)
-has a lot more information. For the purposes of this chapter its enough to know that, in specific circumstances, we need
-to be certain data won't move unexpectedly, and this is achieved through the `Pin` type.
+has a lot more information. For the purposes of this chapter its enough to know that, in specific circumstances, like
+in modular asynchronous architecture where we don't control everything, we need to be certain data won't move
+unexpectedly, and this is achieved through the `Pin` type.
 
 Breaking Down Work
 ------------------
@@ -210,27 +211,23 @@ flowchart LR
 Tasks, Schedulers, Futures, and Executors
 -----------------------------------------
 
-There are four concepts we need to understand to get a good grip on Async Rust: Tasks, Schedulers, Futures, and
-Executors... but don't panic, we can break this down into two groups.
+Asynchronous architectures allow us to break our work up so that we can process different bits of that work while
+waiting on other bits. Conceptually we break the work into tasks, and then have some sort of scheduler that decides
+which task gets run when.
 
-Tasks and Schedulers are conceptual ideas that represent what we want to do, whereas Futures, Executors are how Rust
-achieves this in practice.
+In Rust, we represent tasks with the `Future` trait, which can be applied to any type. We manage task scheduling through
+executors, which themselves use `Waker`s to decide when to run different tasks. This sounds complicated but by the end
+of this chapter, you'll hopefully have a reasonable idea of how Futures, Executors and Wakers work together, and if you
+don't... that's actually ok. Most of the time you won't need to write any of these things yourself, but having even a
+vague understanding of them will help you write better async code, as well as spot and fix common issues you might run
+across.
 
-Tasks represent the work we want to do. The Scheduler decides which task should be run. Importantly, in Rust, while the
-scheduler can start (and wake) tasks, it can't interrupt them. Tasks must hand execution back to the scheduler when they
-can not proceed further. This is how async Rust can work entirely on a single thread, but it means you need to be
-mindful when writing your code to avoid blocking. When a task can not proceed, but is not complete, it stops running and
-waits to be woken to hopefully complete.
-
-Rust abstracts the idea of tasks and schedulers with futures and executors. Most of the time you will not need to write
-your own futures or executors, but we're diving in so that we can understand more about what's happening.
-
-The executor is both the scheduler and the task runner. It will decide which task needs to run next and run that task
-until the task defers execution back to the scheduler (regardless of whether the task is complete).
+Let's get started by building up our understanding step by step.
 
 ### Futures
 
-The Future trait represents a task that may or may not be complete. 
+The Future trait represents a task that may or may not be complete (something that will be completed in the future, but
+not necessarily now).
 
 ```rust
 # use std::pin::Pin;
@@ -246,11 +243,30 @@ pub trait Future {
 }
 ```
 
-The executor uses the poll method to progress the task the future represents. `Poll` is an enum. If the task is done,
-it returns `Poll::Ready(Self::Output)`. If the task is passing back control to the executor, but is not yet complete, it
-will return `Poll::Pending`. 
+It has an associated type, `Output` and a single method, `.poll()`.
 
-If `Poll::Pending` is returned, then the future will need to be run again... but when.
+`Output` represents the type of the data eventually returned by the Future. Usually this type will actually be a 
+`Result<T, E>` because if we're waiting on something happening, there's a chance that thing itself might fail.
+
+The `.poll()` method is a lot more interesting though. Firstly, you'll notice that `self` is typed, which we've never
+seen in this book before. In `Future`'s, `self` is a Pinned mutable reference to data of the type the `Future` is
+applied to. The reason for this is _where_ the Future executes might change, but because you might want to apply a
+`Future` to a self-referential type, we need to know the data the Future represents won't itself move.
+
+`.poll()` also takes a mutable reference to some sort of `Context` type. For now, the only thing `Context` contains is
+a `Waker` which we'll talk about later. The reason we don't pass the `Waker` directly though is that in the future we
+might want to add more data to a `Context` (this can be done in `nightly` Rust but this is outside the scope of this
+book).
+
+Finally, the return type of `.poll()` method is a `Poll` enum. `.poll()` should be called any time we want to make
+progress on a task, and the return type tells us whether that call has resulted in an `Output`, represented by
+`Poll::Ready(Self::Output)`, or if the poll is not currently complete and needs to be called again, represented by
+`Poll::Pending`.
+
+> Note: Once a Future has returned Ready, you _shouldn't_ call it again... we will be breaking this rule later but,
+> we'll be very careful when we do 😉.
+
+Let's create a simple `ExampleFuture` and apply the `Future` trait to it: 
 
 ```rust
 use std::pin::Pin;
@@ -278,17 +294,22 @@ fn main() {
 }
 ```
 
-One quirk of Rust's Futures is that they _allow_ self-referential data, that is data that points to itself. Because of
-this, we _must_ Pin data to prevent it moving. We won't dive too deep into how Pin works here, but suffice to say it's
-enough for it to take ownership of a mutable reference to the data to prevent it moving.
+In this example we create the Future, and then shadow the `example` variable with a Pin that references the original
+`example` data. There are several ways to pin data depending on what you specifically want to do, and we'll look at
+some others later. In this case we're pinning example to the stack, though this isn't always the best place to put it.
 
-We also need to pass a context to poll, which we'll cover later (for now we aren't using it).
+We then create a `Context` that contains a `Waker`, though in this case we'll use a `Waker` that doesn't do anything,
+because we aren't using the `Waker` in this case. Normally you'll only use a `Waker::noop` for testing, as it prevents
+the Future from controlling its own execution (we'll get into how this works later).
 
-If a task can't be completed, we need to call poll again. Each time we call poll we're asking the Future to continue
-working as far as it can, after which it may be `Ready` or it may still be `Pending`.
+When we call `.poll` on the Future, it instantly responds with a `Poll::Ready` containing a statically referenced string
+slice.
+
+Normally, `Future`s won't be "ready" immediately, and will need to be polled again. Let's create a Future that doesn't
+complete the first time you poll it, using a simple counter.
 
 ```rust
-use std::pin::Pin;
+use std::pin::{pin, Pin};
 use std::task::{Context, Poll, Waker};
 
 struct ExampleFuture {
@@ -310,8 +331,7 @@ impl Future for ExampleFuture {
 }
 
 fn main() {
-    // We can also Pin a future by putting it in a Box
-    let mut example = Box::pin(ExampleFuture { work_remaining: 3 });
+    let mut example = pin!(ExampleFuture { work_remaining: 3 });
     
     let mut context = Context::from_waker(Waker::noop());
     
@@ -325,69 +345,279 @@ fn main() {
 }
 ```
 
+Each time we call poll we're asking the Future to continue working as far as it can, after which it may be `Ready` or it
+may still be `Pending`.
+
 So managing futures is just about repeatedly calling `.poll()` right? Well... no, not quite.
 
-We could get a list of Futures and take turns calling `.poll()` on each of them, removing them from the list as they
-complete... but this would be incredibly inefficient. Imagine we want to download a large file from a slow server, it
-could take minutes to complete. If we constantly poll a Future waiting on that file, we'd be calling it potentially
-millions of times with no progress being made.
+### Executors
 
-For now, lets ignore that though, and start by writing an executor.
+Before why polling repeatedly isn't ideal, let's create a simple executor that _will_ just poll Futures until they're 
+Ready.
 
+```rust,no_run
+use std::task::{Context, Poll, Waker};
+use std::pin::pin;
 
+fn execute<F: Future>(future: F) -> F::Output {
+    let mut pinned_future = pin!(future);
+    let mut context = Context::from_waker(Waker::noop());
 
+    let mut loop_counter = 1;
 
-Instead, where possible, it's preferable to allow the Future to inform the Executor when it can make more progress using
-a `Waker`. A `Waker` is just a function called to let the executor know that the Future it passed the Waker too, should
-now be polled again. We tell the Future about the Waker via the Context that's passed into the Future each time it's 
-polled.
+    let result = loop {
+        match pinned_future.as_mut().poll(&mut context) {
+            Poll::Ready(r) => break r,
+            Poll::Pending => loop_counter += 1,
+        }
+    };
+
+    println!();
+    println!("All done!");
+    println!("We called poll {loop_counter} times!");
+
+    result
+}
+```
+
+In this example our executor takes an arbitrary `Future`, pins it to the stack, and then polls it forever in a loop. 
+We also keep count how many times we called poll and print it at the end before returning the Future's output.
+
+Passing our previous example in, this seems to work quite well:
+
+```rust
+use std::task::{Context, Poll, Waker};
+use std::pin::{pin, Pin};
+
+struct ExampleFuture {
+    work_remaining: u8,
+}
+
+impl Future for ExampleFuture {
+    // ...snip...
+#     type Output = &'static str;
+# 
+#     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+#         match self.work_remaining {
+#             0 => Poll::Ready("All done!"),
+#             _ => {
+#                 self.get_mut().work_remaining -= 1;
+#                 Poll::Pending
+#             }
+#         }
+#     }
+}
+
+fn execute<F: Future>(future: F) -> F::Output {
+    // ...snip...
+#     let mut pinned_future = pin!(future);
+#     let mut context = Context::from_waker(Waker::noop());
+# 
+#     let mut loop_counter = 1;
+# 
+#     let result = loop {
+#         match pinned_future.as_mut().poll(&mut context) {
+#             Poll::Ready(r) => break r,
+#             Poll::Pending => loop_counter += 1,
+#         }
+#     };
+# 
+#     println!();
+#     println!("All done!");
+#     println!("We called poll {loop_counter} times!");
+# 
+#     result
+}
+
+fn main() {
+    let future = ExampleFuture { work_remaining: 3 };
+    let _ = execute(future);
+}
+```
+
+But, Futures usually wait on things like IO or heavy compute tasks which won't nicely finish after a set number of 
+calls. Let's try faking that with a simple timer Future:
+
+```rust
+use std::task::{Context, Poll, Waker};
+use std::pin::{pin, Pin};
+use std::time::{SystemTime, Duration};
+use std::ops::Add;
+
+struct Timer {
+    time_to_end: SystemTime,
+}
+
+impl Timer {
+    fn new(duration: Duration) -> Timer {
+        Self {
+            time_to_end: SystemTime::now().add(duration),
+        }
+    }
+}
+
+impl Future for Timer {
+    type Output = ();
+
+    fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+        if self.time_to_end <= SystemTime::now() {
+            Poll::Ready(())
+        } else {
+            Poll::Pending
+        }
+    }
+}
+
+fn execute<F: Future>(future: F) -> F::Output {
+    // ...snip...
+#     let mut pinned_future = pin!(future);
+#     let mut context = Context::from_waker(Waker::noop());
+#    
+#     let mut loop_counter = 1;
+#    
+#     let result = loop {
+#         match pinned_future.as_mut().poll(&mut context) {
+#             Poll::Ready(r) => break r,
+#             Poll::Pending => loop_counter += 1,
+#         }
+#     };
+#
+#     println!();
+#     println!("All done!");
+#     println!("We called poll {loop_counter} times, yikes!");
+#
+#     result
+}
+
+fn main() {
+    let future = Timer::new(Duration::from_secs(1));
+    let _ = execute(future);
+}
+```
+
+When you run this code here, it's sent to Rust Playground and executed in a sandbox in debug mode, so `.poll()` is
+likely called hundreds of thousands of times. In release mode on a good computer, it might call `.poll()` hundreds of 
+millions of times. Each time we call `.poll()` we're making a system call to get the time, then doing a comparison with
+the stored time. What a massive waste of compute power. 
+
+If only there was a way for the `Future` to let us know when it was ready to be polled again.
 
 ### Waking 
 
-```rust
-// use std::thread::{sleep, spawn};
-// use std::time::Duration;
-// use std::pin::Pin;
-// use std::task::{Context, Poll, Waker};
-// 
-// struct ExampleFuture {
-//     work_remaining: u8,
-// }
-// 
-// impl Future for ExampleFuture {
-//     type Output = &'static str;
-// 
-//     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-//         match self.work_remaining {
-//             0 => Poll::Ready("All done!"),
-//             _ => {
-//                 self.get_mut().work_remaining -= 1;
-//                 // Warning, this join handler gets orphaned.
-//                 spawn(|| {
-//                     sleep(Duration::from_secs(1));
-//                     cx.waker().wake();
-//                 });
-//                 Poll::Pending
-//             }
-//         }
-//     }
-// }
-// 
-// fn main() {
-//     let mut example = Box::pin(ExampleFuture { work_remaining: 3 });
-// 
-//     let mut context = Context::from_waker(Waker::noop());
-// 
-//     // This time the work isn't completed on the first call.
-//     assert_eq!(example.as_mut().poll(&mut context), Poll::Pending);
-// 
-//     // The pin is consumed by poll, so we need to repin each time
-//     assert_eq!(example.as_mut().poll(&mut context), Poll::Pending);
-//     assert_eq!(example.as_mut().poll(&mut context), Poll::Pending);
-//     assert_eq!(example.as_mut().poll(&mut context), Poll::Ready("All done!"));
-// }
+A `Waker` is struct the `Future` can use to inform the Executor it's ready to have its `.poll()` method called again.
 
+Before we get to that though, we're going to update our program to use threads for both tasks and scheduling. It's
+important to note, however, that threads are not a necessary component of asynchronous Rust, there are other ways to 
+achieve Waking, but for now, this is the approach we'll take.
+
+```rust
+use std::task::{Context, Poll, Waker};
+use std::pin::{pin, Pin};
+use std::time::{SystemTime, Duration};
+use std::ops::Add;
+use std::thread::{Thread, sleep, spawn, JoinHandle};
+use std::sync::{Arc, Mutex};
+
+
+pub struct ThreadTimer {
+    duration: Duration,
+    join_handle: Option<JoinHandle<()>>,
+    waker: Arc<Mutex<Waker>>,
+}
+
+impl ThreadTimer {
+    pub fn new(duration: Duration) -> ThreadTimer {
+        Self {
+            duration,
+            join_handle: None,
+            waker: Arc::new(Mutex::new(Waker::noop().clone())),
+        }
+    }
+}
+
+impl Future for ThreadTimer {
+    type Output = ();
+
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        let fut = self.get_mut();
+        
+        // We always need to update the waker whenever we're polled
+        *fut.waker.lock().expect("Thread crashed with mutex lock") = cx.waker().clone();
+        
+        match &fut.join_handle {
+            // If we haven't started the thread, do so now
+            None => {
+                let duration = fut.duration;
+                let waker = fut.waker.clone();
+                fut.join_handle = Some(spawn(move || {
+                    sleep(duration);
+                    waker
+                        .lock()
+                        .expect("Thread crashed with mutex lock")
+                        .wake_by_ref();
+                }));
+                Poll::Pending
+            }
+            // If the thread has started, is it finished yet?
+            Some(join_handler) => {
+                match join_handler.is_finished() {
+                    true => Poll::Ready(()),
+                    false => Poll::Pending,
+                }
+            }
+        }
+    }
+}
+
+fn execute<F: Future>(future: F) -> F::Output {
+    // ...snip...
+#     let mut pinned_future = pin!(future);
+#     let mut context = Context::from_waker(Waker::noop());
+#    
+#     let mut loop_counter = 1;
+#    
+#     let result = loop {
+#         match pinned_future.as_mut().poll(&mut context) {
+#             Poll::Ready(r) => break r,
+#             Poll::Pending => loop_counter += 1,
+#         }
+#     };
+#
+#     println!();
+#     println!("All done!");
+#     println!("We called poll {loop_counter} times, yikes!");
+#
+#     result
+}
+
+fn main() {
+    let future = ThreadTimer::new(Duration::from_secs(1));
+    let _ = execute(future);
+}
 ```
+
+Our timer now has a Duration, an optional JoinHandle and a Waker wrapped in an `Arc<Mutex<_>>`. When we create a new
+instance of it, we store the Duration, set the JoinHandle to `None`, and storing a No-Op waker in its `Arc<Mutex<_>>`.
+
+When `.poll()` is called, we replace the Waker with the one given to us by the executor. We do this _every_ time 
+`.poll()` is called because it could be that the responsibility for keeping track of our future might move and a 
+different executor needs to be woken when the future is ready to do more work.
+
+Next we look to see if the thread has been started.
+
+If we don't currently have a join handle, then we start a new thread, passing in the duration and our Arc'd Waker.
+Using the `Arc<Mutex<_>>` allows us to change the Waker being called from the other thread. The thread only does two
+things, sleeps itself for the duration, and then calls the Waker.
+
+> Note: Thread sleeps are not accurate, the only thing that can be guaranteed is that the thread will sleep for 
+> _at least_ the given Duration... unless the Duration is zero, in which case even sleeping isn't guaranteed. Its fine
+> for the purposes of this demonstration though.
+
+If the thread has been started, we'll look to see if the thread is finished. If it is, we can return `Ready<()>`,
+otherwise we'll assume we were polled early, and return `Pending`.
+
+We're still using the old executor, so if you run this, you'll see we still poll hundreds of thousands of times. Lets
+fix that next.
 
 Async / Await
 -------------

@@ -39,10 +39,7 @@ fn execute<F: Future>(future: F) -> F::Output {
     let result = loop {
         match pinned_future.as_mut().poll(&mut context) {
             Poll::Ready(r) => break r,
-            Poll::Pending => {
-                print!(".");
-                loop_counter += 1;
-            }
+            Poll::Pending => loop_counter += 1,
         }
     };
 
