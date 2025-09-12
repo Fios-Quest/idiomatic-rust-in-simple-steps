@@ -768,9 +768,322 @@ own Future's is great for the very edge of our Rust code where we're waiting on 
 program, or something like a compute heavy task we control.
 
 Most of the time we won't necessarily even be doing that though, as there are lots of crates for dealing with common
-I/O tasks, like reading files, accessing databases or downloading files.
+I/O tasks, like reading files, accessing databases or downloading files. Most of the time, we just need to glue those
+bits together.
+
+This is where async/await comes in. We can make any block of code or any function a Future with the async keyword. Lets
+try that out with our existing `block_thread_on` executor:
+
+```rust
+use std::task::{Context, Poll, Waker, Wake};
+use std::pin::{pin, Pin};
+use std::time::{SystemTime, Duration};
+use std::ops::Add;
+use std::thread::{self, Thread, sleep, spawn, JoinHandle};
+use std::sync::{Arc, Mutex};
+
+# pub struct ThreadWaker {
+#     thread: Thread,
+# }
+# 
+# impl ThreadWaker {
+#     pub fn current_thread() -> Self {
+#         ThreadWaker {
+#             thread: thread::current(),
+#         }
+#     }
+# }
+# 
+# impl Wake for ThreadWaker {
+#     fn wake(self: Arc<Self>) {
+#         self.thread.unpark();
+#     }
+# }
+# 
+fn block_thread_on<F: Future>(future: F) -> F::Output {
+    let mut example = pin!(future);
+
+    let waker = Arc::new(ThreadWaker::current_thread()).into();
+    let mut context = Context::from_waker(&waker);
+    
+    let mut loop_counter = 1;
+    let output = loop {
+        match example.as_mut().poll(&mut context) {
+            Poll::Ready(output) => break output,
+            Poll::Pending => {
+                loop_counter += 1;
+                std::thread::park();
+            },
+        }
+    };
+    
+    println!("All done!");
+    println!("This time poll was only called {loop_counter} times, yay!");
+    
+    output
+}
+
+async fn calling_this_function_returns_a_future() -> String {
+    String::from("Inside an async function")
+}
+
+fn main() {
+    let this_block_is_a_future = async {
+        String::from("Inside an async block")
+    };
+    assert_eq!(
+        block_thread_on(this_block_is_a_future),
+        "Inside an async block".to_string()
+    );
+    assert_eq!(
+        block_thread_on(calling_this_function_returns_a_future()), 
+        "Inside an async function".to_string()
+    );
+}
+```
+
+But async code does something a little bit special. It can work up to another future and then pause untill that future
+is ready to continue by using the `.await` postfix of a Future. What's rather brilliant in async code though is that
+when woken, the code resumes from where it got to. Try this:
+
+```rust
+use std::task::{Context, Poll, Waker, Wake};
+use std::pin::{pin, Pin};
+use std::time::{SystemTime, Duration};
+use std::ops::Add;
+use std::thread::{self, Thread, sleep, spawn, JoinHandle};
+use std::sync::{Arc, Mutex};
+
+# pub struct ThreadWaker {
+#     thread: Thread,
+# }
+# 
+# impl ThreadWaker {
+#     pub fn current_thread() -> Self {
+#         ThreadWaker {
+#             thread: thread::current(),
+#         }
+#     }
+# }
+# 
+# impl Wake for ThreadWaker {
+#     fn wake(self: Arc<Self>) {
+#         self.thread.unpark();
+#     }
+# }
+# 
+pub struct ThreadTimer {
+    duration: Duration,
+    join_handle: Option<JoinHandle<()>>,
+    waker: Arc<Mutex<Waker>>,
+}
+
+impl ThreadTimer {
+    pub fn new(duration: Duration) -> ThreadTimer {
+        Self {
+            duration,
+            join_handle: None,
+            waker: Arc::new(Mutex::new(Waker::noop().clone())),
+        }
+    }
+}
+
+impl Future for ThreadTimer {
+    type Output = ();
+
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        let fut = self.get_mut();
+        
+        // We always need to update the waker whenever we're polled
+        *fut.waker.lock().expect("Thread crashed with mutex lock") = cx.waker().clone();
+        
+        match &fut.join_handle {
+            // If we haven't started the thread, do so now
+            None => {
+                let duration = fut.duration;
+                let waker = fut.waker.clone();
+                fut.join_handle = Some(spawn(move || {
+                    sleep(duration);
+                    waker
+                        .lock()
+                        .expect("Thread crashed with mutex lock")
+                        .wake_by_ref();
+                }));
+                Poll::Pending
+            }
+            // If the thread has started, is it finished yet?
+            Some(join_handler) => {
+                match join_handler.is_finished() {
+                    true => Poll::Ready(()),
+                    false => Poll::Pending,
+                }
+            }
+        }
+    }
+}
+
+fn block_thread_on<F: Future>(future: F) -> F::Output {
+    let mut example = pin!(future);
+
+    let waker = Arc::new(ThreadWaker::current_thread()).into();
+    let mut context = Context::from_waker(&waker);
+    
+    let mut loop_counter = 1;
+    let output = loop {
+        match example.as_mut().poll(&mut context) {
+            Poll::Ready(output) => break output,
+            Poll::Pending => {
+                loop_counter += 1;
+                std::thread::park();
+            },
+        }
+    };
+    
+    println!("All done!");
+    println!("This time poll was only called {loop_counter} times, yay!");
+    
+    output
+}
+
+fn main() {
+    let future = async {
+        println!("Started the future");
+        ThreadTimer::new(Duration::from_secs(2)).await;
+        ThreadTimer::new(Duration::from_secs(1)).await;
+        println!("Completing the future")
+    };
+
+    block_thread_on(future);
+}
+```
+
+Using '.await' will essentially pause the execution of the code until the ThreadTimer future is ready, then continue on
+from that point. So this code is amazing right? ... Right?
+
+No! This code is bad, actually, but the reason may not be immediatey obvious.
+
+This version might help you see why the code is bad:
+
+```rust
+use std::task::{Context, Poll, Waker, Wake};
+use std::pin::{pin, Pin};
+use std::time::{SystemTime, Duration, Instant};
+use std::ops::Add;
+use std::thread::{self, Thread, sleep, spawn, JoinHandle};
+use std::sync::{Arc, Mutex};
+
+# pub struct ThreadWaker {
+#     thread: Thread,
+# }
+# 
+# impl ThreadWaker {
+#     pub fn current_thread() -> Self {
+#         ThreadWaker {
+#             thread: thread::current(),
+#         }
+#     }
+# }
+# 
+# impl Wake for ThreadWaker {
+#     fn wake(self: Arc<Self>) {
+#         self.thread.unpark();
+#     }
+# }
+# 
+pub struct ThreadTimer {
+    duration: Duration,
+    join_handle: Option<JoinHandle<()>>,
+    waker: Arc<Mutex<Waker>>,
+}
+
+impl ThreadTimer {
+    pub fn new(duration: Duration) -> ThreadTimer {
+        Self {
+            duration,
+            join_handle: None,
+            waker: Arc::new(Mutex::new(Waker::noop().clone())),
+        }
+    }
+}
+
+impl Future for ThreadTimer {
+    type Output = ();
+
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        let fut = self.get_mut();
+        
+        // We always need to update the waker whenever we're polled
+        *fut.waker.lock().expect("Thread crashed with mutex lock") = cx.waker().clone();
+        
+        match &fut.join_handle {
+            // If we haven't started the thread, do so now
+            None => {
+                let duration = fut.duration;
+                let waker = fut.waker.clone();
+                fut.join_handle = Some(spawn(move || {
+                    sleep(duration);
+                    waker
+                        .lock()
+                        .expect("Thread crashed with mutex lock")
+                        .wake_by_ref();
+                }));
+                Poll::Pending
+            }
+            // If the thread has started, is it finished yet?
+            Some(join_handler) => {
+                match join_handler.is_finished() {
+                    true => Poll::Ready(()),
+                    false => Poll::Pending,
+                }
+            }
+        }
+    }
+}
+
+fn block_thread_on<F: Future>(future: F) -> F::Output {
+    let mut example = pin!(future);
+
+    let waker = Arc::new(ThreadWaker::current_thread()).into();
+    let mut context = Context::from_waker(&waker);
+    
+    let mut loop_counter = 1;
+    let output = loop {
+        match example.as_mut().poll(&mut context) {
+            Poll::Ready(output) => break output,
+            Poll::Pending => {
+                loop_counter += 1;
+                std::thread::park();
+            },
+        }
+    };
+    
+    println!("All done!");
+    println!("This time poll was only called {loop_counter} times, yay!");
+    
+    output
+}
+
+fn main() {
+    let future = async {
+        let now = Instant::now();
+        ThreadTimer::new(Duration::from_secs(2)).await;
+        ThreadTimer::new(Duration::from_secs(1)).await;
+        now.elapsed().as_secs()
+    };
+
+    let time_taken = block_thread_on(future);
+    println!("Time taken {time_taken}");
+    assert_eq!(time_taken, 3);
+}
+```
+
+The total time taken to run the timers is 3 seconds, which makes sense right? We have a two second timer and a one
+second timer, combined, that's three seconds... but that's the problem...
 
 ### Join!
+
+The two timers in the previous exampples are completely independent of each other. We should not be waiting for the
+first timer to complete before working on the second timer.
 
 Over in the Real World
 ----------------------
