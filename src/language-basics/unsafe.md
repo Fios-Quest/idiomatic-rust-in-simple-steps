@@ -116,7 +116,7 @@ in memory, but they are not pointers. The validity of pointers is not checked, b
 that guarantee they are valid. References in unsafe Rust must still abide by the rules of the borrow checker. Unsafe 
 Rust doesn't turn off the borrow checker, instead it gives us access to raw pointers which can't be borrow checked.
 
-Some of these tools exist in other commonly used low-level languages that have been around for decades and are still,
+Some of these tools exist in other commonly used compiled languages that have been around for decades and are still,
 rightly, very popular today. In these languages, these tools are available at any time. Having the tools is not a bad
 thing. They're necessary tools that we need to do things that there is no other way to do.
 
