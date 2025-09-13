@@ -49,7 +49,6 @@ impl FromIterator<Album> for Albums {
 // ANCHOR_END: FromIterator
 
 fn main() {
-
     // ANCHOR: UseIntoIterator
     let mut albums = Albums::new();
 
@@ -76,7 +75,11 @@ fn main() {
 
     assert_eq!(
         artists,
-        vec!["The Beatles".to_string(), "AC/DC".to_string(), "Eagles".to_string()],
+        vec![
+            "The Beatles".to_string(),
+            "AC/DC".to_string(),
+            "Eagles".to_string()
+        ],
     );
     // ANCHOR_END: UseIntoIterator
 
@@ -86,12 +89,10 @@ fn main() {
             name: "Sgt. Pepper's Lonely Hearts Club Band".into(),
             artist: "The Beatles".into(),
         },
-
         Album {
             name: "Back in Black".into(),
             artist: "AC/DC".into(),
         },
-
         Album {
             name: "Hotel California".into(),
             artist: "Eagles".into(),
