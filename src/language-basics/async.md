@@ -1,24 +1,24 @@
 Async Rust
 ==========
 
-Often times, when we write code, we have to wait on certain things happening. This is usually some form of IO, such
-as reading or writing to a disk, getting data from a database, downloading a file, etc. Sometimes it could just be 
-something computationally expensive, such as processing large amounts of data.
+Often times, when we write code, we have to wait on certain "things" to happen. "Things" are often some form of IO, such
+as reading or writing to a disk, getting data from a database, downloading a file, etc. Sometimes the "thing" could just
+be computationally expensive, such as processing large amounts of data.
 
 Our programs are typically complex with multiple parts to them. For example, applications often have a user interface,
 whether that's via a terminal, a web page, or a full desktop GUI. If our application has to wait on something happening,
-we don't want to prevent other aspects (like the UI) to freeze up, unable to do anything while we wait.
+we don't want other aspects (like the UI) to freeze up, unable to do anything while we wait.
 
 Asynchronous programming is a way to structure our code so that we can do work when nothing else is happening, and it
-doesn't depend on specific way to get the work done. Under the hood, we might use threads, or we may depend on Operating
-System hooks or even, for embedded programming, hardware interrupts and exceptions.
+doesn't depend on any specific way to get the work done. Under the hood, we might use threads, or we may depend on 
+Operating System hooks or even for embedded programming, hardware interrupts, and exceptions.
 
-In this chapter we're going explain the modular design of async programming in Rust with the aim of getting a solid
+In this chapter we're going to explain the modular design of async programming in Rust. Our aim is to get a solid(ish)
 understanding of the concepts involved, even though, in the real world, you're likely to depend on others to design and
-build the more complex stuff.
+build the more complex parts.
 
-Seriously, I've simplified this chapter beyond real world usefulness, it's just here to explain the concepts. Please 
-don't use any of this in a real application!
+In fact, I've simplified this chapter beyond real-world usefulness; it's just here to explain the concepts. Please don't
+use any of this in a real application!
 
 Move and Pin
 ------------
@@ -26,14 +26,16 @@ Move and Pin
 Before we go further into the chapter, we once again need to talk about memory, moving, and pinning.
 
 All data in our running program exists somewhere in memory, whether it's the stack, the heap, or static memory. That
-means, everything has a pointer address in memory. When we do something like pass a variable to another function,
-ownership of that variable "moves" to the other function. If we do something like add a variable to a `Vec` then
-ownership of that variable "moves" to the heap.
+means that everything has a pointer address in memory. 
 
-When data "moves" ownership, it also physically moves in memory. Run this and look closely at the returned addresses.
+When we do something like pass a variable to another function, ownership of that variable "moves" to the other function.
+If we do something like add a variable to a `Vec` then ownership of that variable "moves" to the heap. When data "moves"
+ownership, it also physically moves in memory. 
+
+Run this and look closely at the returned addresses.
 
 ```rust
-fn demo_move(hello: String) {
+fn example_move(hello: String) {
     let hello_ptr = &raw const hello;
     println!("Hello is stored at {hello_ptr:p}");
 }
@@ -44,12 +46,16 @@ fn main() {
     let hello_ptr = &raw const hello;
     println!("Hello is stored at {hello_ptr:p}");
     
-    demo_move(hello);
+    example_move(hello);
 }
 ```
 
+Because `example_move` takes ownership of the String, and as we learned in the [unsafe](./unsafe) chapter, the metadata
+for String is stored on the stack, meaning that that portion of the data is copied to the memory for the new function
+(the stack frame). 
+
 This is usually fine, but _occasionally_ things might need to know where they themselves are in memory. This is called
-self referencing. If something references itself, and we move it, where does that reference now point?
+self-referencing. If something references itself, and we move it, where does that reference now point?
 
 In the below example we create a self-referential struct and pass it to a function up the stack. When you run the code,
 you'll see we get some weird behavior.
@@ -100,12 +106,12 @@ fn main() {
 }
 ```
 
-The pointer in the struct is just a number pointing at a location in memory. We moved the data, but the pointer is
+The pointer in the struct is just a number pointing at a location in memory. We moved the data, but the pointer is still
 pointing at the old location.
 
-Obviously self-referential data is dangerous... but it can be useful. In order to keep ourselves safer then, we can
-`Pin` any arbitrary data to memory. Pin itself is just a container for a mutable reference to the data, so that's safe
-to move around, but through the magic of the borrow checker, that single mutable reference will lock the data in place.
+Self-referential data is dangerous... but it can be useful. To keep ourselves safer then, we can `Pin` any arbitrary
+data to memory. Pin itself is just a container for a mutable reference to the data, so the Pin itself is safe to move
+around. Through the magic of the borrow checker, that single mutable reference will lock the data in place.
 
 ```rust
 use std::pin::pin;
@@ -154,9 +160,9 @@ fn main() {
 ```
 
 There's a lot to `Pin` so and if you're curious about it, the [std documentation](https://doc.rust-lang.org/std/pin/)
-has a lot more information. For the purposes of this chapter its enough to know that, in specific circumstances, like
-in modular asynchronous architecture where we don't control everything, we need to be certain data won't move
-unexpectedly, and this is achieved through the `Pin` type.
+has a lot more information. For this chapter its enough to know that, in specific circumstances, like in modular
+asynchronous architecture where we don't control everything, we need to be certain data won't move unexpectedly, and
+this is achieved through the `Pin` type.
 
 Breaking Down Work
 ------------------
@@ -217,7 +223,7 @@ which task gets run when.
 
 In Rust, we represent tasks with the `Future` trait, which can be applied to any type. We manage task scheduling through
 executors, which themselves use `Waker`s to decide when to run different tasks. This sounds complicated but by the end
-of this chapter, you'll hopefully have a reasonable idea of how Futures, Executors and Wakers work together, and if you
+of this chapter, you'll hopefully have a reasonable idea of how Futures, Executors, and Wakers work together, and if you
 don't... that's actually ok. Most of the time you won't need to write any of these things yourself, but having even a
 vague understanding of them will help you write better async code, as well as spot and fix common issues you might run
 across.
@@ -591,7 +597,7 @@ fn main() {
 }
 ```
 
-Our timer now has a Duration, an optional JoinHandle and a Waker wrapped in an `Arc<Mutex<_>>`. When we create a new
+Our timer now has a Duration, an optional JoinHandle, and a Waker wrapped in an `Arc<Mutex<_>>`. When we create a new
 instance of it, we store the Duration, set the JoinHandle to `None`, and storing a No-Op waker in its `Arc<Mutex<_>>`.
 
 When `.poll()` is called, we replace the Waker with the one given to us by the executor. We do this _every_ time 
@@ -768,7 +774,7 @@ own Future's is great for the very edge of our Rust code where we're waiting on 
 program, or something like a compute heavy task we control.
 
 Most of the time we won't necessarily even be doing that though, as there are lots of crates for dealing with common
-I/O tasks, like reading files, accessing databases or downloading files. Most of the time, we just need to glue those
+I/O tasks, like reading files, accessing databases, or downloading files. Most of the time, we just need to glue those
 bits together.
 
 This is where async/await comes in. We can make any block of code or any function a Future with the async keyword. Lets
@@ -1296,17 +1302,17 @@ Over in the Real World
 
 Rust doesn't come with its own Executors, or much in the way of Future utilities (other than what we've covered here),
 as the implementation details can vary significantly depending on what you're doing. For example, while our examples
-here have used Threads, Threads aren't necessary, aren't always available, and are particularly efficient in some use
-cases. 
+here have used Threads, Threads aren't necessary, aren't always available, and aren't particularly efficient in some 
+situations.
 
 If you're working on an embedded microcontroller, for example, rather than parking and unparking threads, you might use
 interrupts and exceptions to wake futures. If you're running code inside an operating system, it might be more efficient
 to wait on callbacks from the OS to know when to wake a given future.
 
-Rather than writing your own executors though you'll find that other people have provided executors for common use cases
-such as [Tokio](https://docs.rs/tokio/latest/tokio/) and [Smol](https://docs.rs/smol/latest/smol/). These crates also
-come with a lot of utility types, functions and macros, including substantially more efficient and ergonomic ways to
-join futures and libraries for common futures such as working with the file system or network traffic asynchronously.
+Rather than writing your own executors, though, you'll find that other people have provided executors for common use 
+cases such as [Tokio](https://docs.rs/tokio/latest/tokio/) and [Smol](https://docs.rs/smol/latest/smol/). These crates
+also come with a lot of utility types, functions and macros, including substantially more efficient and ergonomic ways 
+to join futures and libraries for common futures such as working with the file system or network traffic asynchronously.
 
 Beyond this there are also executor agnostic libraries that provide futures for more specific needs like 
 [reqwest](https://docs.rs/reqwest/latest/reqwest/) which provides HTTP specific futures, or 
@@ -1314,8 +1320,8 @@ Beyond this there are also executor agnostic libraries that provide futures for 
 
 So, most of the time when you work with async Rust in the real world, you won't need to write executors, and you won't
 need to implement the Future trait yourself. You'll use third party libraries for futures at the outer bounds of your
-software, join futures with third party utilities, and gluing it together with futures created with `async` blocks and
-functions.
+software, join futures with third party utilities, and you'll glue it all together with futures created with `async`
+blocks and functions.
 
 So why did I just try to explain all of this?
 
@@ -1325,25 +1331,37 @@ Common Gotchas
 There are two fairly common gotcha's in async code, and they're much easier to spot when you have a fair understanding
 of what's going on underneath. 
 
-First is blocking. We used threads in our examples, but you may not end up using a threaded executor, and even when you
-do, some executors allow multiple futures to run on the main thread. This means using any blocking code could prevent
-a thread from continuing until its complete could impact the execution of some or all of your other futures.
+The first is blocking. We used threads in our examples, but you may not end up using a threaded executor, and even when 
+you do, some executors allow multiple futures to run on the main thread. This means using any blocking code could 
+prevent a thread from continuing until its complete could impact the execution of some or all of your other futures.
 
 This is an easier mistake to make than you might think. For example, 
-[opening a file and reading it](https://doc.rust-lang.org/std/fs/struct.File.html) are both blocking functions. Same 
+[opening a file and reading it](https://doc.rust-lang.org/std/fs/struct.File.html) are both blocking functions. The same 
 goes for [TcpStream](https://doc.rust-lang.org/std/net/struct.TcpStream.html) and other standard library implementations
 of IO functionality.
 
-Worse still is Mutex which, which will block a thread until the lock becomes available. If the MutexGuard that has 
-locked the Mutex happens to be being used on the same thread, then you will get a deadlock, and your code will stop. 
+Worse still is `Mutex` which, which will block a thread until the lock becomes available. If the MutexGuard that has 
+locked the Mutex happens to be being used on the same thread, then you will get a deadlock, and your code will stop.
 
-Libraries like Tokio and Smol either come with (or provide separately) their own interpretations of these behaviours
+> If you cleverly noticed that I used an unsafe Mutex earlier, good catch! Luckily, the specific way it's being used is
+> safe as the only two locks are guaranteed to be on different threads. :)
+
+Libraries like Tokio and Smol either come with (or provide separately) their own interpretations of these behaviors
 that use Futures instead of blocking code.
 
-The second gotcha is with ownership.
+The second gotcha is with borrowing and ownership. As we've seen, there's complexity around Futures that requires
+Pinning to be a thing. This is because a Future might be moved by its executor, and if it is, self-referential data
+would point at old (or worse, freed) memory. But it can get even more complex than that.
 
+Rusts ownership model means that the lifetime of a reference must be trackable to make sure it does not outlive its
+owned data. This gets a lot more challenging with futures as the compiler needs to track references through deferred
+work. Thinking even more carefully about owned data, references, and the memory and CPU tradeoffs of cloning data can 
+make async code harder to reason about.
 
 Summary
 -------
 
+Not sure how to summarize 🤔. 
 
+- Hopefully learned how Rust manages async under the hood
+- The goal of async is to make your code more manageable, if it isn't doing that for you, you don't need to use it.
