@@ -22,36 +22,68 @@
     - [Threads](./language-basics/threads.md)
     - [Macros](./language-basics/macros.md)
     - [Unsafe](language-basics/unsafe.md)
-    - [Async]()
-- [Common Patterns]()
-    - [Derive]()
-    - [Monads]()
-    - [Interior Mutability]()
-    - [New Types]()
-    - [RAII / Drop and Finalise]()
-    - [Prefer Borrows]()
-    - [Type State]()
-    - [Builder]()
-- [Rust Ecosystem]()
-    - [Project Structure]()
-    - [rustup]()
-    - [Error Handling with ThisError and Anyhow]()
-    - [log]()
-    - [mdbook]()
-    - [Itertools]()
-    - [Rayon]()
-    - [Clap]()
-    - [Async with Tokio and async_std]()
-    - [Serialisation with Serde]()
-    - [Parsing with Nom]()
-    - [Regex]()
-    - [reqwest]()
-    - [Crossbeam?]()
-    - [bitvec]()
-    - [Derive More]()
-- [Advanced Rust]()
-    - [Foreign Function Interfaces]()
-    - [Proc Macro]()
-    - [Intro to Web Dev]()
-    - [Intro to Embedded]()
-    - [Intro to Game Dev]()
+    - [Async](language-basics/async.md)
+
+[//]: # (- [Common Patterns]&#40;&#41;)
+
+[//]: # (    - [Derive]&#40;&#41;)
+
+[//]: # (    - [Monads]&#40;&#41;)
+
+[//]: # (    - [Interior Mutability]&#40;&#41;)
+
+[//]: # (    - [New Types]&#40;&#41;)
+
+[//]: # (    - [RAII / Drop and Finalise]&#40;&#41;)
+
+[//]: # (    - [Prefer Borrows]&#40;&#41;)
+
+[//]: # (    - [Type State]&#40;&#41;)
+
+[//]: # (    - [Builder]&#40;&#41;)
+
+[//]: # (- [Rust Ecosystem]&#40;&#41;)
+
+[//]: # (    - [Project Structure]&#40;&#41;)
+
+[//]: # (    - [rustup]&#40;&#41;)
+
+[//]: # (    - [Error Handling with ThisError and Anyhow]&#40;&#41;)
+
+[//]: # (    - [log]&#40;&#41;)
+
+[//]: # (    - [mdbook]&#40;&#41;)
+
+[//]: # (    - [Itertools]&#40;&#41;)
+
+[//]: # (    - [Rayon]&#40;&#41;)
+
+[//]: # (    - [Clap]&#40;&#41;)
+
+[//]: # (    - [Async with Tokio and async_std]&#40;&#41;)
+
+[//]: # (    - [Serialisation with Serde]&#40;&#41;)
+
+[//]: # (    - [Parsing with Nom]&#40;&#41;)
+
+[//]: # (    - [Regex]&#40;&#41;)
+
+[//]: # (    - [reqwest]&#40;&#41;)
+
+[//]: # (    - [Crossbeam?]&#40;&#41;)
+
+[//]: # (    - [bitvec]&#40;&#41;)
+
+[//]: # (    - [Derive More]&#40;&#41;)
+
+[//]: # (- [Advanced Rust]&#40;&#41;)
+
+[//]: # (    - [Foreign Function Interfaces]&#40;&#41;)
+
+[//]: # (    - [Proc Macro]&#40;&#41;)
+
+[//]: # (    - [Intro to Web Dev]&#40;&#41;)
+
+[//]: # (    - [Intro to Embedded]&#40;&#41;)
+
+[//]: # (    - [Intro to Game Dev]&#40;&#41;)

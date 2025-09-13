@@ -103,7 +103,7 @@ intending to show your understanding of recursion.
 > 
 > ```rust
 > // Press 👁️ to reveal a method of calculating the nth value of the sequence
-> // without having to use recursion of a loop!
+> // without having to use recursion or a loop!
 > # const GOLDEN_RATIO: f64 = 1.618033988749894848204586834365638118;
 > # const SQRT_FIVE: f64 = 2.23606797749979;
 > # 
@@ -348,7 +348,7 @@ let mut ll = LinkedList::new();
 ll.push_back(hello);
 ll.push_back(world);
 
-// The inner type can be elided as Rust can work out that its String 
+// The inner type can be elided as Rust can work out that it's String 
 let v: Vec<_> = ll
     .into_iter() // This takes ownership of the contents of the linked list 
     .collect(); // This collects the data into the vector which now owns the inner data
@@ -393,7 +393,7 @@ Using what we've learned above, what if we want to use owned data, but we need t
 
 There are two methods on `Iterator` for this purpose: `.copied()` and `.cloned()`.
 
-`.copied()` only works on Iterators where the item is `Copy` will take the iterator and return a new iterator which
+`.copied()` only works on Iterators where the item is `Copy` and will take the iterator and return a new iterator which
 returns each Item copied. 
 
 ```rust
@@ -641,7 +641,7 @@ assert_eq!(full_iter.count(), 10);
 assert_eq!(filtered_iter.count(), 5);
 ```
 
-Another great way to process Iterators one Item at a time is to take that Item and transform it in some way. We can use
+Another great way to process Iterators one Item at a time is to take that Item and transform it in some way. We can
 pass a function into the `.map()` method that receives the item and returns a new value. If that value is of a different
 type, the Iterator you get back will also be of that new type:
 
@@ -764,7 +764,7 @@ let bad_sum = (100u8..=106)
 
 assert_eq!(bad_sum, Err(OverflowError));
 ```
-That said, in this kind of case, once our fold function returns a `Err`, we can't process any more items, we can break
+That said, in this kind of case, once our fold function returns an `Err`, we can't process any more items, we can break
 out of this early with `.try_fold()` which will stop iterating immediately:
 
 ```rust

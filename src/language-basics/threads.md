@@ -29,7 +29,7 @@ Before we get into the Rust, it's worth discussing what a thread is.
 When you run a program, that specific instance of the program is called a Process. The process incorporates not just the
 instructions to be run but is an abstraction around various resources that the program has access to, such as memory.
 
-You can run multiple processes which the operating system will schedule separate which could allow you to do more things
+You can run multiple processes which the operating system will schedule separately which could allow you to do more things
 at once, however, those processes won't (or at least, shouldn't) have access to the same memory. There are ways to
 communicate between processes, but they can be slower and more restrictive than if we could share memory.
 
@@ -376,12 +376,12 @@ decreased. Once the count hits zero, there are no further references to the data
 
 Now, if you've paid attention as to why we need a Mutex for modifying data across threads, you'll see that using a
 normal reference count won't work. If the reference counter is cloned or dropped while also being cloned or dropped in
-another thread, you could end up with an inconsistent number count of references, meaning data gets dropped at the wrong
+another thread, you could end up with an inconsistent count of references, meaning data gets dropped at the wrong
 time. This is why we need a special reference count type, `std::sync::Arc`, an Atomic Reference Count.
 
 Atomic data types guarantee atomic changes. Atomic changes are guaranteed to appear to be instantaneous to all external
 observers, meaning that two threads can change the value, but that this change cannot overlap. `Arc` is a little slower
-than Rusts built in basic reference counting type `std::rc::Rc`, but prevents corruption across threads.
+than Rust's built in basic reference counting type `std::rc::Rc`, but prevents corruption across threads.
 
 > Authors note: I don't think I've _ever_ used `Rc`, but I use `Arc` all the time, so don't worry that we didn't
 > cover it in this book. If you need to pass data around wrapped in its own container its there to use
@@ -422,4 +422,4 @@ Next Chapter
 ------------
 
 Macros! We'll be looking at the `macro_rules!` macro that lets you make more macros. We'll learn how `macro_rules!` 
-is used, how we can use it to remove repetitive code or even write our own domain-specific language (DSL!
+is used, how we can use it to remove repetitive code or even write our own domain-specific language (DSL)!
