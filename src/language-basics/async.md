@@ -1294,7 +1294,11 @@ The `Join` future uses another future I've created called the `CollapsableFuture
 after its Ready but only returns the data when I extract it. When you poll the Join, it polls the inner Futures, if
 they both report they're ready then the Join extracts the data and returns Ready with the results.
 
-But, ideally, you won't be writing inefficient Join's like this one yourself...
+But, ideally, you won't be writing inefficient Join's like this one yourself. Most async crates provide their own
+version of join, such as [Tokio's `join!`](https://docs.rs/tokio/latest/tokio/macro.join.html) macro, and
+[Smol's `.zip()`](https://docs.rs/smol/latest/smol/future/fn.zip.html) method on their Future trait. Even the Rust
+standard library has [std::future::join](https://doc.rust-lang.org/std/future/macro.join.html) which they're trying to
+stabilise.
 
 
 Over in the Real World
@@ -1323,13 +1327,41 @@ need to implement the Future trait yourself. You'll use third party libraries fo
 software, join futures with third party utilities, and you'll glue it all together with futures created with `async`
 blocks and functions.
 
-So why did I just try to explain all of this?
+You're `async` code is less likely to look like what we've seen above and much more likely to look like this:
+
+```rust
+use std::error::Error;
+
+const FIOS_QUEST_URL: &str = "https://fios-quest.com";
+const IRISS_URL: &str = "https://fios-quest.com/idiomatic-rust-in-simple-steps/";
+
+async fn get_url(url: &str) -> Result<String, Box<dyn Error>> {
+    Ok(reqwest::get(url).await?.text().await?)
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    let (fios_quest, iriss) = tokio::join!(get_url(FIOS_QUEST_URL), get_url(IRISS_URL));
+
+    let fq_chars_chars = fios_quest?.chars().count();
+    let iriss_chars = iriss?.chars().count();
+
+    println!("Fio's Quest's body contains {fq_chars_chars} characters");
+    println!("IRISS's body contains {iriss_chars} characters");
+
+    Ok(())
+}
+```
+
+So why did I just try to explain all of this? Because my hope is that, when you understand what's happening under the
+hood, it will help you make the best use of async and avoid... 
 
 Common Gotchas
 --------------
 
-There are two fairly common gotcha's in async code, and they're much easier to spot when you have a fair understanding
-of what's going on underneath. 
+Other than blocking unrelated work while awaiting a future (see the earlier Join section) there are two fairly common
+gotcha's in async code, and they're much easier to spot when you have a fair understanding of what's going on
+underneath.
 
 The first is blocking. We used threads in our examples, but you may not end up using a threaded executor, and even when 
 you do, some executors allow multiple futures to run on the main thread. This means using any blocking code could 
