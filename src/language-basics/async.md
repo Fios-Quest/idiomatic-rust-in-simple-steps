@@ -841,6 +841,8 @@ But async code does something a little bit special. It can work up to another fu
 is ready to continue by using the `.await` postfix of a Future. What's rather brilliant in async code though is that
 when woken, the code resumes from where it got to.
 
+[//]: # (TODO: Section on Result and ?)
+
 ```rust
 # use std::task::{Context, Poll, Waker, Wake};
 # use std::pin::{pin, Pin};
@@ -1329,6 +1331,9 @@ blocks and functions.
 
 You're `async` code is less likely to look like what we've seen above and much more likely to look like this:
 
+> ⚠️ This _may_ not work on Rust Playground / when run in the online book, check the source code in the
+> [books repository](https://github.com/Fios-Quest/idiomatic-rust-in-simple-steps/)
+
 ```rust
 use std::error::Error;
 
@@ -1352,6 +1357,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 ```
+
+Not a Future trait or Pin in sight!
 
 So why did I just try to explain all of this? Because my hope is that, when you understand what's happening under the
 hood, it will help you make the best use of async and avoid... 
@@ -1390,10 +1397,16 @@ owned data. This gets a lot more challenging with futures as the compiler needs 
 work. Thinking even more carefully about owned data, references, and the memory and CPU tradeoffs of cloning data can 
 make async code harder to reason about.
 
+It's worth remembering that, particularly for smaller projects, you don't _have_ to use async, if its causing your code
+to be more complicated than it would otherwise be.
+
 Summary
 -------
 
-Not sure how to summarize 🤔. 
+Hopefully after this chapter, you have a bit more of an understanding about what's going on when you use async in Rust.
+Various crates that help provide utilities for async implement the specifics in their own way, so before you choose
+executor crates and Future supporting libraries, its worth reading crate documentation to understand the options 
+available and the choices made.
 
-- Hopefully learned how Rust manages async under the hood
-- The goal of async is to make your code more manageable, if it isn't doing that for you, you don't need to use it.
+This is the end of the language basics section of Idiomatic Rust in Simple Steps. While there are many more language
+features available to you, I hope I've left you in a strong place to continue your journey.
