@@ -11,7 +11,7 @@ we don't want other aspects (like the UI) to freeze up, unable to do anything wh
 
 Asynchronous programming is a way to structure our code so that we can continue to do work while waiting on other
 things, and it doesn't depend on any specific way to get the work done. Under the hood, we might use threads, or we may
-depend on Operating System hooks or even, for embedded programming; hardware interrupts, and exceptions.
+depend on Operating System hooks or even, for embedded programming, hardware interrupts, and exceptions.
 
 In this chapter we're going to explain the modular design of async programming in Rust. Our aim is to get a solid(ish)
 understanding of the concepts involved, even though, in the real world, you're likely to depend on others to design and
@@ -20,16 +20,16 @@ build the more complex parts of the system.
 Move and Pin
 ------------
 
-Before we go further into the chapter, we once again need to talk about memory, specifically moving, and pinning.
+Before we go further into the chapter, we once again need to talk about memory, specifically: moving and pinning.
 
 All data in our running program exists somewhere in memory, whether it's the stack, the heap, or static memory. That
 means that everything has a pointer address in memory. 
 
-When we do something like pass a variable to another function, ownership of that variable "moves" to the other function.
-If we do something like add a variable to a `Vec` then ownership of that variable "moves" to the heap. When data "moves"
-ownership, it also physically moves in memory. 
+When we pass a variable to another function, ownership of that variable "moves" to the other function. When we add a
+variable to a `Vec` then ownership of that variable "moves" to the heap. Any time data "moves" ownership, it also
+physically moves in memory. 
 
-Run this and look closely at the returned addresses, they're similar but not the same.
+Run this and look closely at the returned addresses, they're similar, but they are different.
 
 ```rust
 fn main() {
@@ -47,9 +47,9 @@ fn example_move(hello: String) {
 }
 ```
 
-Because `example_move` takes ownership of the String, and as we learned in the [unsafe](./unsafe) chapter, the metadata
-for String is stored on the stack, meaning that _that_ portion of the data is copied to the memory for the new function
-(often called a stack frame). 
+Because `example_move` takes ownership of the `String`, and as we learned in the [unsafe](./unsafe) chapter, the 
+metadata for `String` is stored on the stack, meaning that _that_ portion of the data is copied to the memory for the 
+new function (often called a stack frame). 
 
 This is usually fine, but _occasionally_ things might need to know where they themselves are in memory. This is called
 self-referencing. If something references itself, and we move it, where does that reference now point?
@@ -58,12 +58,12 @@ In the below example we create a self-referential struct and pass it to a functi
 you'll see our last assertion fails.
 
 ```rust,should_panic
-struct HorribleExampleOfSelfReference {
+struct ExampleOfSelfReference {
     value: usize,
     reference_to_value: Option<*const usize>,
 }
 
-impl HorribleExampleOfSelfReference {
+impl ExampleOfSelfReference {
     fn new(value: usize) -> Self {
         Self {
             value,
@@ -82,7 +82,7 @@ impl HorribleExampleOfSelfReference {
 }
 
 # fn main() {
-let mut example = HorribleExampleOfSelfReference::new(1);
+let mut example = ExampleOfSelfReference::new(1);
 
 // We need to set the reference now as the constructor moves the data too!
 example.set_reference();
@@ -90,40 +90,37 @@ example.set_reference();
 // Check the value was initialised correctly
 assert_eq!(example.get_value(), 1);
 
-// Update the value
+// Update the value and check it was updated
 example.value = 2;
-
-// Check the value has updated
 assert_eq!(example.get_value(), 2);
 
 // This causes a move in the same stack frame
 let mut example = example;
 
-// Update the value again
+// Update the value again and check it was updated
 example.value = 3;
-
-// Check the value has updated
 assert_eq!(example.get_value(), 3);
 # }
 ```
 
-The pointer in the struct is just a number pointing at a location in memory. We moved the data, but the pointer is still
+`reference_to_value` is just a number pointing at a location in memory. We moved the data, but the pointer is still
 pointing at the old location.
 
-Self-referential data is dangerous... but it can be useful in certain circumstances. For this reason, for some Generic
-types we occasionally need to take it into consideration. To keep ourselves safer then, we can `Pin` any arbitrary data
-to memory. Pin itself is just a container for a mutable reference to the data, so the Pin itself is safe to move around.
-Through the magic of the borrow checker, holding that single mutable reference is enough to lock the data in place.
+Self-referential data is dangerous... but it can also be useful in certain circumstances. For this reason, some Generic 
+types occasionally need to take it into consideration. To keep ourselves safe, we can "pin" arbitrary data to memory,
+preventing it from being moved. We use the `Pin` type to express this behavior, though the type itself is just a
+container for a mutable reference to the data, so the Pin itself is safe to move around. Through the magic of the borrow
+checker, holding that single mutable reference is enough to lock the data in place.
 
 ```rust
 use std::pin::Pin;
 
-# struct HorribleExampleOfSelfReference {
+# struct ExampleOfSelfReference {
 #     value: usize,
 #     reference_to_value: Option<*const usize>,
 # }
 # 
-# impl HorribleExampleOfSelfReference {
+# impl ExampleOfSelfReference {
 #     fn new(value: usize) -> Self {
 #         Self {
 #             value,
@@ -142,15 +139,13 @@ use std::pin::Pin;
 # }
 # 
 # fn main() {
-let mut example = HorribleExampleOfSelfReference::new(1);
-
-// We need to set the reference now as the constructor moves the data too!
+let mut example = ExampleOfSelfReference::new(1);
 example.set_reference();
     
 // Pin doesn't take ownership of the data, it takes a mutable reference to it
 let mut pinned_example = Pin::new(&mut example);
 
-// We can still read the value
+// We can still read the value thanks to Deref
 assert_eq!(pinned_example.get_value(), 1);
 
 // But we can no longer mutate it
@@ -168,8 +163,8 @@ assert_eq!(pinned_example.get_value(), 2);
 
 There's a lot to `Pin` so and if you're curious about it, the [std documentation](https://doc.rust-lang.org/std/pin/)
 has a lot more information. For this chapter its enough to know that, in specific circumstances, like in modular
-asynchronous architecture where we don't control everything, we need to be certain data won't move unexpectedly, and
-this is achieved through the `Pin` type.
+asynchronous architecture where we don't necessarily control everything, we need to be certain data won't move
+unexpectedly, and this is achieved through the `Pin` type.
 
 > Note: There are other ways to pin data including `Box::pin(T)` and the `pin!` macro which have their utility but,
 > crucially, do move the data you're trying to prevent moving, so watch out for that! 😅
@@ -177,7 +172,7 @@ this is achieved through the `Pin` type.
 Breaking Down Work
 ------------------
 
-When we build software, we can compartmentalise different parts of our program into tasks. Imagine we want to download
+When we build software, we can compartmentalize different parts of our program into tasks. Imagine we want to download
 two websites and compare the contents. We download website A, then download website B, then compare the contents of the
 two sites. If we break that down into tasks, it might look like this.
 
@@ -191,8 +186,8 @@ flowchart LR
     B --> C
 ```
 
-However, now that we've broken it down into tasks, we can see that getting the tasks for getting the websites don't
-depend on each other, and could be performed at the same time.
+However, now that we've broken it down into tasks, we can see the tasks for getting the websites don't depend on each
+other and could be performed at the same time.
 
 ```mermaid
 flowchart LR
@@ -208,23 +203,26 @@ flowchart LR
 ```
 
 Asynchronous design allows us to reason about our code at the task level. It doesn't specifically tell us how that work
-will get done though. In C# the default way async tasks are run is using multiple threads in a thread pool. Node.js is
-a single threaded runtime though, so async code uses operating system callbacks to let your program know when a task is
+will get done, though. In C# the default way async tasks are run is using multiple threads in a thread pool. Node.js is
+a single threaded runtime, though, so async code uses operating system callbacks to let your program know when a task is
 complete.
 
-Rust provides ways to structure asynchronous tasks but doesn't have a default way of handling Asynchronous work. This
-allows software engineers to choose the method that will work best for their application. In the following sections 
-we'll go over the Rust way of thinking about this work and create our own way of working with asynchronous tasks.
+Rust provides ways to structure asynchronous code out of the box but doesn't have a default way of making sure
+Asynchronous work is performed. This allows software engineers to choose the method that will work best for their
+application.
+
+In the following sections we'll go over the Rust way of thinking about this work and create our own way of working with
+asynchronous tasks.
 
 Tasks, Schedulers, Futures, and Executors
 -----------------------------------------
 
 Asynchronous architectures allow us to break our work up so that we can process different bits of that work while
-waiting on other bits. Conceptually we break the work into tasks, and then have some sort of scheduler that decides
+waiting on other bits. Conceptually, we break the work into tasks and then have some sort of scheduler that decides
 which task gets run when.
 
 In Rust, we represent tasks with the `Future` trait, which can be applied to any type. We manage task scheduling through
-executors, which themselves use `Waker`s to decide when to run different tasks. This sounds complicated but by the end
+executors, which themselves use `Waker`s to decide when to run different tasks. This sounds complicated, but by the end
 of this chapter, you'll hopefully have a reasonable idea of how Futures, Executors, and Wakers work together, and if you
 don't... that's actually ok. Most of the time you won't need to write any of these things yourself, but having even a
 vague understanding of them will help you write better async code, as well as spot and fix common issues you might run
@@ -267,12 +265,12 @@ might want to add more data to a `Context` (this can be done in `nightly` Rust b
 book).
 
 Finally, the return type of `.poll()` method is a `Poll` enum. `.poll()` should be called any time we want to make
-progress on a task, and the return type tells us whether that call has resulted in an `Output`, represented by
+progress on a task. The return type tells us whether that call has resulted in an `Output`, represented by
 `Poll::Ready(Self::Output)`, or if the poll is not currently complete and needs to be called again, represented by
 `Poll::Pending`.
 
 > Note: Once a Future has returned Ready, you _shouldn't_ call it again... we will be breaking this rule later but,
-> we'll be very careful when we do 😉.
+> we'll be very cautious when we do 😉.
 
 Let's create a simple `ExampleFuture` and apply the `Future` trait to it: 
 
@@ -306,7 +304,7 @@ assert_eq!(result, Poll::Ready("The future ran"));
 
 In this example we create the Future, and then shadow the `example` variable with a Pin that references the original
 `example` data. There are several ways to pin data depending on what you specifically want to do, and we'll look at
-some others later. In this case we're pinning example to the stack, though this isn't always the best place to put it.
+some others later. In this case we're pinning `example` to the stack, though this isn't always the best place to put it.
 
 We then create a `Context` that contains a `Waker`, though in this case we'll use a `Waker` that doesn't do anything,
 because we aren't using the `Waker` in this case. Normally you'll only use a `Waker::noop` for testing, as it prevents
@@ -354,8 +352,8 @@ impl Future for ExampleFuture {
 # }
 ```
 
-Each time we call poll we're asking the Future to continue working as far as it can, after which it may be `Ready` or it
-may still be `Pending`.
+Each time we call `.poll()` we're asking the Future to continue working as far as it can, after which it may be `Ready` 
+or it may still be `Pending`.
 
 So managing futures is just about repeatedly calling `.poll()` right? Well... no, not quite.
 
@@ -442,8 +440,8 @@ fn main() {
 }
 ```
 
-But, Futures usually wait on things like IO or heavy compute tasks which won't nicely finish after a set number of 
-calls. Let's try faking that with a simple timer Future:
+But Futures usually wait on things like IO or heavy compute tasks which won't nicely finish after a set number of calls.
+Let's try faking that with a simple timer Future:
 
 ```rust
 use std::task::{Context, Poll, Waker};
@@ -512,8 +510,8 @@ If only there was a way for the `Future` to let us know when it was ready to be 
 
 A `Waker` is struct the `Future` can use to inform the Executor it's ready to have its `.poll()` method called again.
 
-Before we get to that though, we're going to update our program to use threads for both tasks and scheduling. It's
-important to note, however, that threads are not a necessary component of asynchronous Rust, there are other ways to 
+Before we get to that, though, we're going to update our program to use threads for both tasks and scheduling. It's
+important to note, however, that threads are not a necessary element of asynchronous Rust, there are other ways to 
 achieve Waking, but for now, this is the approach we'll take.
 
 ```rust
@@ -588,7 +586,7 @@ fn execute<F: Future>(future: F) -> F::Output {
 #     };
 #
 #     println!("All done!");
-#     println!("But we called poll {loop_counter} times, yikes!");
+#     println!("But we called .poll() {loop_counter} times, yikes!");
 #
 #     result
 }
@@ -614,8 +612,8 @@ things, sleeps itself for the duration, and then calls the Waker by calling the 
 consuming the Waker.
 
 > Note: Thread sleeps are not accurate, the only thing that can be guaranteed is that the thread will sleep for 
-> _at least_ the given Duration... unless the Duration is zero, in which case even sleeping isn't guaranteed. Its fine
-> for the purposes of this demonstration though.
+> _at least_ the given Duration... unless the Duration is zero, in which case even sleeping isn't guaranteed. It's fine
+> for this demonstration, though.
 
 If the thread has been started, we'll look to see if the thread is finished. If it is, we can return `Ready<()>`,
 otherwise we'll assume we were polled early, and return `Pending`.
@@ -745,7 +743,7 @@ fn block_thread_on<F: Future>(future: F) -> F::Output {
     };
     
     println!("All done!");
-    println!("This time poll was only called {loop_counter} times, yay!");
+    println!("This time .poll() was only called {loop_counter} times, yay!");
     
     output
 }
@@ -771,14 +769,14 @@ Async / Await
 -------------
 
 The whole point of asynchronous code architectures is that we break our code down into small tasks. Implementing our
-own Future's is great for the very edge of our Rust code where we're waiting on some sort of I/O from outside our
+own Futures is great for the very edge of our Rust code where we're waiting on some sort of I/O from outside our
 program, or something like a compute heavy task we control.
 
-Most of the time we won't necessarily even be doing that though, as there are lots of crates for dealing with common
+Most of the time we won't necessarily even be doing that, though, as there are lots of crates for dealing with common
 I/O tasks, like reading files, accessing databases, or downloading files. Most of the time, we just need to glue those
 bits together.
 
-This is where async/await comes in. We can make any block of code or any function a Future with the async keyword. Lets
+This is where async/await comes in. We can make any block of code or any function a Future with the async keyword. Let's
 try that out with our existing `block_thread_on` executor:
 
 ```rust
@@ -834,7 +832,7 @@ fn main() {
 ```
 
 But async code does something a little bit special. It can work up to another future and then pause until that future
-is ready to continue by using the `.await` postfix of a Future. What's rather brilliant in async code though is that
+is ready to continue by using the `.await` postfix of a Future. What's rather brilliant in async code, though, is that
 when woken, the code resumes from where it got to. Furthermore, `.await` will automatically unwrap the `Poll` enum for 
 you, giving you the `Poll::Ready` value.
 
@@ -952,6 +950,130 @@ block_thread_on(future_that_uses_the_value_from_the_other_future);
 # }
 ```
 
+More importantly, because the value is considered to be instantly available, and because most of the time when waiting
+on something we have to assume that thing might fail... we arrive at the most sublime pairing of Rust syntax, `.await?`.
+
+Function that can fail should return a `Result`. `Future`'s always return `Poll` but `Future::Output` will _regularly_
+be a Result.
+
+```rust
+# use std::task::{Context, Poll, Waker, Wake};
+# use std::pin::{pin, Pin};
+# use std::time::{Duration, SystemTime, UNIX_EPOCH};
+# use std::thread::{self, Thread, sleep, spawn, JoinHandle};
+# use std::sync::{Arc, Mutex};
+# 
+# pub struct ThreadWaker {
+#     thread: Thread,
+# }
+# 
+# impl ThreadWaker {
+#     pub fn current_thread() -> Self {
+#         ThreadWaker {
+#             thread: thread::current(),
+#         }
+#     }
+# }
+# 
+# impl Wake for ThreadWaker {
+#     fn wake(self: Arc<Self>) {
+#         self.thread.unpark();
+#     }
+# }
+# 
+# pub struct ThreadTimer {
+#     duration: Duration,
+#     join_handle: Option<JoinHandle<()>>,
+#     waker: Arc<Mutex<Waker>>,
+# }
+# 
+# impl ThreadTimer {
+#     pub fn new(duration: Duration) -> ThreadTimer {
+#         Self {
+#             duration,
+#             join_handle: None,
+#             waker: Arc::new(Mutex::new(Waker::noop().clone())),
+#         }
+#     }
+# }
+# 
+# impl Future for ThreadTimer {
+#     type Output = ();
+# 
+#     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+#         let fut = self.get_mut();
+#         
+#         // We always need to update the waker whenever we're polled
+#         *fut.waker.lock().expect("Thread crashed with mutex lock") = cx.waker().clone();
+#         
+#         match &fut.join_handle {
+#             // If we haven't started the thread, do so now
+#             None => {
+#                 let duration = fut.duration;
+#                 let waker = fut.waker.clone();
+#                 fut.join_handle = Some(spawn(move || {
+#                     sleep(duration);
+#                     waker
+#                         .lock()
+#                         .expect("Thread crashed with mutex lock")
+#                         .wake_by_ref();
+#                 }));
+#                 Poll::Pending
+#             }
+#             // If the thread has started, is it finished yet?
+#             Some(join_handler) => {
+#                 match join_handler.is_finished() {
+#                     true => Poll::Ready(()),
+#                     false => Poll::Pending,
+#                 }
+#             }
+#         }
+#     }
+# }
+# 
+# fn block_thread_on<F: Future>(future: F) -> F::Output {
+#     let mut example = pin!(future);
+# 
+#     let waker = Arc::new(ThreadWaker::current_thread()).into();
+#     let mut context = Context::from_waker(&waker);
+#     
+#     let mut loop_counter = 1;
+#     loop {
+#         match example.as_mut().poll(&mut context) {
+#             Poll::Ready(output) => break output,
+#             Poll::Pending => {
+#                 loop_counter += 1;
+#                 std::thread::park();
+#             },
+#         }
+#     }
+# }
+# 
+async fn this_future_could_fail() -> Result<u64, String> {
+    let time = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| "Time went backwards... a lot!".to_string())?
+        .as_secs();
+    match time.is_multiple_of(2) {
+        true => Ok(time),
+        false => Err("A completely unforeseen thing happened!".to_string()),
+    }
+}
+
+async fn use_fallible_future() -> Result<(), String> {
+    let time = this_future_could_fail().await?; // <- gorgeous!
+    println!("{time} secs have passed since the Unix Epoch");
+    Ok(())
+}
+
+# fn main() {
+match  block_thread_on(use_fallible_future()) {
+    Ok(()) => {},
+    Err(message) => eprintln!("{message}"),
+}
+# }
+```
+
 Because the `.await` postfix works on any future, we can `.await` several futures one after the other
 
 
@@ -1061,9 +1183,9 @@ block_thread_on(future);
 ```
 
 Using '.await' essentially pauses the execution of the code until the ThreadTimer future is ready, then continues on
-from that point. So this code is amazing right? ... Right?
+from that point. So this code is amazing, right? ... Right?
 
-No! This code is bad, actually, but the reason may not be immediate obvious.
+No! This code is bad, actually, but the reason may not be immediately obvious.
 
 This version might help you see why the code is bad:
 
@@ -1185,8 +1307,8 @@ first timer to complete before working on the second timer, that defeats the ben
 What would be more useful is if we do both bits of "work" at the same time. What we need to happen is for both Futures
 to be polled at the same time. This is often called "joining".
 
-We can... although we shouldn't, we'll come on to that in a bit... create a Join Future something like this (I've hidden
-some of the code as its less relevant, but you can see it with the eye button.
+We can... although we shouldn't, we'll come on to that in a bit... create a Join Future something like this. I've hidden
+some code as it's less relevant, but you can see it with the eye button.
 
 ```rust
 # use std::cell::RefCell;
@@ -1383,28 +1505,31 @@ impl<F1: Future, F2: Future> Future for Join<F1, F2> {
     }
 }
 
-
+async fn run_both_timers() -> Result<u64, InnerFutureSpentError> {
+    let now = Instant::now();
+    Join::new(
+        ThreadTimer::new(Duration::from_secs(2)),
+        ThreadTimer::new(Duration::from_secs(1)),
+    ).await?;
+    Ok(now.elapsed().as_secs())
+}
 
 fn main() {
-    let future = async {
-        let now = Instant::now();
-        Join::new(
-            ThreadTimer::new(Duration::from_secs(2)),
-            ThreadTimer::new(Duration::from_secs(1)),
-        ).await.expect("Join failed");
-        now.elapsed().as_secs()     
-        
-    };
-
-    let time_taken = block_thread_on(future);
-    println!("Time taken {time_taken} seconds");
-    # assert_eq!(time_taken, 2);
+    match block_thread_on(run_both_timers()) {
+        Ok(time_taken) => {
+            println!("Time taken {time_taken} seconds");
+#             assert_eq!(time_taken, 2);
+        },
+        Err(e) => {
+            panic!("{e:?}");
+        }
+    }
 }
 ```
 
 The `Join` future uses another future I've created called the `CollapsableFuture` which simply allows me to poll it even
-after its Ready but only returns the data when I extract it. When you poll the Join, it polls the inner Futures, if
-they both report they're ready then the Join extracts the data and returns Ready with the results.
+after its Ready but only returns the data when I extract it. When you poll the Join, it polls the inner `Future`s, if
+they both report they're ready, then the Join extracts the data and returns Ready with the results.
 
 But, ideally, you won't be writing inefficient Join's like this one yourself. Most async crates provide their own
 version of join, such as [Tokio's `join!`](https://docs.rs/tokio/latest/tokio/macro.join.html) macro, and
@@ -1485,7 +1610,7 @@ underneath.
 
 The first is blocking. We used threads in our examples, but you may not end up using a threaded executor, and even when 
 you do, some executors allow multiple futures to run on the main thread. This means using any blocking code could 
-prevent a thread from continuing until its complete could impact the execution of some or all of your other futures.
+prevent a thread from continuing until it's complete could impact the execution of some or all of your other futures.
 
 This is an easier mistake to make than you might think. For example, 
 [opening a file and reading it](https://doc.rust-lang.org/std/fs/struct.File.html) are both blocking functions. The same 
@@ -1516,10 +1641,10 @@ to be more complicated than it would otherwise be.
 Summary
 -------
 
-Hopefully after this chapter, you have a bit more of an understanding about what's going on when you use async in Rust.
+Hopefully, after this chapter, you have a bit more of an understanding about what's going on when you use async in Rust.
 Various crates that help provide utilities for async implement the specifics in their own way, so before you choose
-executor crates and Future supporting libraries, its worth reading crate documentation to understand the options 
+executor crates and Future supporting libraries, it's worth reading crate documentation to understand the options 
 available and the choices made.
 
-This is the end of the language basics section of Idiomatic Rust in Simple Steps. While there are many more language
+This is the end of the "Language Basics" section of Idiomatic Rust in Simple Steps. While there are many more language
 features available to you, I hope I've left you in a strong place to continue your journey.
