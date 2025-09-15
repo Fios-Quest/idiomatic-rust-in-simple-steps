@@ -35,11 +35,6 @@ ownership, it also physically moves in memory.
 Run this and look closely at the returned addresses.
 
 ```rust
-fn example_move(hello: String) {
-    let hello_ptr = &raw const hello;
-    println!("Hello is stored at {hello_ptr:p}");
-}
-
 fn main() {
     let hello = "Hello".to_string();
     
@@ -47,6 +42,11 @@ fn main() {
     println!("Hello is stored at {hello_ptr:p}");
     
     example_move(hello);
+}
+
+fn example_move(hello: String) {
+    let hello_ptr = &raw const hello;
+    println!("Hello is stored at {hello_ptr:p}");
 }
 ```
 
@@ -84,26 +84,30 @@ impl HorribleExampleOfSelfReference {
     }
 }
 
-fn main() {
-    let mut example = HorribleExampleOfSelfReference::new(1);
-    // We need to set the reference now as the constructor moves the data too!
-    example.set_reference();
-    
-    // Check the value was initialised correctly
-    assert_eq!(example.get_value(), 1);
-    // Update the value
-    example.value = 2;
-    // Check the value has updated
-    assert_eq!(example.get_value(), 2);
-    
-    // This causes a move in the same stack frame
-    let mut example = example;
-    
-    // Update the value again
-    example.value = 3;
-    // Check the value has updated
-    assert_eq!(example.get_value(), 3);
-}
+# fn main() {
+let mut example = HorribleExampleOfSelfReference::new(1);
+
+// We need to set the reference now as the constructor moves the data too!
+example.set_reference();
+
+// Check the value was initialised correctly
+assert_eq!(example.get_value(), 1);
+
+// Update the value
+example.value = 2;
+
+// Check the value has updated
+assert_eq!(example.get_value(), 2);
+
+// This causes a move in the same stack frame
+let mut example = example;
+
+// Update the value again
+example.value = 3;
+
+// Check the value has updated
+assert_eq!(example.get_value(), 3);
+# }
 ```
 
 The pointer in the struct is just a number pointing at a location in memory. We moved the data, but the pointer is still
@@ -139,24 +143,24 @@ use std::pin::pin;
 #     }
 # }
 # 
-fn main() {
-    let mut example = HorribleExampleOfSelfReference::new(1);
+# fn main() {
+let mut example = HorribleExampleOfSelfReference::new(1);
 
-    // We need to set the reference now as the constructor moves the data too!
-    example.set_reference();
+// We need to set the reference now as the constructor moves the data too!
+example.set_reference();
 
-    let pinned_example = pin!(example);
+let pinned_example = pin!(example);
 
-    // We can still read the value
-    assert_eq!(pinned_example.get_value(), 1);
+// We can still read the value
+assert_eq!(pinned_example.get_value(), 1);
 
-    // But we can no longer mutate it
-    // example.value = 2;
-    // pinned_example.value = 2;
+// But we can no longer mutate it
+// example.value = 2;
+// pinned_example.value = 2;
 
-    // Or move the underlying data
-    // let example = example;
-}
+// Or move the underlying data
+// let example = example;
+# }
 ```
 
 There's a lot to `Pin` so and if you're curious about it, the [std documentation](https://doc.rust-lang.org/std/pin/)
@@ -288,16 +292,18 @@ impl Future for ExampleFuture {
     }
 }
 
-fn main() {
-    let mut example = ExampleFuture;
+# fn main() {
+// We'll enstantiate our future and pin it
+let mut example = ExampleFuture;
+let example = Pin::new(&mut example);
 
-    let example = Pin::new(&mut example);
-    let mut context = Context::from_waker(Waker::noop());
+// Don't worry about context yet, it has no effect in this example
+let mut context = Context::from_waker(Waker::noop());
 
-    // The work doesn't actually happen until we call `poll`
-    let result = example.poll(&mut context);
-    assert_eq!(result, Poll::Ready("The future ran"));
-}
+// Nothing happens until we poll the future
+let result = example.poll(&mut context);
+assert_eq!(result, Poll::Ready("The future ran"));
+# }
 ```
 
 In this example we create the Future, and then shadow the `example` variable with a Pin that references the original
@@ -336,19 +342,18 @@ impl Future for ExampleFuture {
     }
 }
 
-fn main() {
+# fn main() {
     let mut example = pin!(ExampleFuture { work_remaining: 3 });
     
     let mut context = Context::from_waker(Waker::noop());
     
-    // The as_mut method will then give us a Pin of the Future
+    // Pins are consumed when the Future is called but as_mut will effectively
+    // duplicate the Pin... it's weird, but useful.
     assert_eq!(example.as_mut().poll(&mut context), Poll::Pending);
-    
-    // The pin is consumed by poll, so we need to repin each time
     assert_eq!(example.as_mut().poll(&mut context), Poll::Pending);
     assert_eq!(example.as_mut().poll(&mut context), Poll::Pending);
     assert_eq!(example.as_mut().poll(&mut context), Poll::Ready("All done!"));
-}
+# }
 ```
 
 Each time we call poll we're asking the Future to continue working as far as it can, after which it may be `Ready` or it
@@ -516,9 +521,8 @@ achieve Waking, but for now, this is the approach we'll take.
 ```rust
 use std::task::{Context, Poll, Waker};
 use std::pin::{pin, Pin};
-use std::time::{SystemTime, Duration};
-use std::ops::Add;
-use std::thread::{Thread, sleep, spawn, JoinHandle};
+use std::time::Duration;
+use std::thread::{sleep, spawn, JoinHandle};
 use std::sync::{Arc, Mutex};
 
 pub struct ThreadTimer {
@@ -586,7 +590,7 @@ fn execute<F: Future>(future: F) -> F::Output {
 #     };
 #
 #     println!("All done!");
-#     println!("We called poll {loop_counter} times, yikes!");
+#     println!("But we called poll {loop_counter} times, yikes!");
 #
 #     result
 }
@@ -653,8 +657,7 @@ Now we'll create an executor that parks the thread it's on while waiting for Fut
 ```rust
 # use std::task::{Context, Poll, Waker, Wake};
 # use std::pin::{pin, Pin};
-# use std::time::{SystemTime, Duration};
-# use std::ops::Add;
+# use std::time::Duration;
 # use std::thread::{self, Thread, sleep, spawn, JoinHandle};
 # use std::sync::{Arc, Mutex};
 # 
@@ -783,8 +786,7 @@ try that out with our existing `block_thread_on` executor:
 ```rust
 # use std::task::{Context, Poll, Waker, Wake};
 # use std::pin::{pin, Pin};
-# use std::time::{SystemTime, Duration};
-# use std::ops::Add;
+# use std::time::Duration;
 # use std::thread::{self, Thread, sleep, spawn, JoinHandle};
 # use std::sync::{Arc, Mutex};
 # 
@@ -811,15 +813,11 @@ try that out with our existing `block_thread_on` executor:
 # 
 #     let waker = Arc::new(ThreadWaker::current_thread()).into();
 #     let mut context = Context::from_waker(&waker);
-#     
-#     let mut loop_counter = 1;
+#
 #     loop {
 #         match example.as_mut().poll(&mut context) {
 #             Poll::Ready(output) => break output,
-#             Poll::Pending => {
-#                 loop_counter += 1;
-#                 std::thread::park();
-#             },
+#             Poll::Pending => std::thread::park(),
 #         }
 #     }
 # }
@@ -839,15 +837,130 @@ fn main() {
 
 But async code does something a little bit special. It can work up to another future and then pause until that future
 is ready to continue by using the `.await` postfix of a Future. What's rather brilliant in async code though is that
-when woken, the code resumes from where it got to.
+when woken, the code resumes from where it got to. Furthermore, `.await` will automatically unwrap the `Poll` enum for 
+you, giving you the `Poll::Ready` value.
 
-[//]: # (TODO: Section on Result and ?)
+Let's use `async` to create one future that returns a value after a time, and a second that awaits that future, receives
+the value, and does something with it:
 
 ```rust
 # use std::task::{Context, Poll, Waker, Wake};
 # use std::pin::{pin, Pin};
-# use std::time::{SystemTime, Duration};
-# use std::ops::Add;
+# use std::time::Duration;
+# use std::thread::{self, Thread, sleep, spawn, JoinHandle};
+# use std::sync::{Arc, Mutex};
+# 
+# pub struct ThreadWaker {
+#     thread: Thread,
+# }
+# 
+# impl ThreadWaker {
+#     pub fn current_thread() -> Self {
+#         ThreadWaker {
+#             thread: thread::current(),
+#         }
+#     }
+# }
+# 
+# impl Wake for ThreadWaker {
+#     fn wake(self: Arc<Self>) {
+#         self.thread.unpark();
+#     }
+# }
+# 
+# pub struct ThreadTimer {
+#     duration: Duration,
+#     join_handle: Option<JoinHandle<()>>,
+#     waker: Arc<Mutex<Waker>>,
+# }
+# 
+# impl ThreadTimer {
+#     pub fn new(duration: Duration) -> ThreadTimer {
+#         Self {
+#             duration,
+#             join_handle: None,
+#             waker: Arc::new(Mutex::new(Waker::noop().clone())),
+#         }
+#     }
+# }
+# 
+# impl Future for ThreadTimer {
+#     type Output = ();
+# 
+#     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+#         let fut = self.get_mut();
+#         
+#         // We always need to update the waker whenever we're polled
+#         *fut.waker.lock().expect("Thread crashed with mutex lock") = cx.waker().clone();
+#         
+#         match &fut.join_handle {
+#             // If we haven't started the thread, do so now
+#             None => {
+#                 let duration = fut.duration;
+#                 let waker = fut.waker.clone();
+#                 fut.join_handle = Some(spawn(move || {
+#                     sleep(duration);
+#                     waker
+#                         .lock()
+#                         .expect("Thread crashed with mutex lock")
+#                         .wake_by_ref();
+#                 }));
+#                 Poll::Pending
+#             }
+#             // If the thread has started, is it finished yet?
+#             Some(join_handler) => {
+#                 match join_handler.is_finished() {
+#                     true => Poll::Ready(()),
+#                     false => Poll::Pending,
+#                 }
+#             }
+#         }
+#     }
+# }
+# 
+# fn block_thread_on<F: Future>(future: F) -> F::Output {
+#     let mut example = pin!(future);
+# 
+#     let waker = Arc::new(ThreadWaker::current_thread()).into();
+#     let mut context = Context::from_waker(&waker);
+#     
+#     let mut loop_counter = 1;
+#     loop {
+#         match example.as_mut().poll(&mut context) {
+#             Poll::Ready(output) => break output,
+#             Poll::Pending => {
+#                 loop_counter += 1;
+#                 std::thread::park();
+#             },
+#         }
+#     }
+# }
+# 
+# fn main() {
+// This async block is Future<Output = &'static str>
+let future_with_value = async {
+    ThreadTimer::new(Duration::from_secs(1)).await;
+    "This future returns a static string reference"
+};
+    
+// This async block is Future<Output = ()>
+let future_that_uses_the_value_from_the_other_future = async { 
+    let value = future_with_value.await;
+    println!("Received: {value}");
+};
+
+// Running the second future so we can see the output
+block_thread_on(future_that_uses_the_value_from_the_other_future);
+# }
+```
+
+Because the `.await` postfix works on any future, we can `.await` several futures one after the other
+
+
+```rust
+# use std::task::{Context, Poll, Waker, Wake};
+# use std::pin::{pin, Pin};
+# use std::time::{Duration, Instant};
 # use std::thread::{self, Thread, sleep, spawn, JoinHandle};
 # use std::sync::{Arc, Mutex};
 # 
@@ -939,17 +1052,17 @@ when woken, the code resumes from where it got to.
 # 
 # fn main() {
 let future = async {
-    println!("Started the future");
+    println!("Starting future"); // Only prints once
     ThreadTimer::new(Duration::from_secs(2)).await;
     ThreadTimer::new(Duration::from_secs(1)).await;
-    println!("Completing the future")
+    println!("Ending future"); // Only prints once
 };
 
 block_thread_on(future);
 # }
 ```
 
-Using '.await' will essentially pause the execution of the code until the ThreadTimer future is ready, then continue on
+Using '.await' essentially pauses the execution of the code until the ThreadTimer future is ready, then continues on
 from that point. So this code is amazing right? ... Right?
 
 No! This code is bad, actually, but the reason may not be immediate obvious.
@@ -959,8 +1072,7 @@ This version might help you see why the code is bad:
 ```rust
 # use std::task::{Context, Poll, Waker, Wake};
 # use std::pin::{pin, Pin};
-# use std::time::{SystemTime, Duration, Instant};
-# use std::ops::Add;
+# use std::time::{Duration, Instant};
 # use std::thread::{self, Thread, sleep, spawn, JoinHandle};
 # use std::sync::{Arc, Mutex};
 # 
@@ -1064,8 +1176,8 @@ println!("Time taken {time_taken} seconds");
 # }
 ```
 
-The total time taken to run the timers is 3 seconds, which makes sense right? We have a two second timer and a one
-second timer, combined, that's three seconds... but that's the problem...
+The total time taken to run the timers is 3 seconds, which makes sense right? We have a two-second timer and a 
+one-second timer, combined, that's three seconds... but that's the problem...
 
 ### Join
 
@@ -1082,7 +1194,7 @@ some of the code as its less relevant, but you can see it with the eye button.
 # use std::cell::RefCell;
 # use std::task::{Context, Poll, Waker, Wake};
 # use std::pin::{pin, Pin};
-# use std::time::{SystemTime, Duration, Instant};
+# use std::time::{Duration, Instant};
 # use std::ops::DerefMut;
 # use std::thread::{self, Thread, sleep, spawn, JoinHandle};
 # use std::sync::{Arc, Mutex};
@@ -1331,23 +1443,26 @@ blocks and functions.
 
 You're `async` code is less likely to look like what we've seen above and much more likely to look like this:
 
-> ⚠️ This _may_ not work on Rust Playground / when run in the online book, check the source code in the
-> [books repository](https://github.com/Fios-Quest/idiomatic-rust-in-simple-steps/)
-
-```rust
+```rust,ignore
 use std::error::Error;
 
 const FIOS_QUEST_URL: &str = "https://fios-quest.com";
 const IRISS_URL: &str = "https://fios-quest.com/idiomatic-rust-in-simple-steps/";
 
+/// Get the body of an document at a given URL as a string
 async fn get_url(url: &str) -> Result<String, Box<dyn Error>> {
+    // Note that both `.get()` and `.text()` return Futures that can be awaited
     Ok(reqwest::get(url).await?.text().await?)
 }
 
+// Tokio provides an attribute macro that can turn main itself into an async fn
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    // Join two get_url Futures as they're independent of each other
     let (fios_quest, iriss) = tokio::join!(get_url(FIOS_QUEST_URL), get_url(IRISS_URL));
 
+    // I couldn't think of anything useful to do so lets just see how many 
+    // chars are in the html returned :)
     let fq_chars_chars = fios_quest?.chars().count();
     let iriss_chars = iriss?.chars().count();
 
