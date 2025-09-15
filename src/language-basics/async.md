@@ -1,29 +1,26 @@
 Async Rust
 ==========
 
-Often times, when we write code, we have to wait on certain "things" to happen. "Things" are often some form of IO, such
-as reading or writing to a disk, getting data from a database, downloading a file, etc. Sometimes the "thing" could just
-be computationally expensive, such as processing large amounts of data.
+Often times, when we write code, we have to wait on certain "things that take time" to happen. "Things that take time"
+are usually things like IO, such as reading or writing to a disk, getting data from a database, downloading a file, etc. 
+Sometimes "things that take time" could just be computationally expensive, such as processing large amounts of data.
 
 Our programs are typically complex with multiple parts to them. For example, applications often have a user interface,
 whether that's via a terminal, a web page, or a full desktop GUI. If our application has to wait on something happening,
 we don't want other aspects (like the UI) to freeze up, unable to do anything while we wait.
 
-Asynchronous programming is a way to structure our code so that we can do work when nothing else is happening, and it
-doesn't depend on any specific way to get the work done. Under the hood, we might use threads, or we may depend on 
-Operating System hooks or even for embedded programming, hardware interrupts, and exceptions.
+Asynchronous programming is a way to structure our code so that we can continue to do work while waiting on other
+things, and it doesn't depend on any specific way to get the work done. Under the hood, we might use threads, or we may
+depend on Operating System hooks or even, for embedded programming; hardware interrupts, and exceptions.
 
 In this chapter we're going to explain the modular design of async programming in Rust. Our aim is to get a solid(ish)
 understanding of the concepts involved, even though, in the real world, you're likely to depend on others to design and
-build the more complex parts.
-
-In fact, I've simplified this chapter beyond real-world usefulness; it's just here to explain the concepts. Please don't
-use any of this in a real application!
+build the more complex parts of the system.
 
 Move and Pin
 ------------
 
-Before we go further into the chapter, we once again need to talk about memory, moving, and pinning.
+Before we go further into the chapter, we once again need to talk about memory, specifically moving, and pinning.
 
 All data in our running program exists somewhere in memory, whether it's the stack, the heap, or static memory. That
 means that everything has a pointer address in memory. 
@@ -32,7 +29,7 @@ When we do something like pass a variable to another function, ownership of that
 If we do something like add a variable to a `Vec` then ownership of that variable "moves" to the heap. When data "moves"
 ownership, it also physically moves in memory. 
 
-Run this and look closely at the returned addresses.
+Run this and look closely at the returned addresses, they're similar but not the same.
 
 ```rust
 fn main() {
@@ -51,14 +48,14 @@ fn example_move(hello: String) {
 ```
 
 Because `example_move` takes ownership of the String, and as we learned in the [unsafe](./unsafe) chapter, the metadata
-for String is stored on the stack, meaning that that portion of the data is copied to the memory for the new function
-(the stack frame). 
+for String is stored on the stack, meaning that _that_ portion of the data is copied to the memory for the new function
+(often called a stack frame). 
 
 This is usually fine, but _occasionally_ things might need to know where they themselves are in memory. This is called
 self-referencing. If something references itself, and we move it, where does that reference now point?
 
 In the below example we create a self-referential struct and pass it to a function up the stack. When you run the code,
-you'll see we get some weird behavior.
+you'll see our last assertion fails.
 
 ```rust,should_panic
 struct HorribleExampleOfSelfReference {
@@ -113,12 +110,13 @@ assert_eq!(example.get_value(), 3);
 The pointer in the struct is just a number pointing at a location in memory. We moved the data, but the pointer is still
 pointing at the old location.
 
-Self-referential data is dangerous... but it can be useful. To keep ourselves safer then, we can `Pin` any arbitrary
-data to memory. Pin itself is just a container for a mutable reference to the data, so the Pin itself is safe to move
-around. Through the magic of the borrow checker, that single mutable reference will lock the data in place.
+Self-referential data is dangerous... but it can be useful in certain circumstances. For this reason, for some Generic
+types we occasionally need to take it into consideration. To keep ourselves safer then, we can `Pin` any arbitrary data
+to memory. Pin itself is just a container for a mutable reference to the data, so the Pin itself is safe to move around.
+Through the magic of the borrow checker, holding that single mutable reference is enough to lock the data in place.
 
 ```rust
-use std::pin::pin;
+use std::pin::Pin;
 
 # struct HorribleExampleOfSelfReference {
 #     value: usize,
@@ -148,8 +146,9 @@ let mut example = HorribleExampleOfSelfReference::new(1);
 
 // We need to set the reference now as the constructor moves the data too!
 example.set_reference();
-
-let pinned_example = pin!(example);
+    
+// Pin doesn't take ownership of the data, it takes a mutable reference to it
+let mut pinned_example = Pin::new(&mut example);
 
 // We can still read the value
 assert_eq!(pinned_example.get_value(), 1);
@@ -160,6 +159,10 @@ assert_eq!(pinned_example.get_value(), 1);
 
 // Or move the underlying data
 // let example = example;
+
+// We can, however, access the original data via a mutable reference
+pinned_example.as_mut().value = 2;
+assert_eq!(pinned_example.get_value(), 2);
 # }
 ```
 
@@ -168,55 +171,50 @@ has a lot more information. For this chapter its enough to know that, in specifi
 asynchronous architecture where we don't control everything, we need to be certain data won't move unexpectedly, and
 this is achieved through the `Pin` type.
 
+> Note: There are other ways to pin data including `Box::pin(T)` and the `pin!` macro which have their utility but,
+> crucially, do move the data you're trying to prevent moving, so watch out for that! 😅
+
 Breaking Down Work
 ------------------
 
-ToDo: Rethink all of this
-
-Instead of waiting on one thing to be finished before we start the next thing, we could think of our code as a set of
-tasks that need to be completed. Imagine we have two tasks, A and B, where B depends on work done by A.
+When we build software, we can compartmentalise different parts of our program into tasks. Imagine we want to download
+two websites and compare the contents. We download website A, then download website B, then compare the contents of the
+two sites. If we break that down into tasks, it might look like this.
 
 ```mermaid
 flowchart LR
-    S([Start])
-    subgraph Task A
-        A([Task A])
-    end
-    subgraph Task B
-        B([Task B])
-    end
-    E([End])
+    A[Get website A]
+    B[Get website B]
+    C[Compare contents]
 
-    S --> A
     A --> B
-    B --> E
+    B --> C
 ```
 
-But these tasks could be broken down into smaller parts, and it turns out that only the last bit of B requires A to be
+However, now that we've broken it down into tasks, we can see that getting the tasks for getting the websites don't
+depend on each other, and could be performed at the same time.
+
+```mermaid
+flowchart LR
+    A[Start other tasks]
+    B[Get website A]
+    C[Get website B]
+    D[Compare contents]
+
+    A --> B
+    A --> C
+    B --> D
+    C --> D
+```
+
+Asynchronous design allows us to reason about our code at the task level. It doesn't specifically tell us how that work
+will get done though. In C# the default way async tasks are run is using multiple threads in a thread pool. Node.js is
+a single threaded runtime though, so async code uses operating system callbacks to let your program know when a task is
 complete.
 
-```mermaid
-flowchart LR
-    S([Start])
-    subgraph Task A
-        A1([Workload 1A])
-        A2([Workload 2A])
-    end
-    subgraph Task B
-        B1([Workload 1B])
-        B2([Workload 2B])
-        B3([Workload 3B])
-    end
-    E([End])
-
-    S --> A1
-    S --> B1
-    A1 --> A2
-    A2 --> B3
-    B1 --> B2
-    B2 --> B3
-    B3 --> E
-```
+Rust provides ways to structure asynchronous tasks but doesn't have a default way of handling Asynchronous work. This
+allows software engineers to choose the method that will work best for their application. In the following sections 
+we'll go over the Rust way of thinking about this work and create our own way of working with asynchronous tasks.
 
 Tasks, Schedulers, Futures, and Executors
 -----------------------------------------
