@@ -1024,12 +1024,12 @@ be a Result.
 # use std::thread::{self, Thread, sleep, spawn, JoinHandle};
 # use std::sync::{Arc, Mutex};
 # 
-# pub struct ThreadWaker {
+# struct ThreadWaker {
 #     thread: Thread,
 # }
 # 
 # impl ThreadWaker {
-#     pub fn current_thread() -> Self {
+#     fn current_thread() -> Self {
 #         ThreadWaker {
 #             thread: thread::current(),
 #         }
@@ -1042,7 +1042,7 @@ be a Result.
 #     }
 # }
 # 
-# pub struct ThreadTimer {
+# struct ThreadTimer {
 #     duration: Duration,
 #     join_handle: Option<JoinHandle<()>>,
 #     waker: Arc<Mutex<Waker>>,
@@ -1050,7 +1050,7 @@ be a Result.
 # }
 # 
 # impl ThreadTimer {
-#     pub fn new(duration: Duration) -> ThreadTimer {
+#     fn new(duration: Duration) -> ThreadTimer {
 #         Self {
 #             duration,
 #             join_handle: None,
@@ -1153,12 +1153,12 @@ Anyway, because the `.await` postfix works on any future, and async code will re
 # use std::thread::{self, Thread, sleep, spawn, JoinHandle};
 # use std::sync::{Arc, Mutex};
 # 
-# pub struct ThreadWaker {
+# struct ThreadWaker {
 #     thread: Thread,
 # }
 # 
 # impl ThreadWaker {
-#     pub fn current_thread() -> Self {
+#     fn current_thread() -> Self {
 #         ThreadWaker {
 #             thread: thread::current(),
 #         }
@@ -1171,7 +1171,7 @@ Anyway, because the `.await` postfix works on any future, and async code will re
 #     }
 # }
 # 
-# pub struct ThreadTimer {
+# struct ThreadTimer {
 #     duration: Duration,
 #     join_handle: Option<JoinHandle<()>>,
 #     waker: Arc<Mutex<Waker>>,
@@ -1179,7 +1179,7 @@ Anyway, because the `.await` postfix works on any future, and async code will re
 # }
 # 
 # impl ThreadTimer {
-#     pub fn new(duration: Duration) -> ThreadTimer {
+#     fn new(duration: Duration) -> ThreadTimer {
 #         Self {
 #             duration,
 #             join_handle: None,
@@ -1264,12 +1264,12 @@ This version might help you see why the code is bad:
 # use std::thread::{self, Thread, sleep, spawn, JoinHandle};
 # use std::sync::{Arc, Mutex};
 # 
-# pub struct ThreadWaker {
+# struct ThreadWaker {
 #     thread: Thread,
 # }
 # 
 # impl ThreadWaker {
-#     pub fn current_thread() -> Self {
+#     fn current_thread() -> Self {
 #         ThreadWaker {
 #             thread: thread::current(),
 #         }
@@ -1282,7 +1282,7 @@ This version might help you see why the code is bad:
 #     }
 # }
 # 
-# pub struct ThreadTimer {
+# struct ThreadTimer {
 #     duration: Duration,
 #     join_handle: Option<JoinHandle<()>>,
 #     waker: Arc<Mutex<Waker>>,
@@ -1290,7 +1290,7 @@ This version might help you see why the code is bad:
 # }
 # 
 # impl ThreadTimer {
-#     pub fn new(duration: Duration) -> ThreadTimer {
+#     fn new(duration: Duration) -> ThreadTimer {
 #         Self {
 #             duration,
 #             join_handle: None,
@@ -1405,7 +1405,7 @@ We can (although we shouldn't, we'll come on to that in a bit) create a Join Fut
 #     }
 # }
 # 
-# pub struct ThreadTimer {
+# struct ThreadTimer {
 #     duration: Duration,
 #     join_handle: Option<JoinHandle<()>>,
 #     waker: Arc<Mutex<Waker>>,
@@ -1413,7 +1413,7 @@ We can (although we shouldn't, we'll come on to that in a bit) create a Join Fut
 # }
 # 
 # impl ThreadTimer {
-#     pub fn new(duration: Duration) -> ThreadTimer {
+#     fn new(duration: Duration) -> ThreadTimer {
 #         Self {
 #             duration,
 #             join_handle: None,
@@ -1493,17 +1493,17 @@ We can (although we shouldn't, we'll come on to that in a bit) create a Join Fut
 # }
 # 
 # #[derive(Debug)]
-# pub struct InnerFutureSpentError;
+# struct InnerFutureSpentError;
 # 
-# pub struct MemoFuture<F: Future>(RefCell<InnerMemoFuture<F>>);
+# struct MemoFuture<F: Future>(RefCell<InnerMemoFuture<F>>);
 # 
 # impl<F: Future> MemoFuture<F> {
-#     pub fn new(future: F) -> Self {
+#     fn new(future: F) -> Self {
 #         Self(RefCell::new(InnerMemoFuture::new(future)))
 #     }
 # 
 #     /// Warning: This will drop the future if the future is not Ready
-#     pub fn extract(&self) -> Option<F::Output> {
+#     fn extract(&self) -> Option<F::Output> {
 #         let old_value = self.0.replace(InnerMemoFuture::Spent);
 #         old_value.extract()
 #     }
