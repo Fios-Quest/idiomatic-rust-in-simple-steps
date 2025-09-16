@@ -1,7 +1,7 @@
 Macros
 ======
 
-Macro's let us do metaprogramming in Rust. This allows us to treat our code as data, manipulating it, expanding it, and
+Macros let us do metaprogramming in Rust. This allows us to treat our code as data, manipulating it, expanding it, and
 creating new code.
 
 Over this chapter we'll learn how to do three things with macros:
@@ -12,7 +12,7 @@ Over this chapter we'll learn how to do three things with macros:
 
 There are two types of macro in Rust, `macro_rules!`, also known as declarative macros, or macros by example, and
 `proc macro`s. We won't be dealing with `proc macro`s in this book, but they are what allow you to create custom Derive
-macros (like `#[derive(Clone)]`), and custom attributes like `#[YourAttriburte]`. They also let you make the same
+macros (like `#[derive(Clone)]`), and custom attributes like `#[YourAttribute]`. They also let you make the same
 function style macros we'll be making with `macro_rules!` but can unlock even more power!
 
 Anatomy of `macro_rules!`
@@ -32,7 +32,7 @@ macro_rules! <macro_name> {
     // "metavariables".
     //
     // Each rule is matched based on the pattern and stores matching
-    // "metavariables" for use in the macro.  Don't worry, we''ll explain all
+    // "metavariables" for use in the macro.  Don't worry, we'll explain all
     // of this very soon.
     ( <match_pattern> ) => {
         // curly braces surround the macro body. This is used to generate code
@@ -49,7 +49,7 @@ macro_rules! <macro_name> {
 
 When you invoke your macro, it works as a sort of replacement, generating new code to exist at that point of invocation.
 But, rather than it being a copy-paste, `macro_rules!` works on the Abstract Syntax Tree, an intermediate step of the
-compilation process where your code has already been turning into datastructures that represents what your program 
+compilation process where your code has already been turned into data structures that represents what your program 
 does.
 
 This makes it much safer and more fully featured than a copy-paste.
@@ -252,8 +252,8 @@ You can add a separator to the repeat pattern by placing it before the repeat ch
 anything except the repeat symbols, or token used for delimiters, e.g.: `$(...),+` or `$(...);+` or even `$(...)~+`
 are all fine, but its worth noting things get a _little_ weird using separators with `*`.
 
-Repeats can be used to match metavariables multiple times and to repeat code generation for each used repeated
-metavariable. When the repeat pattern is used in code generation, it will repeat for each combination of metavariables
+Repeats can be used to match metavariables multiple times and to repeat code generation for each repeated
+metavariable used. When the repeat pattern is used in code generation, it will repeat for each combination of metavariables
 used within it.
 
 We already have zero and one metavariable dealt with, so we want a rule in our macro that takes two or more inputs:
@@ -355,7 +355,7 @@ we'd _have_ to use the comma after the first literal so `hello!("Yuki")` would _
 Instead, we've moved the comma token to the beginning of the repeat pattern which can contain things that aren't
 metavariables too.
 
-I wasn't quite lying about not being able to treat the first and last differently with macro repeats. We can't do it
+I wasn't quite lying about not being able to treat the first and last elements differently with macro repeats. We can't do it
 with _just_ macro repeats, BUT we can work around that with very low-cost language features like slices.
 
 ```rust
@@ -474,14 +474,14 @@ Usefully DRY
 
 > ℹ️ I've slightly altered the code in this section to not rely on third party crates, such as
 > [Uuid](https://crates.io/crates/uuid) and [paste](https://crates.io/crates/paste). If you're comfortable with crates
-> then bellow is a permalink straight to the `storage` crate of the Job Application repository where you'll find the
+> then below is a permalink straight to the `storage` crate of the Job Application repository where you'll find the
 > real examples. For example, if you look in the `storable` module, you'll find test macros defined in the `property`
 > module which are consumed in the `object` module.
 >
 > [https://github.com/Fios-Quest/job-tracker/tree/c1eba63311ff954de0d80cdd9f55984051c620ef/storage/src/](https://github.com/Fios-Quest/job-tracker/tree/c1eba63311ff954de0d80cdd9f55984051c620ef/storage/src/storable)
 
-The example we've run through to build up our understanding of how macro's work is very abstract and not very useful,
-so I wanted to go over a quick example of how I've started using Macro's.
+The example we've run through to build up our understanding of how macros work is very abstract and not very useful,
+so I wanted to go over a quick example of how I've started using Macros.
 
 In the [Fio's Job Tracker](https://github.com/Fios-Quest/job-tracker/) app I've been building with the help of folks in
 the chat of my [streams](https://www.youtube.com/playlist?list=PLW2L8KbM0O7Z2KroHNNBWY1UApqmeiyqe), I've leaned heavily
@@ -696,7 +696,7 @@ Let's break it down:
 - `$($token:tt)+` is the input to our interpreter. We're using the `tt` fragment-specifier which means that our
   repeating metavariable `$token` represents a token tree. As it happens `>`, `<`, `+`, `-`, `.`, `,`, `[` and `]` are
   all tokens in Rust so this _should_ work well... (**foreshadowing**).
-- `memory` is going to be our programs' memory. We're using a Vec with a single initialised value of `0` under the
+- `memory` is going to be our program's memory. We're using a Vec with a single initialised value of `0` under the
   assumption that even the smallest program requires one word of memory. We'll expand the Vec as necessary. Maybe not
   the most time-effective, but it'll be ok. For our memory we're using `u8` to represent one word. You can use larger
   words if you like, but different programs might function differently depending on what word size is used and how
