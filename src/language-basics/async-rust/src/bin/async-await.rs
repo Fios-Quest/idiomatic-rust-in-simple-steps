@@ -1,11 +1,11 @@
-use async_rust::fake_work::ThreadedFakeWorker;
 use async_rust::thread_executor::block_thread_on;
+use async_rust::thread_timer::ThreadTimer;
 use std::time::{Duration, Instant};
 
 fn main() {
     // We can also Pin a future by putting it in a Box
-    let worker_1 = ThreadedFakeWorker::new(Duration::from_secs(2));
-    let worker_2 = ThreadedFakeWorker::new(Duration::from_secs(1));
+    let worker_1 = ThreadTimer::new(Duration::from_secs(2));
+    let worker_2 = ThreadTimer::new(Duration::from_secs(1));
 
     let worker_1_wrapper = async {
         let now = Instant::now();

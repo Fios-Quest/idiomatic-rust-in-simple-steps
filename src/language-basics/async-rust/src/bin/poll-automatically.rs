@@ -1,10 +1,10 @@
+use async_rust::thread_timer::ThreadTimer;
+use async_rust::thread_waker::ThreadWaker;
 use std::ops::Add;
 use std::pin::{Pin, pin};
 use std::sync::Arc;
 use std::task::{Context, Poll, Waker};
 use std::time::{Duration, SystemTime};
-use async_rust::fake_work::ThreadedFakeWorker;
-use async_rust::thread_waker::ThreadWaker;
 
 struct Timer {
     time_to_end: SystemTime,
@@ -81,10 +81,10 @@ pub fn block_thread_on<F: Future>(future: F) -> F::Output {
 fn main() {
     let future = Timer::new(Duration::from_secs(1));
     execute(future);
-    
-    let future = ThreadedFakeWorker::new(Duration::from_secs(1));
+
+    let future = ThreadTimer::new(Duration::from_secs(1));
     execute(future);
-    
-    let future = ThreadedFakeWorker::new(Duration::from_secs(1));
+
+    let future = ThreadTimer::new(Duration::from_secs(1));
     block_thread_on(future);
 }

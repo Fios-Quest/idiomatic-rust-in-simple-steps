@@ -1,17 +1,17 @@
-use async_rust::fake_work::ThreadedFakeWorker;
-use async_rust::thread_executor::block_thread_on;
-use std::time::{Duration, Instant};
 use async_rust::join::Join;
+use async_rust::thread_executor::block_thread_on;
+use async_rust::thread_timer::ThreadTimer;
+use std::time::{Duration, Instant};
 
 fn main() {
     let future_1 = async {
         let now = Instant::now();
-        ThreadedFakeWorker::new(Duration::from_secs(2)).await;
+        ThreadTimer::new(Duration::from_secs(2)).await;
         now.elapsed().as_millis()
     };
     let future_2 = async {
         let now = Instant::now();
-        ThreadedFakeWorker::new(Duration::from_secs(1)).await;
+        ThreadTimer::new(Duration::from_secs(1)).await;
         now.elapsed().as_millis()
     };
 

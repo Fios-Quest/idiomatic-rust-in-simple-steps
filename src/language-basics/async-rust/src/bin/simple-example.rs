@@ -6,7 +6,7 @@ struct ExampleFuture;
 impl Future for ExampleFuture {
     type Output = &'static str;
 
-    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
         Poll::Ready("The future ran")
     }
 }
