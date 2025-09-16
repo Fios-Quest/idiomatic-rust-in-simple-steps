@@ -1,2 +1,2 @@
-pub mod fibonacci;
 pub mod albums;
+pub mod fibonacci;

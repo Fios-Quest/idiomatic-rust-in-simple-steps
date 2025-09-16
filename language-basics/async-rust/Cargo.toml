@@ -1,0 +1,11 @@
+[package]
+name = "async-rust"
+version = "0.1.0"
+edition = "2024"
+
+[dev-dependencies]
+reqwest = "0.12.23"
+tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread"] }
+
+[[example]]
+name = "tokio-example"

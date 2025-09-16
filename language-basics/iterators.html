@@ -1068,7 +1068,11 @@ fn main() {
 
     assert_eq!(
         artists,
-        vec!["The Beatles".to_string(), "AC/DC".to_string(), "Eagles".to_string()],
+        vec![
+            "The Beatles".to_string(),
+            "AC/DC".to_string(),
+            "Eagles".to_string()
+        ],
     );
 }</code></pre></pre>
 <p><code>FromIterator</code> allows you to turn an Iterator into another type, usually through the <code>.collect()</code> method on <code>Iterator</code>s</p>
@@ -1113,12 +1117,10 @@ fn main() {
             name: "Sgt. Pepper's Lonely Hearts Club Band".into(),
             artist: "The Beatles".into(),
         },
-
         Album {
             name: "Back in Black".into(),
             artist: "AC/DC".into(),
         },
-
         Album {
             name: "Hotel California".into(),
             artist: "Eagles".into(),
