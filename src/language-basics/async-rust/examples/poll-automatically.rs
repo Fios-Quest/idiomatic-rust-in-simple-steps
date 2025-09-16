@@ -51,8 +51,6 @@ fn loop_executor<F: Future>(future: F) -> F::Output {
 }
 
 pub fn block_thread_on<F: Future>(future: F) -> F::Output {
-    // The pin macro also pins the thing you give it but does so by taking ownership and then
-    // pinning. This does not require Heap storage which is more efficient.
     let mut example = pin!(future);
 
     let waker = Arc::new(ThreadWaker::current_thread()).into();
@@ -81,7 +79,7 @@ pub fn block_thread_on<F: Future>(future: F) -> F::Output {
 fn main() {
     let future = FakeWorker { work_remaining: 3 };
     loop_executor(future);
-    
+
     let future = Timer::new(Duration::from_secs(1));
     loop_executor(future);
 
