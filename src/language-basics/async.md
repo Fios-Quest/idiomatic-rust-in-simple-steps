@@ -292,7 +292,7 @@ struct ExampleFuture;
 impl Future for ExampleFuture {
     type Output = &'static str;
 
-    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
         Poll::Ready("The future ran")
     }
 }
@@ -350,7 +350,7 @@ struct FakeWorker {
 impl Future for FakeWorker {
     type Output = &'static str;
 
-    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
         match self.work_remaining {
             0 => Poll::Ready("All done!"),
             _ => {
@@ -1494,6 +1494,14 @@ We can (although we shouldn't, we'll come on to that in a bit) create a Join Fut
 # 
 # #[derive(Debug)]
 # struct InnerFutureSpentError;
+#
+# impl std::error::Error for InnerFutureSpentError {}
+#
+# impl std::fmt::Display for InnerFutureSpentError {
+#     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+#         write!(f, "Tried to extract output from spent future")
+#     }
+# }
 # 
 # struct MemoFuture<F: Future>(RefCell<InnerMemoFuture<F>>);
 # 
@@ -1535,6 +1543,8 @@ We can (although we shouldn't, we'll come on to that in a bit) create a Join Fut
 #     }
 # }
 # 
+// --- Join ---
+
 struct Join<F1: Future, F2: Future>(
     Pin<Box<MemoFuture<F1>>>,
     Pin<Box<MemoFuture<F2>>>,
@@ -1572,6 +1582,8 @@ impl<F1: Future, F2: Future> Future for Join<F1, F2> {
     }
 }
 
+// --- await Join futures in a future ---
+
 async fn run_both_timers() -> Result<u64, InnerFutureSpentError> {
     let now = Instant::now();
     Join::new(
@@ -1581,17 +1593,14 @@ async fn run_both_timers() -> Result<u64, InnerFutureSpentError> {
     Ok(now.elapsed().as_secs())
 }
 
-fn main() {
-    match block_thread_on(run_both_timers()) {
-        Ok(time_taken) => {
-            println!("Time taken {time_taken} seconds");
-#             assert_eq!(time_taken, 2);
-        },
-        Err(e) => {
-            panic!("{e:?}");
-        }
-    }
-}
+// --- Usage ---
+
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
+let time_taken = block_thread_on(run_both_timers())?;
+println!("Time taken {time_taken} seconds");
+#     assert_eq!(time_taken, 2);
+#     Ok(())
+# }
 ```
 
 The `Join` future uses another future I've created called the `MemoFuture` which simply allows me to poll it even

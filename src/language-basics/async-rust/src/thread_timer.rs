@@ -8,7 +8,7 @@ pub struct ThreadTimer {
     duration: Duration,
     join_handle: Option<JoinHandle<()>>,
     waker: Arc<Mutex<Waker>>,
-    timer_complete: Arc<Mutex<bool>>,
+    is_complete: Arc<Mutex<bool>>,
 }
 
 impl ThreadTimer {
@@ -17,7 +17,7 @@ impl ThreadTimer {
             duration,
             join_handle: None,
             waker: Arc::new(Mutex::new(Waker::noop().clone())),
-            timer_complete: Arc::new(Mutex::new(false)),
+            is_complete: Arc::new(Mutex::new(false)),
         }
     }
 }
@@ -35,7 +35,7 @@ impl Future for ThreadTimer {
         if fut.join_handle.is_none() {
             let duration = fut.duration;
             let waker = fut.waker.clone();
-            let timer_complete = fut.timer_complete.clone();
+            let timer_complete = fut.is_complete.clone();
             fut.join_handle = Some(spawn(move || {
                 sleep(duration);
                 *timer_complete
@@ -49,7 +49,7 @@ impl Future for ThreadTimer {
         }
 
         match *fut
-            .timer_complete
+            .is_complete
             .lock()
             .expect("Thread crashed with mutex lock")
         {

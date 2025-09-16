@@ -26,6 +26,15 @@ impl<F: Future> InnerCollapsableFuture<F> {
 #[derive(Debug)]
 pub struct InnerFutureSpentError;
 
+impl std::error::Error for InnerFutureSpentError {}
+
+impl std::fmt::Display for InnerFutureSpentError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Tried to extract output from spent future")
+    }
+}
+
+
 pub struct CollapsableFuture<F: Future>(RefCell<InnerCollapsableFuture<F>>);
 
 impl<F: Future> CollapsableFuture<F> {

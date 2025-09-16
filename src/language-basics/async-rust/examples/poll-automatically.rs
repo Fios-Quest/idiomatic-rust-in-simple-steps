@@ -5,6 +5,7 @@ use std::pin::{Pin, pin};
 use std::sync::Arc;
 use std::task::{Context, Poll, Waker};
 use std::time::{Duration, SystemTime};
+use async_rust::fake_worker::FakeWorker;
 
 struct Timer {
     time_to_end: SystemTime,
@@ -30,11 +31,11 @@ impl Future for Timer {
     }
 }
 
-fn execute<F: Future>(future: F) -> F::Output {
+fn loop_executor<F: Future>(future: F) -> F::Output {
     let mut pinned_future = pin!(future);
     let mut context = Context::from_waker(Waker::noop());
 
-    let mut loop_counter = 0;
+    let mut loop_counter = 1;
 
     let result = loop {
         match pinned_future.as_mut().poll(&mut context) {
@@ -43,9 +44,8 @@ fn execute<F: Future>(future: F) -> F::Output {
         }
     };
 
-    println!();
     println!("All done!");
-    println!("But we called the loop {loop_counter} times, yikes!");
+    println!("We called .poll() {loop_counter} times!");
 
     result
 }
@@ -79,11 +79,14 @@ pub fn block_thread_on<F: Future>(future: F) -> F::Output {
 }
 
 fn main() {
+    let future = FakeWorker { work_remaining: 3 };
+    loop_executor(future);
+    
     let future = Timer::new(Duration::from_secs(1));
-    execute(future);
+    loop_executor(future);
 
     let future = ThreadTimer::new(Duration::from_secs(1));
-    execute(future);
+    loop_executor(future);
 
     let future = ThreadTimer::new(Duration::from_secs(1));
     block_thread_on(future);

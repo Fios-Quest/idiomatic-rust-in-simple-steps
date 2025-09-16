@@ -1,7 +1,7 @@
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
-mod collapsable_future;
+pub mod collapsable_future;
 
 use crate::join::collapsable_future::{CollapsableFuture, InnerFutureSpentError};
 

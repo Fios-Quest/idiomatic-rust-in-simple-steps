@@ -1,11 +1,11 @@
-use std::pin::pin;
+use std::pin::Pin;
 
-struct HorribleExampleOfSelfReference {
+struct ExampleOfSelfReference {
     value: usize,
     reference_to_value: Option<*const usize>,
 }
 
-impl HorribleExampleOfSelfReference {
+impl ExampleOfSelfReference {
     fn new(value: usize) -> Self {
         Self {
             value,
@@ -24,14 +24,13 @@ impl HorribleExampleOfSelfReference {
 }
 
 fn main() {
-    let mut example = HorribleExampleOfSelfReference::new(1);
-
-    // We need to set the reference now as the constructor moves the data too!
+    let mut example = ExampleOfSelfReference::new(1);
     example.set_reference();
 
-    let pinned_example = pin!(example);
+    // Pin doesn't take ownership of the data, it takes a mutable reference to it
+    let mut pinned_example = Pin::new(&mut example);
 
-    // We can still read the value
+    // We can still read the value thanks to Deref
     assert_eq!(pinned_example.get_value(), 1);
 
     // But we can no longer mutate it
@@ -40,4 +39,8 @@ fn main() {
 
     // Or move the underlying data
     // let example = example;
+
+    // We can, however, access the original data via a mutable reference
+    pinned_example.as_mut().value = 2;
+    assert_eq!(pinned_example.get_value(), 2);
 }
