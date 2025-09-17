@@ -10701,19 +10701,21 @@ example.set_reference();
 // Pin doesn't take ownership of the data, it takes a mutable reference to it
 let mut pinned_example = Pin::new(&amp;mut example);
 
-// We can still read the value thanks to Deref
+// We can no longer mutate or move the data because the pin holds the mutable reference
+// example.value = 2;
+// let example = example;
+    
+// We can read the data via the Pin thanks to Deref
 assert_eq!(pinned_example.get_value(), 1);
 
-// But we can no longer mutate it
-// example.value = 2;
-// pinned_example.value = 2;
-
-// Or move the underlying data
-// let example = example;
-
-// We can, however, access the original data via a mutable reference
-pinned_example.as_mut().value = 2;
+// And we can mutate the data via the Pin thanks to DerefMut
+pinned_example.value = 2;
 assert_eq!(pinned_example.get_value(), 2);
+
+// We can even safely move the pin, since it just contains a reference
+let mut pinned_example = pinned_example;
+pinned_example.value = 3;
+assert_eq!(pinned_example.get_value(), 3);
 <span class="boring">}</span></code></pre></pre>
 <p>There’s a lot to <code>Pin</code> so and if you’re curious about it, the <a href="https://doc.rust-lang.org/std/pin/" title="" target="_blank">std documentation</a>
 has a lot more information. For this chapter its enough to know that, in specific circumstances, like in modular
@@ -10794,7 +10796,7 @@ applied to. The reason for this is <em>where</em> the Future executes might chan
 a <code>Waker</code> which we’ll talk about later. The reason we don’t pass the <code>Waker</code> directly though is that in the future we
 might want to add more data to a <code>Context</code> (this can be done in <code>nightly</code> Rust but this is outside the scope of this
 book).</p>
-<p>Finally, the return type of <code>.poll()</code> method is a <code>Poll</code> enum. <code>.poll()</code> should be called any time we want to make
+<p>Finally, the return type of the <code>.poll()</code> method is a <code>Poll</code> enum. <code>.poll()</code> should be called any time we want to make
 progress on a task. The return type tells us whether that call has resulted in an <code>Output</code>, represented by
 <code>Poll::Ready(Self::Output)</code>, or if the poll is not currently complete and needs to be called again, represented by
 <code>Poll::Pending</code>.</p>
