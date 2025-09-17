@@ -273,7 +273,7 @@ a `Waker` which we'll talk about later. The reason we don't pass the `Waker` dir
 might want to add more data to a `Context` (this can be done in `nightly` Rust but this is outside the scope of this
 book).
 
-Finally, the return type of `.poll()` method is a `Poll` enum. `.poll()` should be called any time we want to make
+Finally, the return type of the `.poll()` method is a `Poll` enum. `.poll()` should be called any time we want to make
 progress on a task. The return type tells us whether that call has resulted in an `Output`, represented by
 `Poll::Ready(Self::Output)`, or if the poll is not currently complete and needs to be called again, represented by
 `Poll::Pending`.
