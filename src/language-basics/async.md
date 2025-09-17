@@ -152,16 +152,18 @@ let mut pinned_example = Pin::new(&mut example);
 // We can still read the value thanks to Deref
 assert_eq!(pinned_example.get_value(), 1);
 
-// But we can no longer mutate it
+// But we can no longer mutate or move the data
 // example.value = 2;
-// pinned_example.value = 2;
-
-// Or move the underlying data
 // let example = example;
 
-// We can, however, access the original data via a mutable reference
-pinned_example.as_mut().value = 2;
+// We can, however, safely mutate `example` using DerefMut on the pin
+pinned_example.value = 2;
 assert_eq!(pinned_example.get_value(), 2);
+
+// We can even move the pin, since it itself is just a reference
+let mut pinned_example = pinned_example;
+pinned_example.value = 3;
+assert_eq!(pinned_example.get_value(), 3);
 # }
 ```
 
