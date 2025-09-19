@@ -482,7 +482,7 @@ struct ExampleUnitType;
 impl Safer for ExampleUnitType {}
 ```
 
-You're likely to need unsafe Traits only when the behavior the trait describes is itself is unsafe. For example, `Send`
+You're likely to need unsafe Traits only when the behavior the trait describes is itself unsafe. For example, `Send`
 and `Sync` are automatically applied to all types that are only constructed from types that are also `Send` and `Sync`.
 If your type contains types that are not `Send` and/or `Sync` then the compiler can no longer guarantee safety itself.
 You can still implement `Send` and `Sync` for your type manually but its now up to you to check the implementation is
@@ -492,7 +492,7 @@ Unions
 ------
 
 Unions, in software engineering, are a way of storing different types in the same section of memory. They're typically 
-broken into two flavors, tagged and untagged. "Tagged" simply means the type is part of data, so you can only access the
+broken into two flavors, tagged and untagged. "Tagged" simply means the type is part of the data, so you can only access the
 data _as_ the type that it is. We use tagged unions in Rust all the time, and they're perfectly safe:
 
 ```rust
@@ -637,7 +637,7 @@ need it.
 extern
 ------
 
-A lot of the time you're going to be working with other peoples code. Most often, that code will be written in Rust,
+A lot of the time you're going to be working with other people's code. Most often, that code will be written in Rust,
 downloaded as a crate, and combined with your code into a single binary. Sometimes, though, you'll want to work with
 code written in other languages, either by consuming a library written in another language, or by building a library
 that another language can consume.
@@ -645,7 +645,7 @@ that another language can consume.
 This is done with `extern`.
 
 For compiled languages to interoperate, they need to use an Application Binary Interface. Rust doesn't (and probably
-never will) have a stable ABI. Instead, we use typically use C's, though
+never will) have a stable ABI. Instead, we typically use C's, though
 [other options also exist](https://doc.rust-lang.org/reference/items/external-blocks.html#abi). 
 
 Creating a library that can be consumed by other languages is fairly safe. You define a function that will be made
