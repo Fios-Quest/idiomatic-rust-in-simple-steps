@@ -560,14 +560,14 @@ struct ExampleUnitType;
 
 impl Safer for ExampleUnitType {}
 <span class="boring">}</span></code></pre></pre>
-<p>You’re likely to need unsafe Traits only when the behavior the trait describes is itself is unsafe. For example, <code>Send</code>
+<p>You’re likely to need unsafe Traits only when the behavior the trait describes is itself unsafe. For example, <code>Send</code>
 and <code>Sync</code> are automatically applied to all types that are only constructed from types that are also <code>Send</code> and <code>Sync</code>.
 If your type contains types that are not <code>Send</code> and/or <code>Sync</code> then the compiler can no longer guarantee safety itself.
 You can still implement <code>Send</code> and <code>Sync</code> for your type manually but its now up to you to check the implementation is
 safe, so the traits themselves are <code>unsafe</code>.</p>
 <h2 id="unions"><a class="header" href="#unions">Unions</a></h2>
 <p>Unions, in software engineering, are a way of storing different types in the same section of memory. They’re typically
-broken into two flavors, tagged and untagged. “Tagged” simply means the type is part of data, so you can only access the
+broken into two flavors, tagged and untagged. “Tagged” simply means the type is part of the data, so you can only access the
 data <em>as</em> the type that it is. We use tagged unions in Rust all the time, and they’re perfectly safe:</p>
 <pre><pre class="playground"><code class="language-rust edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -692,13 +692,13 @@ hardware for that matter, but we’re not covering that here), so assembly is on
 Rust’s unsafe features, this is the one you’re least likely to need to touch, but, as with the others, it’s there if you
 need it.</p>
 <h2 id="extern"><a class="header" href="#extern">extern</a></h2>
-<p>A lot of the time you’re going to be working with other peoples code. Most often, that code will be written in Rust,
+<p>A lot of the time you’re going to be working with other people’s code. Most often, that code will be written in Rust,
 downloaded as a crate, and combined with your code into a single binary. Sometimes, though, you’ll want to work with
 code written in other languages, either by consuming a library written in another language, or by building a library
 that another language can consume.</p>
 <p>This is done with <code>extern</code>.</p>
 <p>For compiled languages to interoperate, they need to use an Application Binary Interface. Rust doesn’t (and probably
-never will) have a stable ABI. Instead, we use typically use C’s, though
+never will) have a stable ABI. Instead, we typically use C’s, though
 <a href="https://doc.rust-lang.org/reference/items/external-blocks.html#abi" title="" target="_blank">other options also exist</a>.</p>
 <p>Creating a library that can be consumed by other languages is fairly safe. You define a function that will be made
 available externally (thus the name). The function itself is safe… exposing it is not. To be made available, the name
