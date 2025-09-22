@@ -149,19 +149,21 @@ example.set_reference();
 // Pin doesn't take ownership of the data, it takes a mutable reference to it
 let mut pinned_example = Pin::new(&mut example);
 
-// We can still read the value thanks to Deref
+// We can no longer mutate or move the data because the pin holds the mutable reference
+// example.value = 2;
+// let example = example;
+    
+// We can read the data via the Pin thanks to Deref
 assert_eq!(pinned_example.get_value(), 1);
 
-// But we can no longer mutate it
-// example.value = 2;
-// pinned_example.value = 2;
-
-// Or move the underlying data
-// let example = example;
-
-// We can, however, access the original data via a mutable reference
-pinned_example.as_mut().value = 2;
+// And we can mutate the data via the Pin thanks to DerefMut
+pinned_example.value = 2;
 assert_eq!(pinned_example.get_value(), 2);
+
+// We can even safely move the pin, since it just contains a reference
+let mut pinned_example = pinned_example;
+pinned_example.value = 3;
+assert_eq!(pinned_example.get_value(), 3);
 # }
 ```
 
@@ -271,7 +273,7 @@ a `Waker` which we'll talk about later. The reason we don't pass the `Waker` dir
 might want to add more data to a `Context` (this can be done in `nightly` Rust but this is outside the scope of this
 book).
 
-Finally, the return type of `.poll()` method is a `Poll` enum. `.poll()` should be called any time we want to make
+Finally, the return type of the `.poll()` method is a `Poll` enum. `.poll()` should be called any time we want to make
 progress on a task. The return type tells us whether that call has resulted in an `Output`, represented by
 `Poll::Ready(Self::Output)`, or if the poll is not currently complete and needs to be called again, represented by
 `Poll::Pending`.
