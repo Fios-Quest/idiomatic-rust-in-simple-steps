@@ -264,7 +264,7 @@ It has an associated type, `Output` and a single method, `.poll()`.
 `Result<T, E>` because if we're waiting on something happening, there's a chance that it might not.
 
 The `.poll()` method is a lot more interesting though. Firstly, you'll notice that `self` is typed, which we haven't
-seen in this book before. In `Future`'s, `self` is a Pinned mutable reference to data of the type the `Future` is
+seen in this book before. In `Future`s, `self` is a Pinned mutable reference to data of the type the `Future` is
 applied to. The reason for this is _where_ the Future executes might change, but because you might want to apply a
 `Future` to a self-referential type, we need to know the data the `Future` represents won't itself move.
 
@@ -302,7 +302,7 @@ impl Future for ExampleFuture {
 // --- Usage ---
 
 # fn main() {
-// We'll enstantiate our future and pin it
+// We'll instantiate our future and pin it
 let mut example = ExampleFuture;
 let example = Pin::new(&mut example);
 
@@ -660,7 +660,7 @@ Next we look to see if the thread has been started.
 
 If we don't currently have a join handle, then we start a new thread, passing in the duration and our Arc'd Waker and
 `is_complete`. Using the `Arc<Mutex<_>>` allows us to make these values accessible from both threads. The thread we're
-starting sleeps itself for the duration, updates `is_complete`, and finally calls the `Waker` by calling using the
+starting sleeps itself for the duration, updates `is_complete`, and finally calls the `Waker` by using the
 `.wake_by_ref()` method which avoids consuming the `Waker` which is owned by the Future.
 
 > Note: Thread sleeps are not accurate, the only thing that can be guaranteed is that the thread will sleep for 
@@ -671,7 +671,7 @@ If the thread has been started, check the value of `is_complete` for which varia
 
 We're still using the old executor, so if you run this, you'll see we poll hundreds of thousands of times. 
 
-Let's fix that next. First, we need a `Waker`. The `Waker` type itself is a concrete type, but when its created we can
+Let's fix that next. First, we need a `Waker`. The `Waker` type itself is a concrete type, but when it's created we can
 give it any type that implements the `Wake` trait.
 
 ```rust,no_run
@@ -1606,10 +1606,10 @@ println!("Time taken {time_taken} seconds");
 ```
 
 The `Join` future uses another future I've created called the `MemoFuture` which simply allows me to poll it even
-after its Ready but only returns the data when I extract it. When you poll `Join`, it polls the inner `Future`s, if they
+after it's Ready but only returns the data when I extract it. When you poll `Join`, it polls the inner `Future`s, if they
 both report they're ready, then `Join` extracts the data and returns Ready with the results.
 
-Ideally, you won't be writing inefficient Join's like this one yourself. Most async crates provide their own version of
+Ideally, you won't be writing inefficient Joins like this one yourself. Most async crates provide their own version of
 join, such as [Tokio's `join!`](https://docs.rs/tokio/latest/tokio/macro.join.html) macro, and
 [Smol's `.zip()`](https://docs.rs/smol/latest/smol/future/fn.zip.html) function. Even the Rust standard library has
 [std::future::join](https://doc.rust-lang.org/std/future/macro.join.html) which they're trying to stabilize.
@@ -1643,7 +1643,7 @@ need to implement the Future trait yourself. You'll use third party libraries fo
 software, join futures with third party utilities, and you'll glue it all together with futures created with `async`
 blocks and functions.
 
-Returning to our rather silly example from the very beginning of this chapter, you're `async` code is less likely to
+Returning to our rather silly example from the very beginning of this chapter, your `async` code is less likely to
 look like what we've seen so far and much more likely to look like this:
 
 ```rust,ignore
@@ -1652,7 +1652,7 @@ use std::error::Error;
 const FIOS_QUEST_URL: &str = "https://fios-quest.com";
 const IRISS_URL: &str = "https://fios-quest.com/idiomatic-rust-in-simple-steps/";
 
-/// Get the body of an document at a given URL as a string
+/// Get the body of a document at a given URL as a string
 async fn get_url(url: &str) -> Result<String, Box<dyn Error>> {
     // Note that both `.get()` and `.text()` return Futures that can be awaited
     // and those futures return Results that can be shortcut
@@ -1688,7 +1688,7 @@ Common Gotchas
 --------------
 
 Other than blocking unrelated work while awaiting a future, see the earlier Join section, there are two fairly common
-gotcha's in async code. Luckily, they're much easier to spot when you have a fair understanding of what's going on
+gotchas in async code. Luckily, they're much easier to spot when you have a fair understanding of what's going on
 underneath.
 
 The first is blocking. We used threads in our examples, but you may not end up using a threaded executor, and even when 
@@ -1705,7 +1705,7 @@ Worse still is `Mutex` which will block a thread until the lock becomes availabl
 thread, and one has a guard when the other requests it, the second future will block the thread preventing the first
 thread from dropping the guard. This causes a bug called "Deadlock".
 
-> If you cleverly noticed that I used an unsafe Mutexes earlier, good catch! Luckily, the specific way they're being
+> If you cleverly noticed that I used unsafe Mutexes earlier, good catch! Luckily, the specific way they're being
 > used is safe as the locks are guaranteed to be on different threads. :)
 
 Libraries like Tokio and Smol either come with (or provide separately) their own interpretations of typically blocking
