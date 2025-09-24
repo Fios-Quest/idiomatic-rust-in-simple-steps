@@ -10789,7 +10789,7 @@ but not necessarily now).</p>
 <p><code>Output</code> represents the type of the data eventually returned by the <code>Future</code>. Usually this type will actually be a
 <code>Result&lt;T, E&gt;</code> because if we’re waiting on something happening, there’s a chance that it might not.</p>
 <p>The <code>.poll()</code> method is a lot more interesting though. Firstly, you’ll notice that <code>self</code> is typed, which we haven’t
-seen in this book before. In <code>Future</code>’s, <code>self</code> is a Pinned mutable reference to data of the type the <code>Future</code> is
+seen in this book before. In <code>Future</code>s, <code>self</code> is a Pinned mutable reference to data of the type the <code>Future</code> is
 applied to. The reason for this is <em>where</em> the Future executes might change, but because you might want to apply a
 <code>Future</code> to a self-referential type, we need to know the data the <code>Future</code> represents won’t itself move.</p>
 <p><code>.poll()</code> also takes a mutable reference to some sort of <code>Context</code> type. For now, the only thing <code>Context</code> contains is
@@ -10823,7 +10823,7 @@ impl Future for ExampleFuture {
 // --- Usage ---
 
 <span class="boring">fn main() {
-</span>// We'll enstantiate our future and pin it
+</span>// We'll instantiate our future and pin it
 let mut example = ExampleFuture;
 let example = Pin::new(&amp;mut example);
 
@@ -11143,7 +11143,7 @@ different executor needs to be woken when the future is ready to do more work.</
 <p>Next we look to see if the thread has been started.</p>
 <p>If we don’t currently have a join handle, then we start a new thread, passing in the duration and our Arc’d Waker and
 <code>is_complete</code>. Using the <code>Arc&lt;Mutex&lt;_&gt;&gt;</code> allows us to make these values accessible from both threads. The thread we’re
-starting sleeps itself for the duration, updates <code>is_complete</code>, and finally calls the <code>Waker</code> by calling using the
+starting sleeps itself for the duration, updates <code>is_complete</code>, and finally calls the <code>Waker</code> by using the
 <code>.wake_by_ref()</code> method which avoids consuming the <code>Waker</code> which is owned by the Future.</p>
 <blockquote>
 <p>Note: Thread sleeps are not accurate, the only thing that can be guaranteed is that the thread will sleep for
@@ -11152,7 +11152,7 @@ for this demonstration, though.</p>
 </blockquote>
 <p>If the thread has been started, check the value of <code>is_complete</code> for which variant of Poll should be returned.</p>
 <p>We’re still using the old executor, so if you run this, you’ll see we poll hundreds of thousands of times.</p>
-<p>Let’s fix that next. First, we need a <code>Waker</code>. The <code>Waker</code> type itself is a concrete type, but when its created we can
+<p>Let’s fix that next. First, we need a <code>Waker</code>. The <code>Waker</code> type itself is a concrete type, but when it’s created we can
 give it any type that implements the <code>Wake</code> trait.</p>
 <pre><pre class="playground"><code class="language-rust no_run edition2024"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -12039,9 +12039,9 @@ println!("Time taken {time_taken} seconds");
 </span><span class="boring">    Ok(())
 </span><span class="boring">}</span></code></pre></pre>
 <p>The <code>Join</code> future uses another future I’ve created called the <code>MemoFuture</code> which simply allows me to poll it even
-after its Ready but only returns the data when I extract it. When you poll <code>Join</code>, it polls the inner <code>Future</code>s, if they
+after it’s Ready but only returns the data when I extract it. When you poll <code>Join</code>, it polls the inner <code>Future</code>s, if they
 both report they’re ready, then <code>Join</code> extracts the data and returns Ready with the results.</p>
-<p>Ideally, you won’t be writing inefficient Join’s like this one yourself. Most async crates provide their own version of
+<p>Ideally, you won’t be writing inefficient Joins like this one yourself. Most async crates provide their own version of
 join, such as <a href="https://docs.rs/tokio/latest/tokio/macro.join.html" title="" target="_blank">Tokio’s <code>join!</code></a> macro, and
 <a href="https://docs.rs/smol/latest/smol/future/fn.zip.html" title="" target="_blank">Smol’s <code>.zip()</code></a> function. Even the Rust standard library has
 <a href="https://doc.rust-lang.org/std/future/macro.join.html" title="" target="_blank">std::future::join</a> which they’re trying to stabilize.</p>
@@ -12065,14 +12065,14 @@ asynchronously, either via libraries or optional crate features.</p>
 need to implement the Future trait yourself. You’ll use third party libraries for futures at the outer bounds of your
 software, join futures with third party utilities, and you’ll glue it all together with futures created with <code>async</code>
 blocks and functions.</p>
-<p>Returning to our rather silly example from the very beginning of this chapter, you’re <code>async</code> code is less likely to
+<p>Returning to our rather silly example from the very beginning of this chapter, your <code>async</code> code is less likely to
 look like what we’ve seen so far and much more likely to look like this:</p>
 <pre><code class="language-rust ignore">use std::error::Error;
 
 const FIOS_QUEST_URL: &amp;str = "https://fios-quest.com";
 const IRISS_URL: &amp;str = "https://fios-quest.com/idiomatic-rust-in-simple-steps/";
 
-/// Get the body of an document at a given URL as a string
+/// Get the body of a document at a given URL as a string
 async fn get_url(url: &amp;str) -&gt; Result&lt;String, Box&lt;dyn Error&gt;&gt; {
     // Note that both `.get()` and `.text()` return Futures that can be awaited
     // and those futures return Results that can be shortcut
@@ -12102,7 +12102,7 @@ async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
 hood, it will help you make the best use of async and avoid…</p>
 <h2 id="common-gotchas"><a class="header" href="#common-gotchas">Common Gotchas</a></h2>
 <p>Other than blocking unrelated work while awaiting a future, see the earlier Join section, there are two fairly common
-gotcha’s in async code. Luckily, they’re much easier to spot when you have a fair understanding of what’s going on
+gotchas in async code. Luckily, they’re much easier to spot when you have a fair understanding of what’s going on
 underneath.</p>
 <p>The first is blocking. We used threads in our examples, but you may not end up using a threaded executor, and even when
 you do, some executors allow multiple futures to run on a single thread. This means using any blocking code could
@@ -12116,7 +12116,7 @@ of IO functionality. Luckily, async alternatives to the standard library are rea
 thread, and one has a guard when the other requests it, the second future will block the thread preventing the first
 thread from dropping the guard. This causes a bug called “Deadlock”.</p>
 <blockquote>
-<p>If you cleverly noticed that I used an unsafe Mutexes earlier, good catch! Luckily, the specific way they’re being
+<p>If you cleverly noticed that I used unsafe Mutexes earlier, good catch! Luckily, the specific way they’re being
 used is safe as the locks are guaranteed to be on different threads. :)</p>
 </blockquote>
 <p>Libraries like Tokio and Smol either come with (or provide separately) their own interpretations of typically blocking
