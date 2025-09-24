@@ -29,7 +29,7 @@ obviously). Here are some of my favourites:
   from high level concepts such as why Rusts design made certain choices and how they help you be a better developer,
   down to how to use specific language features. (Note: Tris' video on "async isn't real and can't hurt you" convinced
   me to add a reminder you don't _have_ to write async Rust to the async chapter)
-- [Let's Get Rusty] has lower level focus than No Boilerplate. Bogdan, who runs the channel, goes into more detail on
+- [Let's Get Rusty] has a lower level focus than No Boilerplate. Bogdan, who runs the channel, goes into more detail on
   common Idioms and specific crates you might need to learn for specific tasks.
 - [Chris Biscardi] makes great guides on all things [Bevy], showcases new Bevy games, tools and framework features.
   Even if game dev isn't your thing, Chris routinely runs through [Advent of Code] problems, solving them with Rust,
@@ -46,19 +46,19 @@ What do you want to build?
 
 To give you some food for thought, you can build command line apps, cross-platform GUI apps, full stack web apps,
 embedded microcontroller apps, machine learning tools, networking tools, libraries that can be consumed by other
-programs and video games. The list is essentially endless.
+programs and even video games. The list is essentially endless.
 
 Early examples for me were;
 - a CSV to Json converter using [Serde]. Serde, of no agreed pronunciation, is short for **ser**ialize, **de**serialize.
   It's the goto tool for converting string data formatted in a variety of file formats, into data in your application
-  such as structs, and back again.
+  and back again.
 - A web server for reading specific details from a WordPress database using [Actix Web] and [Diesel]. Actix Web is an
   incredibly fast web server framework that's surprisingly easy to work with. Diesel is a Database ORM that not
-  only lets you read and write to databases, but can also manage things like table structure and migrations for you.
-- A 250,000 cell game of life in [Web Assembly] that ran at 60fps. Web Assembly isn't a framework or library like
+  only lets you read and write to databases, but can also manage things like table structure and migrations.
+- A 250,000 cell Game Of Life in [Web Assembly] that ran at 60fps. Web Assembly isn't a framework or library like
   other tools I'm listing here, it's a compile target. You can compile Rust into Web Assembly. I would even go so far
   as to argue that, thanks to how Rust works as a language, and especially the supporting tooling, Rust should be
-  everyone's first choice when writing high compute performance code for frontend web.
+  everyone's first choice when writing high performance code for frontend web.
 - A command line flash card database using [Clap] and [Sqlx]. Clap is a tool for parsing command line arguments as well
   as providing a common experience across cli applications. Sqlx is another framework for working with Databases but
   doesn't have the ORM features built into Diesel.
@@ -84,7 +84,8 @@ to your `[dependencies]` (or `[dev-dependencies]`) section in your manifest file
 for you, and you'll be able to access them in your software.
 
 Documentation for libraries can almost always be found on [docs.rs] (usually linked from the crate's page on 
-crates.io).
+crates.io). docs.rs is built from rustdoc, which we covered in the [documentation] chapter. This means library
+documentation will always be structured in a familiar way making it easy to use.
 
 Over to you
 -----------
@@ -112,5 +113,6 @@ wonderful, supportive people. Let us know what you're up to!
 
 [crates.io]: https://crates.io/
 [docs.rs]: https://docs.rs/
+[documentation]: ../language-basics/documentation.md
 
 [Discord]: https://fios-quest.com/discord/
