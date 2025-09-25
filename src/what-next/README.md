@@ -13,7 +13,7 @@ got all the way through IRISS and didn't look at the official book yet... how? W
 
 The book goes into far more detail that IRISS, and makes fewer pains to avoid non-idiomatic examples or crates so gets 
 to the point more directly. Particularly if you've gone through IRISS already, the official book will be a sinch to get
-through and give you a much broader 
+through and give you a much broader view of the language.
 
 For the more hands on, I can't recommend [Rustlings] enough. It's a collection of short exorcises that don't just tell
 you how Rust works, but get you to write it. You run it locally, and you can only pass a section when your code works! 
@@ -91,7 +91,7 @@ Over to you
 -----------
 
 Where you go next is up to you, but I'd honestly love to hear about it. Fio's Quest has a [Discord], and a community of
-wonderful, supportive people. Let us know what you're up to! 
+wonderful, supportive people. Let us know what learning resources you're using, or what apps or tools you're building.
 
 [The Rust Programming Language]: https://doc.rust-lang.org/book/
 [Rustlings]: https://rustlings.rust-lang.org/
