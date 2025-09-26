@@ -179,11 +179,11 @@
 <p>We’ve reached the end of Idiomatic Rust in Simple Steps. So what next?</p>
 <h2 id="other-learning-resources"><a class="header" href="#other-learning-resources">Other Learning Resources</a></h2>
 <p>If you’d like to dive into other learning resources, there’s a lot of really amazing stuff out there.</p>
-<p>The official book, <a href="https://doc.rust-lang.org/book/" title="" target="_blank">The Rust Programming Language</a> is available in both living digital and “dead tree” versions. If you
-got all the way through IRISS and didn’t look at the official book yet… how? Why? It’s amazing!</p>
-<p>The book goes into far more detail that IRISS, and makes fewer pains to avoid non-idiomatic examples or crates so gets
-to the point more directly. Particularly if you’ve gone through IRISS already, the official book will be a sinch to get
-through and give you a much broader</p>
+<p>The official book, <a href="https://doc.rust-lang.org/book/" title="" target="_blank">The Rust Programming Language</a> is available in both “living digital” and “dead tree” versions. If
+you got all the way through IRISS and didn’t look at the official book yet… how and why? It’s amazing!</p>
+<p>The official book goes into far more detail than IRISS, and makes fewer pains to avoid non-idiomatic examples or crates
+so gets to the point more directly. Particularly if you’ve gone through IRISS already, the official book will be a sinch
+to get through and give you a much broader view of the language.</p>
 <p>For the more hands on, I can’t recommend <a href="https://rustlings.rust-lang.org/" title="" target="_blank">Rustlings</a> enough. It’s a collection of short exorcises that don’t just tell
 you how Rust works, but get you to write it. You run it locally, and you can only pass a section when your code works!
 It mirrors the official book pretty closely so working through both at the same time can really support your learning.</p>
@@ -193,23 +193,23 @@ you’ve just learned.</p>
 obviously). Here are some of my favourites:</p>
 <ul>
 <li><a href="https://www.youtube.com/@NoBoilerplate" title="" target="_blank">No Boilerplate</a> offers what Tris, the creator, describes as “Fast technical videos”. His video’s cover everything
-from high level concepts such as why Rusts design made certain choices and how they help you be a better developer,
+from high level concepts such as why Rust’s design makes certain choices and how they help you be a better developer,
 down to how to use specific language features. (Note: Tris’ video on “async isn’t real and can’t hurt you” convinced
-me to add a reminder you don’t <em>have</em> to write async Rust to the async chapter)</li>
+me to add a reminder that you don’t <em>have</em> to write async Rust to the async chapter)</li>
 <li><a href="https://www.youtube.com/@letsgetrusty" title="" target="_blank">Let’s Get Rusty</a> has a lower level focus than No Boilerplate. Bogdan, who runs the channel, goes into more detail on
-common Idioms and specific crates you might need to learn for specific tasks.</li>
+common idioms and specific crates you might need to learn for specific tasks.</li>
 <li><a href="https://www.youtube.com/c/chrisbiscardi" title="" target="_blank">Chris Biscardi</a> makes great guides on all things <a href="https://bevy.org/" title="" target="_blank">Bevy</a>, showcases new Bevy games, tools and framework features.
 Even if game dev isn’t your thing, Chris routinely runs through <a href="https://adventofcode.com/" title="" target="_blank">Advent of Code</a> problems, solving them with Rust,
 which is a great place to see smart algorithms written succinctly in idiomatic code. (Note: Chris is where I learned
-about <a href="https://docs.rs/nom" title="" target="_blank">nom</a>, and how to do better parsing, which might have helped land my latest job!)</li>
+about <a href="https://docs.rs/nom" title="" target="_blank">nom</a>, and how to do better parsing, discussion of which might have helped land my latest job!)</li>
 </ul>
-<p>If you know of any other good guides, please let me know! You can even send me a PR for the book on GitHub!</p>
+<p>If you know of any other good guides or resources, please let me know! You can even send me a PR for the book on GitHub!</p>
 <h2 id="start-building"><a class="header" href="#start-building">Start building</a></h2>
 <p>But the best way to learn Rust is to start building. Rust is one of the few languages that work in just about any field.
 What do you want to build?</p>
 <p>To give you some food for thought, you can build command line apps, cross-platform GUI apps, full stack web apps,
-embedded microcontroller apps, machine learning tools, networking tools, libraries that can be consumed by other
-programs and even video games. The list is essentially endless.</p>
+embedded microcontroller apps, machine learning tools, networking tools, video games, and even libraries that can be
+consumed by other programs. The list is essentially endless.</p>
 <p>Early examples for me were;</p>
 <ul>
 <li>a CSV to Json converter using <a href="https://serde.rs/" title="" target="_blank">Serde</a>. Serde, of no agreed pronunciation, is short for <strong>ser</strong>ialize, <strong>de</strong>serialize.
@@ -227,15 +227,15 @@ as providing a common experience across cli applications. Sqlx is another framew
 doesn’t have the ORM features built into Diesel.</li>
 </ul>
 <p>My advice is to think of something you’re missing in your life, ideally something that’s limited in scope and
-achievable, plan out how you’d structure the solution, and try building it.</p>
+achievable. Plan out how you’d structure the solution, and try building it.</p>
 <h2 id="cargo-crates-and-docsrs"><a class="header" href="#cargo-crates-and-docsrs">Cargo, Crates, and docs.rs</a></h2>
 <p>Very little of what we build is actually built from scratch. My goal with Idiomatic Rust in Simple Steps was to teach
 Rust without getting distracted with third party libraries (which, even the official book gets a little distracted with
 sometimes).</p>
 <p>But now we’re past that and ready to get really stuck in to everything the ecosystem has to offer.</p>
-<p>Like most modern languages, Rust has a default package manager called <a href="https://crates.io/" title="" target="_blank">crates.io</a>. Here you’ll find a wealth of
-libraries for just about every use you can imagine, whether you’re building for tiny embedded microcontrollers or
-data center scale, distributed, GPU-powered, AI tools. In Rust parlance, we call external libraries “crates”.</p>
+<p>Like most modern languages, Rust has a default library collection called <a href="https://crates.io/" title="" target="_blank">crates.io</a>. In Rust parlance, we call external
+libraries “crates”. Here you’ll find a wealth of libraries for just about every use you can imagine. Whether you’re
+building for tiny embedded microcontrollers or data center scale, distributed, GPU-powered, AI tools.</p>
 <p>When you create a project in Cargo, it will create a <code>Cargo.toml</code> manifest file. By adding libraries from crates.io
 to your <code>[dependencies]</code> (or <code>[dev-dependencies]</code>) section in your manifest file, Cargo will automatically download them
 for you, and you’ll be able to access them in your software.</p>
@@ -243,8 +243,9 @@ for you, and you’ll be able to access them in your software.</p>
 crates.io). docs.rs is built from rustdoc, which we covered in the <a href="../language-basics/documentation.html">documentation</a> chapter. This means library
 documentation will always be structured in a familiar way making it easy to use.</p>
 <h2 id="over-to-you"><a class="header" href="#over-to-you">Over to you</a></h2>
-<p>Where you go next is up to you, but I’d honestly love to hear about it. Fio’s Quest has a <a href="https://fios-quest.com/discord/" title="" target="_blank">Discord</a>, and a community of
-wonderful, supportive people. Let us know what you’re up to!</p>
+<p>Where you go next is up to you, but I’d honestly love to hear about it. Fio’s Quest has a <a href="https://fios-quest.com/discord/" title="" target="_blank">Discord server</a>, and a
+community of wonderful, supportive people. Let us know what learning resources you’re using, or what apps or tools
+you’re building.</p>
 
                     </main>
 
